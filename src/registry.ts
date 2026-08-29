@@ -101,12 +101,27 @@ export class Registry {
       : { server: id, auth, status: "pending", message: `${m.name} requires ${auth}; broker lands in P2.` };
   }
 
+  /** Close one downstream session now (scoped kill switch). Returns whether a
+   *  live session was actually running. */
+  async close(id: string): Promise<boolean> {
+    const s = this.sessions.get(id);
+    if (!s) return false;
+    clearTimeout(s.timer);
+    this.sessions.delete(id);
+    await s.client.close().catch(() => {});
+    return true;
+  }
+
   async closeAll(): Promise<void> {
     for (const [, s] of this.sessions) {
       clearTimeout(s.timer);
       await s.client.close().catch(() => {});
     }
     this.sessions.clear();
+  }
+
+  runningServers(): string[] {
+    return [...this.sessions.keys()];
   }
 
   // --- session pooling -----------------------------------------------------
