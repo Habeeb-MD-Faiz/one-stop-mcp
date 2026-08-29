@@ -2,6 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { DownstreamTool, Manifest } from "./types.js";
+import { LexicalRouter, type RoutableTool, type Router } from "./router.js";
 
 interface Session {
   client: Client;
@@ -29,10 +30,12 @@ export class Registry {
   private sessions = new Map<string, Session>();
   private catalogs = new Map<string, DownstreamTool[]>();
   private ttlMs: number;
+  private router: Router;
 
-  constructor(manifests: Manifest[], opts: { ttlMs?: number } = {}) {
+  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router } = {}) {
     for (const m of manifests) this.manifests.set(m.id, m);
     this.ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
+    this.router = opts.router ?? new LexicalRouter();
   }
 
   listServers(filter?: string): Array<Pick<Manifest, "id" | "name" | "category" | "description"> & { auth: string; running: boolean }> {
@@ -50,19 +53,27 @@ export class Registry {
   }
 
   async findTools(query: string, k = 5): Promise<ToolHit[]> {
-    const terms = [...tokenize(query)];
-    const hits: ToolHit[] = [];
+    const routable: RoutableTool[] = [];
     for (const m of this.manifests.values()) {
       const tools = await this.ensureCatalog(m.id);
-      const examples = (m.routing?.examples ?? []).join(" ");
       for (const t of tools) {
-        const haystack = tokenize(`${t.name} ${t.description ?? ""} ${m.name} ${m.category.join(" ")} ${examples}`);
-        const score = terms.reduce((s, term) => s + (haystack.has(term) ? 1 : 0), 0);
-        if (score > 0) hits.push({ server: m.id, tool: t.name, description: t.description ?? "", inputSchema: t.inputSchema, score });
+        routable.push({
+          server: m.id,
+          tool: t.name,
+          description: t.description ?? "",
+          examples: m.routing?.examples ?? [], // server-level for now; per-tool utterances are a P1 manifest extension
+          category: m.category,
+          inputSchema: t.inputSchema,
+        });
       }
     }
-    // ponytail: keyword overlap ranking — P1 replaces this with a vector index.
-    return hits.sort((a, b) => b.score - a.score).slice(0, k);
+    return this.router.rank(query, routable, k).map((r) => ({
+      server: r.server,
+      tool: r.tool,
+      description: r.description,
+      inputSchema: r.inputSchema,
+      score: r.score,
+    }));
   }
 
   async ensureCatalog(id: string): Promise<DownstreamTool[]> {
@@ -149,8 +160,4 @@ export class Registry {
     if (!m) throw new Error(`unknown server: ${id}`);
     return m;
   }
-}
-
-function tokenize(s: string): Set<string> {
-  return new Set(s.toLowerCase().match(/[a-z0-9]+/g) ?? []);
 }
