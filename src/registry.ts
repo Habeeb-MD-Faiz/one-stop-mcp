@@ -3,6 +3,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { DownstreamTool, Manifest } from "./types.js";
 import { LexicalRouter, type RoutableTool, type Router } from "./router.js";
+import type { UsageLedger } from "./ledger.js";
 
 interface Session {
   client: Client;
@@ -31,11 +32,15 @@ export class Registry {
   private catalogs = new Map<string, DownstreamTool[]>();
   private ttlMs: number;
   private router: Router;
+  private ledger?: UsageLedger;
+  private user: string;
 
-  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router } = {}) {
+  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router; ledger?: UsageLedger; user?: string } = {}) {
     for (const m of manifests) this.manifests.set(m.id, m);
     this.ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
     this.router = opts.router ?? new LexicalRouter();
+    this.ledger = opts.ledger;
+    this.user = opts.user ?? "local";
   }
 
   listServers(filter?: string): Array<Pick<Manifest, "id" | "name" | "category" | "description"> & { auth: string; running: boolean }> {
@@ -88,7 +93,14 @@ export class Registry {
 
   async invoke(id: string, tool: string, args: Record<string, unknown> = {}): Promise<unknown> {
     const client = await this.session(id);
-    return client.callTool({ name: tool, arguments: args });
+    try {
+      const res = (await client.callTool({ name: tool, arguments: args })) as { isError?: boolean };
+      this.ledger?.record({ ts: Date.now(), user: this.user, server: id, tool, result: res.isError ? "error" : "authorized" });
+      return res;
+    } catch (err) {
+      this.ledger?.record({ ts: Date.now(), user: this.user, server: id, tool, result: "error" });
+      throw err;
+    }
   }
 
   /** P0 auth stub. Real OAuth/vault brokering is P2 — for now report what the

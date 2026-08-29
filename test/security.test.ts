@@ -61,13 +61,14 @@ test("kill switch closes sessions, freezes the vault, and audits the action", as
     transport: { type: "stdio", command: process.execPath, args: [echoPath] },
     auth: { type: "none" }, routing: {},
   };
-  const registry = new Registry([manifest]);
   const vault = new Vault("m");
   const ledger = new UsageLedger();
+  const registry = new Registry([manifest], { ledger });
   const kill = new KillSwitch(registry, vault, ledger);
 
   await registry.invoke("echo", "echo", { message: "hi" }); // spins up a session
   assert.equal(registry.runningServers().length, 1);
+  assert.equal(ledger.all({ server: "echo", tool: "echo", result: "authorized" }).length, 1, "invoke is recorded in the ledger");
 
   const res = await kill.revokeAll("alice");
   assert.equal(res.closedSessions, 1);

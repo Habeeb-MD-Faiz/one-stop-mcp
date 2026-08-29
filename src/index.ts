@@ -5,13 +5,15 @@ import { dirname, join } from "node:path";
 import { buildGateway } from "./gateway.js";
 import { loadManifests } from "./manifest.js";
 import { Registry } from "./registry.js";
+import { UsageLedger } from "./ledger.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 // servers/ sits at the repo root, one level up from dist/ (or src/ under tsx).
 const serversDir = process.env.OSMCP_SERVERS_DIR ?? join(here, "..", "servers");
 
 async function main(): Promise<void> {
-  const registry = new Registry(loadManifests(serversDir));
+  const ledger = new UsageLedger();
+  const registry = new Registry(loadManifests(serversDir), { ledger });
   const server = buildGateway(registry);
   const shutdown = async () => {
     await registry.closeAll();
