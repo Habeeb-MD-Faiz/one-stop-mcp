@@ -7,7 +7,7 @@ Original brief: `initial-briefs/one-stop-mcp.html` in that repo — frozen, neve
 
 Code only here. Anything about *why* belongs in brain.
 
-## Status — P0 done · P1 router in progress
+## Status — P0 done · P1 router baselined · P2 security core done (offline)
 
 **P0 (core facade) — working.** Details below.
 **P1 (discovery) — router + benchmark in place.** `find_tools` routes through a pluggable
@@ -15,6 +15,12 @@ Code only here. Anything about *why* belongs in brain.
 **79.4% top-3** on a 34-query / 82-tool offline benchmark (`npm run bench`). The residual
 misses are pure synonymy ("book"→create, "pull down url"→fetch) — the semantic/embedding
 router, implementing the same `Router` interface, is what closes the gap to the 90% target.
+**P2 (security core) — the vault, ledger, and kill switch are built and tested offline.**
+`Vault` (AES-256-GCM + scrypt over `node:crypto`, zero deps) encrypts secrets at rest,
+scoped to (user, server), with freeze/snapshot/rotate. `UsageLedger` records every
+`invoke` (which user, server, tool, result) and flags anomalous bulk access. `KillSwitch`
+cuts every session and freezes the vault in one call, or scopes to one server. The live
+OAuth broker flow + automated refresh need a real provider — marked `TODO(live)`.
 
 
 
@@ -74,8 +80,8 @@ routing:
 
 ## Roadmap
 
-P0 core facade ✓ · P1 registry + router (lexical ✓, semantic pending) · P2 vault/OAuth broker
-+ audit/kill/rotate · P3 50-server seed catalog · P4 multi-tenant · P5 community. Full table in
-the brain project file.
+P0 core facade ✓ · P1 registry + router (lexical ✓, semantic pending) · P2 vault + ledger +
+kill switch ✓ (OAuth broker flow pending live) · P3 50-server seed catalog · P4 multi-tenant ·
+P5 community. Full table in the brain project file.
 
 License: Apache-2.0 (proposed).
