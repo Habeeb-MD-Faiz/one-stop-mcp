@@ -1,0 +1,17 @@
+# Shipped demo manifest. Proves the gateway proxies a real downstream server on
+# first run. Run `npm start` from the repo root so the relative path resolves.
+# The gateway derives the tool list (echo) via MCP initialize + tools/list.
+id: echo
+name: Echo
+category: [dev, testing]
+description: A trivial echo server for verifying the gateway round trip.
+transport:
+  type: stdio
+  command: node
+  args: [examples/echo-server.mjs]
+auth:
+  type: none
+routing:
+  examples:
+    - "echo this message back"
+    - "test the gateway round trip"
