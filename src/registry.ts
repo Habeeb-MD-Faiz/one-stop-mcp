@@ -3,6 +3,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { DownstreamTool, Manifest } from "./types.js";
 import { LexicalRouter, type RoutableTool, type Router } from "./router.js";
+import { compressSchema, type CompressLevel } from "./compress.js";
 import type { UsageLedger } from "./ledger.js";
 
 interface Session {
@@ -34,13 +35,15 @@ export class Registry {
   private router: Router;
   private ledger?: UsageLedger;
   private user: string;
+  private compress: CompressLevel;
 
-  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router; ledger?: UsageLedger; user?: string } = {}) {
+  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router; ledger?: UsageLedger; user?: string; compress?: CompressLevel } = {}) {
     for (const m of manifests) this.manifests.set(m.id, m);
     this.ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
     this.router = opts.router ?? new LexicalRouter();
     this.ledger = opts.ledger;
     this.user = opts.user ?? "local";
+    this.compress = opts.compress ?? "light"; // strip schema boilerplate from shortlists by default
   }
 
   listServers(filter?: string): Array<Pick<Manifest, "id" | "name" | "category" | "description"> & { auth: string; running: boolean }> {
@@ -76,7 +79,7 @@ export class Registry {
       server: r.server,
       tool: r.tool,
       description: r.description,
-      inputSchema: r.inputSchema,
+      inputSchema: compressSchema(r.inputSchema, this.compress),
       score: r.score,
     }));
   }
