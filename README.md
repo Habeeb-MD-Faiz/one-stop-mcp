@@ -15,6 +15,8 @@ Code only here. Anything about *why* belongs in brain.
 **79.4% top-3** on a 34-query / 82-tool offline benchmark (`npm run bench`). The residual
 misses are pure synonymy ("book"→create, "pull down url"→fetch) — the semantic/embedding
 router, implementing the same `Router` interface, is what closes the gap to the 90% target.
+Shortlisted schemas are run through a **compressor** (brief §4.4) that strips JSON-schema
+boilerplate before they enter context (`light` by default, `aggressive` drops descriptions).
 **P2 (security core) — the vault, ledger, and kill switch are built and tested offline.**
 `Vault` (AES-256-GCM + scrypt over `node:crypto`, zero deps) encrypts secrets at rest,
 scoped to (user, server), with freeze/snapshot/rotate. `UsageLedger` records every
