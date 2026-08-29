@@ -7,7 +7,16 @@ Original brief: `initial-briefs/one-stop-mcp.html` in that repo — frozen, neve
 
 Code only here. Anything about *why* belongs in brain.
 
-## Status — P0 (core facade) working
+## Status — P0 done · P1 router in progress
+
+**P0 (core facade) — working.** Details below.
+**P1 (discovery) — router + benchmark in place.** `find_tools` routes through a pluggable
+`Router`; the default `LexicalRouter` (field-weighted keyword overlap + stemming) scores
+**79.4% top-3** on a 34-query / 82-tool offline benchmark (`npm run bench`). The residual
+misses are pure synonymy ("book"→create, "pull down url"→fetch) — the semantic/embedding
+router, implementing the same `Router` interface, is what closes the gap to the 90% target.
+
+
 
 The client sees **four fixed meta-tools**, no matter how many servers are registered:
 
@@ -37,6 +46,7 @@ demo server (`servers/echo.yaml`) so the round trip works out of the box.
 ```bash
 npm test           # integration tests: client -> gateway -> echo over stdio
 npm run budget     # asserts the startup surface stays under the 2k-token target
+npm run bench      # routing accuracy (top-1/top-3) over the offline benchmark
 npm run typecheck
 ```
 
@@ -64,7 +74,8 @@ routing:
 
 ## Roadmap
 
-P0 core facade ✓ · P1 registry + vector router · P2 vault/OAuth broker + audit/kill/rotate ·
-P3 50-server seed catalog · P4 multi-tenant · P5 community. Full table in the brain project file.
+P0 core facade ✓ · P1 registry + router (lexical ✓, semantic pending) · P2 vault/OAuth broker
++ audit/kill/rotate · P3 50-server seed catalog · P4 multi-tenant · P5 community. Full table in
+the brain project file.
 
 License: Apache-2.0 (proposed).
