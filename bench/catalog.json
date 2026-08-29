@@ -1,0 +1,494 @@
+[
+  {
+    "server": "github",
+    "tool": "search_repositories",
+    "description": "Search for GitHub repositories by name, topic, or language.",
+    "examples": ["find a repo about rust web frameworks", "search github for kubernetes operators"]
+  },
+  {
+    "server": "github",
+    "tool": "create_issue",
+    "description": "Open a new issue in a GitHub repository with a title and body.",
+    "examples": ["file a bug against the api repo", "open a ticket to track the flaky test"]
+  },
+  {
+    "server": "github",
+    "tool": "get_file_contents",
+    "description": "Read the contents of a file or directory from a GitHub repository.",
+    "examples": ["show me the README from that repo", "what's in the package.json on main"]
+  },
+  {
+    "server": "github",
+    "tool": "create_pull_request",
+    "description": "Create a pull request to merge changes from one branch into another.",
+    "examples": ["open a PR from my feature branch into main", "raise a pull request for the fix"]
+  },
+  {
+    "server": "github",
+    "tool": "create_or_update_file",
+    "description": "Create or update a single file in a repository and commit it.",
+    "examples": ["commit an updated changelog to the repo", "add a LICENSE file and push it"]
+  },
+  {
+    "server": "github",
+    "tool": "list_commits",
+    "description": "List the commit history for a branch in a GitHub repository.",
+    "examples": ["show recent commits on main", "who pushed to the release branch lately"]
+  },
+  {
+    "server": "github",
+    "tool": "search_code",
+    "description": "Search for code across GitHub repositories matching a query.",
+    "examples": ["find where useAuth is defined across github", "search code for TODO fixme in the org"]
+  },
+  {
+    "server": "github",
+    "tool": "add_issue_comment",
+    "description": "Add a comment to an existing GitHub issue or pull request.",
+    "examples": ["reply on issue 42 that it's fixed", "leave a comment on that PR asking for tests"]
+  },
+  {
+    "server": "git",
+    "tool": "git_status",
+    "description": "Show the working tree status of the local git repository.",
+    "examples": ["what files have I changed", "show the current git state"]
+  },
+  {
+    "server": "git",
+    "tool": "git_diff",
+    "description": "Show line-by-line differences of unstaged or staged changes.",
+    "examples": ["what did I change in this file", "show me the diff before I commit"]
+  },
+  {
+    "server": "git",
+    "tool": "git_log",
+    "description": "Show the commit log of the local repository.",
+    "examples": ["show the last few commits here", "what's the local commit history"]
+  },
+  {
+    "server": "git",
+    "tool": "git_commit",
+    "description": "Record staged changes to the local repository with a message.",
+    "examples": ["commit the staged changes with a message", "save my work as a commit locally"]
+  },
+  {
+    "server": "git",
+    "tool": "git_add",
+    "description": "Stage files in the working tree for the next commit.",
+    "examples": ["stage all my changes", "add these files to the index"]
+  },
+  {
+    "server": "git",
+    "tool": "git_create_branch",
+    "description": "Create a new branch in the local repository.",
+    "examples": ["make a new branch called hotfix", "branch off main for this work"]
+  },
+  {
+    "server": "git",
+    "tool": "git_checkout",
+    "description": "Switch the working tree to a different branch.",
+    "examples": ["switch to the develop branch", "check out my feature branch"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "read_file",
+    "description": "Read the full contents of a file from the local filesystem.",
+    "examples": ["read the contents of config.yaml", "open notes.txt and show me what's inside"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "write_file",
+    "description": "Create a new file or overwrite an existing one with given content.",
+    "examples": ["save this output to results.json", "create a new file with these notes"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "edit_file",
+    "description": "Make targeted line-based edits to an existing file.",
+    "examples": ["change the port in the config file", "replace that function body in place"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "list_directory",
+    "description": "List the files and folders inside a directory.",
+    "examples": ["what's in the src folder", "list everything in my downloads directory"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "create_directory",
+    "description": "Create a new directory, including parent folders if needed.",
+    "examples": ["make a new folder called assets", "create a directory for the logs"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "move_file",
+    "description": "Move or rename a file or directory on the local filesystem.",
+    "examples": ["rename draft.md to final.md", "move that image into the images folder"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "search_files",
+    "description": "Recursively search for files matching a name pattern under a directory.",
+    "examples": ["find all the yaml files in this project", "locate any file named secrets"]
+  },
+  {
+    "server": "filesystem",
+    "tool": "get_file_info",
+    "description": "Get metadata about a file such as size and modified time.",
+    "examples": ["how big is that log file", "when was this file last changed"]
+  },
+  {
+    "server": "sentry",
+    "tool": "search_issues",
+    "description": "Search Sentry for error issues matching a query across a project.",
+    "examples": ["find the unresolved crashes in the checkout service", "any new errors about null pointers"]
+  },
+  {
+    "server": "sentry",
+    "tool": "get_issue_details",
+    "description": "Get the full details and stack trace for a specific Sentry issue.",
+    "examples": ["show me the stack trace for that error", "pull up details on issue PROJ-123"]
+  },
+  {
+    "server": "sentry",
+    "tool": "list_projects",
+    "description": "List the projects in a Sentry organization.",
+    "examples": ["what sentry projects do we have", "list the projects in our org"]
+  },
+  {
+    "server": "sentry",
+    "tool": "update_issue",
+    "description": "Change the status of a Sentry issue, such as resolving or ignoring it.",
+    "examples": ["mark that error as resolved", "ignore this noisy sentry issue"]
+  },
+  {
+    "server": "sentry",
+    "tool": "search_events",
+    "description": "Query individual error events in Sentry with filters.",
+    "examples": ["show events for that error in the last hour", "how many times did this crash happen today"]
+  },
+  {
+    "server": "docker",
+    "tool": "list_containers",
+    "description": "List Docker containers and their current state.",
+    "examples": ["what containers are running", "show me all my docker containers"]
+  },
+  {
+    "server": "docker",
+    "tool": "create_container",
+    "description": "Create a new Docker container from an image.",
+    "examples": ["spin up a redis container", "create a container from the nginx image"]
+  },
+  {
+    "server": "docker",
+    "tool": "start_container",
+    "description": "Start a stopped Docker container.",
+    "examples": ["start the postgres container", "bring up that stopped container"]
+  },
+  {
+    "server": "docker",
+    "tool": "stop_container",
+    "description": "Stop a running Docker container.",
+    "examples": ["stop the web container", "shut down that running container"]
+  },
+  {
+    "server": "docker",
+    "tool": "remove_container",
+    "description": "Remove a Docker container from the host.",
+    "examples": ["delete the old test container", "get rid of that stopped container"]
+  },
+  {
+    "server": "docker",
+    "tool": "list_images",
+    "description": "List the Docker images available on the host.",
+    "examples": ["what docker images do I have", "show my local images"]
+  },
+  {
+    "server": "docker",
+    "tool": "pull_image",
+    "description": "Pull a Docker image from a registry.",
+    "examples": ["download the latest python image", "pull ubuntu 22.04 from docker hub"]
+  },
+  {
+    "server": "docker",
+    "tool": "get_container_logs",
+    "description": "Fetch the logs output by a Docker container.",
+    "examples": ["show logs for the api container", "tail the output of my running container"]
+  },
+  {
+    "server": "postgres",
+    "tool": "execute_sql",
+    "description": "Run a SQL statement against the connected PostgreSQL database.",
+    "examples": ["run a query to count active users", "select the ten most recent orders"]
+  },
+  {
+    "server": "postgres",
+    "tool": "list_tables",
+    "description": "List the tables in the PostgreSQL database.",
+    "examples": ["what tables are in this database", "show me all the postgres tables"]
+  },
+  {
+    "server": "postgres",
+    "tool": "describe_table",
+    "description": "Show the columns and types of a PostgreSQL table.",
+    "examples": ["what columns does the users table have", "describe the schema of orders"]
+  },
+  {
+    "server": "postgres",
+    "tool": "list_schemas",
+    "description": "List the schemas available in the PostgreSQL database.",
+    "examples": ["what schemas exist in this db", "show the postgres schemas"]
+  },
+  {
+    "server": "postgres",
+    "tool": "explain_query",
+    "description": "Return the execution plan for a SQL query in PostgreSQL.",
+    "examples": ["why is this query slow", "show the query plan for that select"]
+  },
+  {
+    "server": "postgres",
+    "tool": "analyze_db_health",
+    "description": "Report on PostgreSQL database health such as bloat and unused indexes.",
+    "examples": ["check the health of the database", "are there any unused indexes wasting space"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "read_query",
+    "description": "Execute a SELECT query against the SQLite database.",
+    "examples": ["query the sqlite table for all customers", "select rows where status is open"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "write_query",
+    "description": "Execute an INSERT, UPDATE, or DELETE statement in SQLite.",
+    "examples": ["insert a new row into the tasks table", "update the price column in sqlite"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "create_table",
+    "description": "Create a new table in the SQLite database.",
+    "examples": ["make a table for storing sessions", "create a sqlite table with id and name columns"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "list_tables",
+    "description": "List all tables in the SQLite database.",
+    "examples": ["what tables does this sqlite file have", "show the tables in the local db"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "describe_table",
+    "description": "Show the column definitions of a SQLite table.",
+    "examples": ["describe the layout of the events table", "what columns are in the sqlite users table"]
+  },
+  {
+    "server": "sqlite",
+    "tool": "append_insight",
+    "description": "Record a business insight to the SQLite memo resource.",
+    "examples": ["note that weekend sales are higher", "save this finding about churn"]
+  },
+  {
+    "server": "notion",
+    "tool": "search",
+    "description": "Search across Notion pages and databases by keyword.",
+    "examples": ["find my notes about the offsite in notion", "search notion for the launch checklist"]
+  },
+  {
+    "server": "notion",
+    "tool": "fetch",
+    "description": "Retrieve the full content of a specific Notion page or database.",
+    "examples": ["open that notion page and read it", "pull the content of the roadmap doc"]
+  },
+  {
+    "server": "notion",
+    "tool": "create-pages",
+    "description": "Create one or more new pages in Notion with content.",
+    "examples": ["make a new notion page for meeting notes", "add a page to the projects database"]
+  },
+  {
+    "server": "notion",
+    "tool": "update-page",
+    "description": "Update the properties or content of an existing Notion page.",
+    "examples": ["mark that notion task as done", "edit the status property on the page"]
+  },
+  {
+    "server": "notion",
+    "tool": "create-comment",
+    "description": "Add a comment to a Notion page.",
+    "examples": ["leave a comment on the spec page", "add a note asking for review in notion"]
+  },
+  {
+    "server": "notion",
+    "tool": "get-comments",
+    "description": "Retrieve the comments on a Notion page.",
+    "examples": ["what comments are on that notion doc", "show the discussion on the page"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_post_message",
+    "description": "Post a new message to a Slack channel.",
+    "examples": ["send a message to the general channel", "post an update in the eng channel"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_reply_to_thread",
+    "description": "Reply to an existing message thread in Slack.",
+    "examples": ["reply in that thread saying I'll take it", "respond to the thread about the outage"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_add_reaction",
+    "description": "Add an emoji reaction to a Slack message.",
+    "examples": ["react to that message with a thumbs up", "add a checkmark emoji to the announcement"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_get_channel_history",
+    "description": "Fetch recent messages from a Slack channel.",
+    "examples": ["what was said in the support channel today", "catch me up on the standup channel"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_list_channels",
+    "description": "List the channels in the Slack workspace.",
+    "examples": ["what slack channels are there", "list the channels I can post to"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_get_users",
+    "description": "List the members of the Slack workspace.",
+    "examples": ["who is in this slack workspace", "list the people on slack"]
+  },
+  {
+    "server": "slack",
+    "tool": "slack_get_thread_replies",
+    "description": "Get all replies in a specific Slack message thread.",
+    "examples": ["show the replies to that thread", "what did people say in the incident thread"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "list-events",
+    "description": "List calendar events within a date range.",
+    "examples": ["what's on my calendar tomorrow", "show my meetings for next week"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "create-event",
+    "description": "Create a new calendar event with time and attendees.",
+    "examples": ["schedule a sync with the team on friday at 3", "put a dentist appointment on my calendar"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "update-event",
+    "description": "Modify the details of an existing calendar event.",
+    "examples": ["move my 2pm meeting to 4pm", "change the location of the standup"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "delete-event",
+    "description": "Remove an event from the calendar.",
+    "examples": ["cancel my lunch meeting", "delete the recurring 1:1 from my calendar"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "list-calendars",
+    "description": "List the calendars available to the account.",
+    "examples": ["which calendars do I have access to", "show all my google calendars"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "get-event",
+    "description": "Get the full details of a specific calendar event.",
+    "examples": ["what are the details of my 3pm", "who's invited to the review meeting"]
+  },
+  {
+    "server": "google-calendar",
+    "tool": "find-free-time",
+    "description": "Find open time slots across calendars for scheduling.",
+    "examples": ["when am I free this afternoon", "find a 30 minute slot we both have open"]
+  },
+  {
+    "server": "linear",
+    "tool": "create_issue",
+    "description": "Create a new issue in Linear with a title, description, and team.",
+    "examples": ["create a linear ticket for the login bug", "add a task to the mobile team backlog"]
+  },
+  {
+    "server": "linear",
+    "tool": "update_issue",
+    "description": "Update fields on an existing Linear issue such as status or assignee.",
+    "examples": ["move that linear issue to in progress", "assign the ticket to me"]
+  },
+  {
+    "server": "linear",
+    "tool": "search_issues",
+    "description": "Search Linear issues by text, label, or status.",
+    "examples": ["find open linear issues about billing", "search tickets labeled urgent"]
+  },
+  {
+    "server": "linear",
+    "tool": "get_issue",
+    "description": "Retrieve the full details of a specific Linear issue.",
+    "examples": ["show me the details of ENG-204", "what's the description on that linear ticket"]
+  },
+  {
+    "server": "linear",
+    "tool": "list_issues",
+    "description": "List Linear issues for a team or assignee.",
+    "examples": ["what's assigned to me in linear", "list the issues in the current cycle"]
+  },
+  {
+    "server": "linear",
+    "tool": "create_comment",
+    "description": "Add a comment to a Linear issue.",
+    "examples": ["comment on that linear issue with an update", "leave a note on the ticket for the reviewer"]
+  },
+  {
+    "server": "linear",
+    "tool": "list_teams",
+    "description": "List the teams in the Linear workspace.",
+    "examples": ["what teams exist in linear", "show the linear teams I'm on"]
+  },
+  {
+    "server": "linear",
+    "tool": "list_projects",
+    "description": "List the projects in the Linear workspace.",
+    "examples": ["what projects are active in linear", "show the roadmap projects"]
+  },
+  {
+    "server": "brave-search",
+    "tool": "brave_web_search",
+    "description": "Perform a general web search using the Brave search engine.",
+    "examples": ["look up the latest node lts version", "search the web for how to center a div"]
+  },
+  {
+    "server": "brave-search",
+    "tool": "brave_local_search",
+    "description": "Search for local businesses and places near a location.",
+    "examples": ["find coffee shops near me", "any good ramen places downtown"]
+  },
+  {
+    "server": "brave-search",
+    "tool": "brave_news_search",
+    "description": "Search recent news articles on a topic.",
+    "examples": ["what's the latest news on the fed rate", "recent headlines about openai"]
+  },
+  {
+    "server": "brave-search",
+    "tool": "brave_image_search",
+    "description": "Search the web for images matching a query.",
+    "examples": ["find images of golden retrievers", "search for pictures of the eiffel tower"]
+  },
+  {
+    "server": "brave-search",
+    "tool": "brave_video_search",
+    "description": "Search the web for videos matching a query.",
+    "examples": ["find a video tutorial on git rebase", "search youtube for sourdough recipes"]
+  },
+  {
+    "server": "fetch",
+    "tool": "fetch",
+    "description": "Fetch a URL and return its contents as markdown.",
+    "examples": ["grab the text of this article url", "fetch that webpage and summarize it"]
+  }
+]

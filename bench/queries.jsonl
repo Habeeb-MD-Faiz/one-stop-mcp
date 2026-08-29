@@ -1,0 +1,34 @@
+{"query": "open a bug report on the mcp repo", "server": "github", "tool": "create_issue"}
+{"query": "look for popular typescript orm libraries on github", "server": "github", "tool": "search_repositories"}
+{"query": "raise a pull request to merge my branch into main", "server": "github", "tool": "create_pull_request"}
+{"query": "show me the dockerfile from the deploy repo's main branch", "server": "github", "tool": "get_file_contents"}
+{"query": "which files did I touch that aren't committed yet", "server": "git", "tool": "git_status"}
+{"query": "record my staged work with a message", "server": "git", "tool": "git_commit"}
+{"query": "cut a new local branch for the refactor", "server": "git", "tool": "git_create_branch"}
+{"query": "dump the contents of the env example file on disk", "server": "filesystem", "tool": "read_file"}
+{"query": "recursively look for every markdown file under docs", "server": "filesystem", "tool": "search_files"}
+{"query": "rename the temp report to the final name", "server": "filesystem", "tool": "move_file"}
+{"query": "save this generated summary into a new text file", "server": "filesystem", "tool": "write_file"}
+{"query": "pull up the stack trace for that production crash", "server": "sentry", "tool": "get_issue_details"}
+{"query": "find the still-open errors in the payments service", "server": "sentry", "tool": "search_issues"}
+{"query": "close out that noisy exception as fixed", "server": "sentry", "tool": "update_issue"}
+{"query": "which containers are currently up", "server": "docker", "tool": "list_containers"}
+{"query": "boot up the database container that's stopped", "server": "docker", "tool": "start_container"}
+{"query": "grab the output logs from the api service container", "server": "docker", "tool": "get_container_logs"}
+{"query": "count how many signups happened last month in the warehouse", "server": "postgres", "tool": "execute_sql"}
+{"query": "what fields are on the customers table in postgres", "server": "postgres", "tool": "describe_table"}
+{"query": "figure out why this join is taking forever", "server": "postgres", "tool": "explain_query"}
+{"query": "pull all rows from the local sqlite orders table", "server": "sqlite", "tool": "read_query"}
+{"query": "add a fresh record into the sqlite todo table", "server": "sqlite", "tool": "write_query"}
+{"query": "jot down that retention dips after week two", "server": "sqlite", "tool": "append_insight"}
+{"query": "start a new page in notion for today's standup", "server": "notion", "tool": "create-pages"}
+{"query": "dig through notion for the hiring plan doc", "server": "notion", "tool": "search"}
+{"query": "drop a message in the announcements channel about the release", "server": "slack", "tool": "slack_post_message"}
+{"query": "catch me up on what's been posted in the incidents channel", "server": "slack", "tool": "slack_get_channel_history"}
+{"query": "book a 30 minute review with design on thursday morning", "server": "google-calendar", "tool": "create-event"}
+{"query": "push my three o'clock meeting back an hour", "server": "google-calendar", "tool": "update-event"}
+{"query": "when do the two of us both have a gap tomorrow", "server": "google-calendar", "tool": "find-free-time"}
+{"query": "log a ticket in linear for the broken signup flow", "server": "linear", "tool": "create_issue"}
+{"query": "flip that linear ticket over to in progress and assign it to me", "server": "linear", "tool": "update_issue"}
+{"query": "look up the current stable release of postgres online", "server": "brave-search", "tool": "brave_web_search"}
+{"query": "pull down this blog post url and give me the text", "server": "fetch", "tool": "fetch"}

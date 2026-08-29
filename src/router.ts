@@ -34,6 +34,7 @@ export class LexicalRouter implements Router {
     if (qTerms.length === 0) return [];
     const qNorm = norm(query);
 
+    const qStems = qTerms.map(stem);
     const scored = tools.map((t) => {
       const weights = new Map<string, number>();
       add(weights, terms(t.tool), W_NAME);
@@ -41,7 +42,7 @@ export class LexicalRouter implements Router {
       add(weights, terms((t.category ?? []).join(" ")), W_CATEGORY);
       add(weights, terms(t.description), W_DESC);
 
-      let score = qTerms.reduce((s, term) => s + (weights.get(term) ?? 0), 0);
+      let score = qStems.reduce((s, term) => s + (weights.get(term) ?? 0), 0);
       // Strong signal: the query is (almost) one of the tool's example utterances.
       if (t.examples.some((ex) => norm(ex) === qNorm)) score += 10;
       return { ...t, score };
@@ -62,7 +63,21 @@ function norm(s: string): string {
 }
 
 function add(map: Map<string, number>, ts: string[], weight: number): void {
-  for (const t of ts) map.set(t, (map.get(t) ?? 0) + weight);
+  for (const t of ts) map.set(stem(t), (map.get(stem(t)) ?? 0) + weight);
+}
+
+/** Crude suffix stemmer — collapses plurals and verb tense so "rows"/"row" and
+ *  "meetings"/"meeting" match. Applied to both query and catalog, so even wrong
+ *  stems still align. Not a real morphological stemmer; it only needs to make
+ *  the two sides agree. */
+function stem(w: string): string {
+  if (w.length <= 4) return w;
+  if (w.endsWith("ies")) return w.slice(0, -3) + "y";
+  if (w.endsWith("es")) return w.slice(0, -2);
+  if (w.endsWith("s") && !w.endsWith("ss")) return w.slice(0, -1);
+  if (w.endsWith("ing")) return w.slice(0, -3);
+  if (w.endsWith("ed")) return w.slice(0, -2);
+  return w;
 }
 
 // A tiny stoplist — filler that would otherwise reward every tool equally.
