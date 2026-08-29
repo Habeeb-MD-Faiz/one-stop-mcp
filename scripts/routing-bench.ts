@@ -1,16 +1,18 @@
 // Measures routing accuracy against the P1 target (>=90% top-3), over a
 // hand-written offline catalog — no servers spawned, no model, no network.
 //
-// Informational: it reports the number and always exits 0. The current default
-// (LexicalRouter) is a baseline; closing the last stretch to 90% is a semantic
-// problem (synonymy), which the embedding router — same Router interface —
-// exists to solve. This is the harness that will prove it when it lands.
+// Informational: it reports the number and always exits 0. The default
+// HybridRouter fuses the two lexical scorers (field overlap + BM25) via RRF and
+// reaches ~85% top-3 with no model. Closing the last stretch to 90% is a semantic
+// problem (synonymy: "book"->create, "jot down"->append) that the dense leg — a
+// VectorRouter fused in as a third leg — exists to solve. This is the harness that
+// proves it when the embedder lands, and the labeled set for later alpha-tuning.
 //
 // Run: npm run bench
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { LexicalRouter, type RoutableTool } from "../src/router.js";
+import { HybridRouter, type RoutableTool } from "../src/router.js";
 
 const TARGET_TOP3 = 0.9;
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -31,7 +33,7 @@ if (missing.length) {
   process.exit(1);
 }
 
-const router = new LexicalRouter();
+const router = new HybridRouter();
 let top1 = 0;
 let top3 = 0;
 const misses: string[] = [];
@@ -58,5 +60,5 @@ if (misses.length) {
 console.log(
   p3 >= TARGET_TOP3
     ? `\nP1 routing target met.`
-    : `\nbaseline below target by ${((TARGET_TOP3 - p3) * 100).toFixed(1)} pts — remaining misses are synonymy (semantic router territory, same interface).`,
+    : `\nhybrid (lexical+BM25 RRF) below target by ${((TARGET_TOP3 - p3) * 100).toFixed(1)} pts — remaining misses are synonymy (dense leg territory: add a VectorRouter as a third leg, same interface).`,
 );

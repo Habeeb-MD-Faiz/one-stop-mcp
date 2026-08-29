@@ -2,7 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { DownstreamTool, Manifest } from "./types.js";
-import { LexicalRouter, type RoutableTool, type Router } from "./router.js";
+import { HybridRouter, type RoutableTool, type Router } from "./router.js";
 import { compressSchema, type CompressLevel } from "./compress.js";
 import type { UsageLedger } from "./ledger.js";
 
@@ -40,7 +40,7 @@ export class Registry {
   constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router; ledger?: UsageLedger; user?: string; compress?: CompressLevel } = {}) {
     for (const m of manifests) this.manifests.set(m.id, m);
     this.ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
-    this.router = opts.router ?? new LexicalRouter();
+    this.router = opts.router ?? new HybridRouter(); // lexical + BM25 fused via RRF; add the dense leg when an embedder is wired
     this.ledger = opts.ledger;
     this.user = opts.user ?? "local";
     this.compress = opts.compress ?? "light"; // strip schema boilerplate from shortlists by default
