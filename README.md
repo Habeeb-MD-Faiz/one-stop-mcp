@@ -87,3 +87,14 @@ kill switch ✓ (OAuth broker flow pending live) · P3 50-server seed catalog ·
 P5 community. Full table in the brain project file.
 
 License: Apache-2.0 (proposed).
+
+## Architecture page
+
+The current picture of this project — system design + diagram, decisions and why, open decisions,
+next steps — lives in the record repo, not here:
+`Habeeb-MD-Faiz/brain` -> `arch/one-stop-mcp.html` (published site, auth-gated).
+
+**If you ship a feature or change the structure from inside this repo, that page goes stale.** It is
+regenerated from `brain`, where `arch/stale.sh` detects the drift by comparing the sha recorded in the
+page footer against this repo's HEAD. Nothing to do here beyond writing a clear commit message — the
+next `brain` session updates the page from `git log <recorded-sha>..HEAD`.
