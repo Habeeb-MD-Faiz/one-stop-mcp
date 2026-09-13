@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-Stop MCP</title>
+<meta name="description" content="An MCP gateway that holds the client-facing surface at four meta-tools, so tool-definition cost stops growing with every server you connect. In active build.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e14;
+  --panel:#0f141c;
+  --panel-2:#131a24;
+  --line:#1e2733;
+  --line-bright:#2a3644;
+  --ink:#e6edf3;
+  --ink-dim:#8b98a6;
+  --ink-faint:#5a6674;
+  --signal:#22d3ee;
+  --signal-deep:#0e7490;
+  --amber:#fbbf24;
+  --violet:#a78bfa;
+  --grid:rgba(34,211,238,.045);
+  /* chart series: validated on --panel (dark band, CVD + normal-vision separation, contrast) */
+  --series-direct:#d97706;
+  --series-gateway:#0891b2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--signal);color:#04141a}
+a{color:var(--signal);text-decoration:none}
+a:hover{text-decoration:underline}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 40%,transparent 100%)}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(10,14,20,.72);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1080px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:18px}
+.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.02em;font-size:16px;display:flex;align-items:center;gap:9px;color:var(--ink)}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px rgba(251,191,36,.6)}
+.brand .wip{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(251,191,36,.3);border-radius:4px;padding:1px 6px}
+.topnav{margin-left:auto;display:flex;gap:20px;font-size:13px;align-items:center}
+.topnav a{color:var(--ink-dim);transition:color .2s}
+.topnav a:hover{color:var(--ink);text-decoration:none}
+.gh{border:1px solid var(--line-bright);border-radius:6px;padding:6px 12px;color:var(--ink)!important;font-size:12.5px;font-family:'JetBrains Mono',monospace;transition:.2s}
+.gh:hover{border-color:var(--signal);background:rgba(34,211,238,.06)}
+@media(max-width:860px){.topnav a:not(.gh){display:none}}
+
+/* hero */
+.hero{padding:84px 0 60px;position:relative}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--signal)}
+h1.title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,7vw,78px);line-height:1;letter-spacing:-.04em;margin-bottom:26px}
+h1.title .thin{color:var(--ink-faint);font-weight:400}
+.lede{font-size:clamp(17px,2.3vw,20px);color:var(--ink-dim);max-width:700px;line-height:1.55}
+.lede b{color:var(--ink);font-weight:600}
+.hero-meta{margin-top:32px;display:flex;flex-wrap:wrap;gap:10px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);border:1px solid var(--line);border-radius:20px;padding:6px 14px;background:var(--panel)}
+.chip b{color:var(--signal);font-weight:500}
+.statusbar{margin-top:28px;display:flex;gap:16px;align-items:flex-start;border:1px solid rgba(251,191,36,.28);border-left:3px solid var(--amber);background:rgba(251,191,36,.045);border-radius:10px;padding:16px 20px;max-width:780px}
+.statusbar .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);flex:none;padding-top:3px}
+.statusbar p{font-size:14.5px;color:var(--ink-dim)}
+.statusbar p b{color:var(--ink);font-weight:600}
+.hero-links{margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink-faint);display:flex;gap:18px;flex-wrap:wrap}
+
+/* sections */
+section{padding:64px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:28px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--signal);font-weight:500;padding-top:6px}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(26px,4vw,36px);letter-spacing:-.025em;line-height:1.1}
+.sec-sub{color:var(--ink-dim);max-width:720px;font-size:16px;margin-top:-12px;margin-bottom:28px}
+h3.sub{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;letter-spacing:-.01em;margin:36px 0 10px;color:var(--ink)}
+p.body{color:var(--ink-dim);max-width:740px;margin-bottom:16px;font-size:15.5px}
+p.body b{color:var(--ink);font-weight:600}
+p.body code,li code,td code,.step p code,.callout code,.card p code{background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 6px;border-radius:4px;font-size:12.5px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.tag.go{background:rgba(34,211,238,.12);color:var(--signal);border:1px solid rgba(34,211,238,.25)}
+.tag.plan{background:rgba(167,139,250,.1);color:var(--violet);border:1px solid rgba(167,139,250,.28)}
+.tag.no{background:rgba(120,130,140,.1);color:var(--ink-faint);border:1px solid var(--line-bright)}
+
+/* cards */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+@media(max-width:720px){.cols2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+.card h4{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card p{color:var(--ink-dim);font-size:14.5px}
+.card p b{color:var(--ink)}
+ul.clean{list-style:none}
+ul.clean li{padding:9px 0 9px 26px;position:relative;color:var(--ink-dim);font-size:14.5px;border-bottom:1px solid var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"\2192";position:absolute;left:0;color:var(--signal);font-family:'JetBrains Mono',monospace}
+ul.clean li b{color:var(--ink)}
+ul.no li::before{content:"\00d7";color:var(--ink-faint)}
+ul.plan li::before{content:"\25cb";color:var(--violet)}
+
+/* metric strip */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+@media(max-width:720px){.metrics{grid-template-columns:1fr 1fr}}
+.metric{background:var(--panel);padding:22px 20px}
+.metric .n{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--ink);letter-spacing:-.02em}
+.metric .n.hi{color:var(--signal)}
+.metric .l{font-size:12.5px;color:var(--ink-dim);margin-top:4px;line-height:1.4}
+.strip-cap{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);letter-spacing:.05em;margin:18px 0 6px}
+
+/* two-column key/value table (from the brief) */
+.tbl{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+.tbl-row{display:grid;grid-template-columns:260px 1fr;border-bottom:1px solid var(--line)}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row.head{background:var(--panel-2)}
+.tbl-row.head .c{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.tbl .c{padding:15px 20px}
+.tbl .c.k{border-right:1px solid var(--line);background:var(--panel)}
+.tbl .c.k code{color:var(--signal);font-size:13.5px;font-weight:500}
+.tbl .c.v{color:var(--ink-dim);font-size:14.5px;background:var(--panel)}
+@media(max-width:640px){.tbl-row{grid-template-columns:1fr}.tbl .c.k{border-right:none;border-bottom:1px solid var(--line)}.tbl-row.head{display:none}}
+
+/* multi-column table */
+.t-wrap{border:1px solid var(--line);border-radius:12px;overflow-x:auto;margin:8px 0 18px}
+table.t{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+table.t th{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);text-align:left;background:var(--panel-2);padding:12px 16px;border-bottom:1px solid var(--line);font-weight:500;white-space:nowrap}
+table.t td{padding:13px 16px;border-bottom:1px solid var(--line);color:var(--ink-dim);vertical-align:top;background:var(--panel)}
+table.t tr:last-child td{border-bottom:none}
+table.t td b{color:var(--ink);font-weight:600}
+table.t td.num,table.t th.num{text-align:right;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t td.nowrap{white-space:nowrap}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.03em;padding:2px 8px;border-radius:4px;white-space:nowrap;border:1px solid}
+.pill.built{color:var(--signal);background:rgba(34,211,238,.09);border-color:rgba(34,211,238,.28)}
+.pill.partial{color:var(--amber);background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.28)}
+.pill.design{color:var(--violet);background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.28)}
+.pill.none{color:var(--ink-faint);border-color:var(--line-bright)}
+
+/* callout */
+.callout{border-radius:12px;padding:22px 24px;margin:24px 0;border:1px solid var(--line);background:var(--panel);border-left:3px solid var(--signal)}
+.callout.amber{border-left-color:var(--amber)}
+.callout.violet{border-left-color:var(--violet)}
+.callout .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;color:var(--signal)}
+.callout.amber .k{color:var(--amber)}
+.callout.violet .k{color:var(--violet)}
+.callout p{color:var(--ink-dim);font-size:15px;line-height:1.6}
+.callout p b{color:var(--ink)}
+.callout p + p{margin-top:10px}
+
+/* code block */
+.codeblock{background:#070a0f;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:18px 0}
+.codeblock .bar{display:flex;align-items:center;gap:7px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.codeblock .bar .d{width:11px;height:11px;border-radius:50%}
+.codeblock .bar .fname{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-faint)}
+.codeblock pre{padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:var(--ink-dim)}
+.codeblock .cm{color:var(--ink-faint)}
+.codeblock .ky{color:var(--violet)}
+.codeblock .st{color:var(--signal)}
+.codeblock .nm{color:var(--amber)}
+.codeblock .tot{color:var(--ink);font-weight:700}
+
+/* steps */
+.steps{counter-reset:s;margin-top:10px}
+.step{display:flex;gap:18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:none}
+.step .idx{counter-increment:s;flex:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--line-bright);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--signal);background:var(--panel)}
+.step .idx::before{content:counter(s,decimal-leading-zero)}
+.step p{color:var(--ink-dim);font-size:14.5px;padding-top:6px}
+.step p b{color:var(--ink)}
+
+/* chart */
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px 14px;margin:24px 0}
+.chart-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.chart-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--ink)}
+.chart-sub{font-size:12.5px;color:var(--ink-faint);margin-top:2px}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--ink-dim)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:18px;height:2px;border-radius:1px;display:inline-block}
+.chart-wrap{position:relative}
+.chart-wrap svg{display:block;width:100%;height:auto;outline:none;touch-action:pan-y}
+.chart-wrap svg:focus-visible{box-shadow:0 0 0 2px var(--signal-deep);border-radius:6px}
+.tip{position:absolute;pointer-events:none;background:#070a0f;border:1px solid var(--line-bright);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--ink-dim);min-width:210px}
+.tip .h{color:var(--ink);font-weight:600;margin-bottom:4px}
+.tip .row{display:flex;align-items:center;justify-content:space-between;gap:14px;line-height:1.8}
+.tip .row span:first-child{display:inline-flex;align-items:center;gap:7px}
+.tip i{width:12px;height:2px;display:inline-block;border-radius:1px}
+.tip .v{font-family:'JetBrains Mono',monospace;color:var(--ink);font-variant-numeric:tabular-nums}
+.tip .note{margin-top:4px;color:var(--ink-faint);font-size:11.5px}
+.chart-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:6px;font-size:12px;color:var(--ink-faint)}
+details.data summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim)}
+details.data[open] summary{margin-bottom:10px}
+
+/* roadmap */
+.road{margin-top:10px}
+.phase{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:18px 0;border-bottom:1px solid var(--line)}
+.phase:last-child{border-bottom:none}
+.phase .pid{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--signal);font-weight:500}
+.phase .pid .s{display:block;color:var(--ink-faint);font-size:11px;margin:3px 0 8px;font-weight:400}
+.phase .pbody h4{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px}
+.phase .pbody p{color:var(--ink-dim);font-size:14px}
+.phase .pbody .exit{font-size:12.5px;color:var(--ink-faint);margin-top:6px;font-family:'JetBrains Mono',monospace}
+.phase .pbody .exit b{color:var(--ink-dim);font-weight:400}
+@media(max-width:640px){.phase{grid-template-columns:1fr;gap:6px}}
+
+/* ways */
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:8px}
+.way{border:1px solid var(--line);border-radius:10px;padding:18px;background:var(--panel)}
+.way .t{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:6px}
+.way p{font-size:13.5px;color:var(--ink-dim)}
+.way p code{background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 5px;border-radius:4px;font-size:12px}
+
+/* topology */
+.topology{margin-top:8px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg));padding:8px;overflow:hidden}
+.topology svg{display:block;width:100%;height:auto}
+.topology .cap{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);padding:10px 14px 6px;letter-spacing:.05em}
+.flow{stroke-dasharray:4 6;animation:dash 1.1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+@media(prefers-reduced-motion:reduce){.flow{animation:none}}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:24px}
+.foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.foot-in .l{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-faint)}
+.foot-in .l b{color:var(--ink-dim);font-weight:400}
+.foot-links{display:flex;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="dot" aria-hidden="true"></span>One-Stop MCP <span class="wip">in build</span></div>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#problem">Problem</a>
+      <a href="#how">How it works</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#status">Status</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#contributing">Contribute</a>
+      <a href="#spec">Spec</a>
+      <a class="gh" href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp">GitHub</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">MCP gateway · in active build · not released</div>
+    <h1 class="title">Tool definitions are billed<br><span class="thin">on every request.</span></h1>
+    <p class="lede">One-Stop MCP is a gateway between one MCP client and any number of MCP servers. Connected tool definitions are re-processed on every model request, so a session's cost grows with <b>how many tools are connected</b>, not with how much work gets done. The gateway holds the client-facing surface at <b>four fixed meta-tools</b> regardless of how many servers sit behind it, and injects a tool's full schema only when a task needs it. Because every server is reached through it, the gateway is also the one place credentials are stored and used.</p>
+    <div class="hero-meta">
+      <span class="chip"><b>4</b> meta-tools at any catalog size</span>
+      <span class="chip">surface <b>~341</b> tokens (est.)</span>
+      <span class="chip">routing <b>85.3%</b> top-3 · target 90%</span>
+      <span class="chip"><b>26</b> tests · stdio only</span>
+      <span class="chip">not published</span>
+    </div>
+    <div class="statusbar" role="note">
+      <span class="k">Status</span>
+      <p><b>In active build. Nothing is released or published.</b> The proxy, router, and security modules run and are tested locally. The OAuth broker, embedding-based routing, and the seed catalog are design-stage. <a href="#status">What is built</a></p>
+    </div>
+    <div class="hero-links">
+      <a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp#readme">README on GitHub</a>
+      <a href="PDR.html">Original design brief (PDR)</a>
+    </div>
+  </header>
+
+  <!-- 01 PROBLEM -->
+  <section id="problem">
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">The problem: you pay for tool definitions on every request</h2></div>
+    <p class="body">Every connected MCP server's tool catalog (names, descriptions, JSON schemas) goes into the model's context at session start. Connect enough servers and that is tens of thousands of tokens of schema before you type anything.</p>
+    <p class="body">Inference re-processes the whole context on every request: system prompt, tool definitions, conversation so far. So you don't pay for tool definitions once. <b>You pay for them on every request, for the entire session</b>, and in an agent loop every tool call round trip is another request.</p>
+    <p class="body">Your bill therefore scales with how many tools are connected, not with how much work is being done. Most of that spend buys nothing: any given request uses two or three tools out of a hundred.</p>
+
+    <div class="callout">
+      <div class="k">Where this came from</div>
+      <p>The problem was found by profiling real Claude Code sessions with <code>/usage</code>: most of each session's token spend was going to re-processing context rather than to the work itself. Tool definitions are the part of that re-processing that grows with every server you connect.</p>
+    </div>
+
+    <h3 class="sub">Worked example <span class="tag no" style="vertical-align:middle;margin-left:6px">illustrative</span></h3>
+    <p class="body">These are assumptions, not measurements. Substitute your own numbers.</p>
+    <div class="t-wrap">
+      <table class="t">
+        <thead><tr><th>assumption</th><th>value</th></tr></thead>
+        <tbody>
+          <tr><td>Connected servers</td><td><b>10</b></td></tr>
+          <tr><td>Tools per server, average</td><td><b>12</b>, so 120 tools</td></tr>
+          <tr><td>Tokens per tool definition (name, description, schema)</td><td><b>300</b>, so 36,000 tokens</td></tr>
+          <tr><td>Model requests in the session, counting tool-call round trips</td><td><b>50</b></td></tr>
+          <tr><td>Gateway: <code>find_tools</code> calls</td><td><b>5</b>, spread through the session, each one an extra request (55 total)</td></tr>
+          <tr><td>Gateway: tools returned per <code>find_tools</code> call</td><td><b>5</b> (the default <code>k</code>) × 300 tokens = 1,500 tokens</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cols2">
+      <div class="codeblock" style="margin:0">
+        <div class="bar"><span class="fname">connected directly</span></div>
+<pre>36,000 tokens × 50 requests
+
+<span class="tot">= 1,800,000 tokens</span></pre>
+      </div>
+      <div class="codeblock" style="margin:0">
+        <div class="bar"><span class="fname">through the gateway</span></div>
+<pre>fixed surface  341 × 55        =  18,755
+shortlists     1,500 × 160     = 240,000
+<span class="cm"># a find_tools result stays in the
+# conversation and is re-read by every
+# later request: 54+43+32+21+10 = 160</span>
+<span class="tot">total                          = 258,755 tokens</span></pre>
+      </div>
+    </div>
+
+    <div class="strip-cap">// illustrative · from the assumptions above</div>
+    <div class="metrics">
+      <div class="metric"><div class="n">1,800,000</div><div class="l">tool-definition tokens, connected directly</div></div>
+      <div class="metric"><div class="n hi">258,755</div><div class="l">tool-definition tokens, through the gateway</div></div>
+      <div class="metric"><div class="n">~86%</div><div class="l">fewer in this session. $5.40 vs $0.78 at an assumed $3 / million input tokens, no caching</div></div>
+      <div class="metric"><div class="n">2×</div><div class="l">direct cost after connecting ten more servers. Gateway figure unchanged</div></div>
+    </div>
+
+    <figure class="chart-card" aria-labelledby="cost-chart-title">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title" id="cost-chart-title">Tool-definition tokens, accumulated over the session</div>
+          <div class="chart-sub">Illustrative, from the worked example. Hover or focus the chart and use the arrow keys to read values.</div>
+        </div>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--series-direct)"></i>Connected directly</span>
+          <span><i style="background:var(--series-gateway)"></i>Through the gateway</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="cost-chart" viewBox="0 0 720 330" tabindex="0" role="img" aria-label="Line chart. Connected directly, cumulative tool-definition tokens rise by 36,000 per request to 1,800,000 at request 50. Through the gateway they reach 258,755 at request 55."></svg>
+        <div class="tip" id="cost-tip" hidden></div>
+      </div>
+      <div class="chart-foot">
+        <details class="data">
+          <summary>Show data table</summary>
+          <div class="t-wrap" style="margin:0">
+            <table class="t" style="min-width:420px">
+              <thead><tr><th class="num">after request</th><th class="num">connected directly</th><th class="num">through the gateway</th></tr></thead>
+              <tbody>
+                <tr><td class="num">10</td><td class="num">360,000</td><td class="num">16,910</td></tr>
+                <tr><td class="num">20</td><td class="num">720,000</td><td class="num">47,320</td></tr>
+                <tr><td class="num">30</td><td class="num">1,080,000</td><td class="num">91,230</td></tr>
+                <tr><td class="num">40</td><td class="num">1,440,000</td><td class="num">148,640</td></tr>
+                <tr><td class="num">50</td><td class="num">1,800,000</td><td class="num">219,550</td></tr>
+                <tr><td class="num">55</td><td class="num">session ended at 50</td><td class="num">258,755</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </figure>
+
+    <p class="body">The percentage matters less than the slope. Connect ten more servers and the direct figure doubles to 3,600,000. The gateway figure does not change, because neither the fixed surface nor the shortlist size depends on how many servers are registered.</p>
+
+    <div class="card" style="margin-top:22px">
+      <h4>Not counted in this example</h4>
+      <ul class="clean no">
+        <li>Each <code>find_tools</code> call is an extra model request, and that request re-reads the rest of the conversation too. That overhead is real and is not in the numbers above.</li>
+        <li>Schema compression is ignored; shortlists are counted at full size.</li>
+        <li>341 is a chars/4 estimate of the gateway's <code>tools/list</code> payload (<code>npm run budget</code>), not a tokenizer count.</li>
+      </ul>
+    </div>
+
+    <div class="callout violet">
+      <div class="k">Prompt caching changes the rate, not the shape</div>
+      <p>Where a provider caches the stable prefix of a request, re-reading tool definitions is billed at a discount instead of full price. It is still billed on every request, caches expire during pauses, and any change to the connected tool set invalidates the cached prefix. The gateway's four-tool surface caches as well, and it does not change when servers are added.</p>
+      <p><b>Some clients already defer tool loading.</b> Where a client or model API has its own tool search, part of this cost is handled there. The gateway does it at the MCP layer, so it works the same with any client, and it is where the credential boundary below lives.</p>
+    </div>
+
+    <div class="callout amber">
+      <div class="k">What follows from fixing it: credential sprawl</div>
+      <p>A dozen directly connected servers means credentials spread across a dozen client configs, with no shared rotation, no audit trail, and no single place to revoke access. Once every server sits behind one gateway, every credential is used from one process. That is where the vault and OAuth broker go. <a href="#credentials">Credentials</a></p>
+    </div>
+  </section>
+
+  <!-- 02 HOW IT WORKS -->
+  <section id="how">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">How it works</h2></div>
+    <p class="sec-sub">The gateway is an MCP server to the client and an MCP client to each downstream server.</p>
+
+    <div class="topology">
+      <div class="cap">// target architecture · parts are design-stage, see Status</div>
+      <svg viewBox="0 0 980 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One-Stop MCP topology: one client connects to the gateway, which routes to many downstream servers">
+        <defs>
+          <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#131a24"/><stop offset="1" stop-color="#0b1119"/></linearGradient>
+        </defs>
+        <rect x="360" y="18" width="260" height="52" rx="9" fill="#0f141c" stroke="#2a3644"/>
+        <text x="490" y="41" text-anchor="middle" fill="#e6edf3" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">AI CLIENT</text>
+        <text x="490" y="58" text-anchor="middle" fill="#5a6674" font-family="JetBrains Mono, monospace" font-size="10.5">Claude · Cursor · custom agent</text>
+        <line class="flow" x1="490" y1="70" x2="490" y2="108" stroke="#22d3ee" stroke-width="2"/>
+        <text x="504" y="94" fill="#5a6674" font-family="JetBrains Mono, monospace" font-size="10">MCP</text>
+        <rect x="250" y="108" width="480" height="88" rx="11" fill="url(#gw)" stroke="#22d3ee" stroke-opacity="0.5"/>
+        <text x="490" y="132" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" letter-spacing="1">ONE-STOP MCP GATEWAY</text>
+        <rect x="270" y="146" width="126" height="36" rx="6" fill="#0a0e14" stroke="#2a3644"/>
+        <text x="333" y="168" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono, monospace" font-size="10">meta-tool facade</text>
+        <rect x="408" y="146" width="120" height="36" rx="6" fill="#0a0e14" stroke="#2a3644"/>
+        <text x="468" y="168" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono, monospace" font-size="10">semantic router</text>
+        <rect x="540" y="146" width="170" height="36" rx="6" fill="#0a0e14" stroke="#2a3644"/>
+        <text x="625" y="168" text-anchor="middle" fill="#fbbf24" font-family="JetBrains Mono, monospace" font-size="10">vault · oauth broker</text>
+        <g stroke-width="1.5" fill="none" stroke="#22d3ee" stroke-opacity=".55">
+          <path class="flow" d="M300 196 V222 H120 V244"/>
+          <path class="flow" d="M400 196 V232 H305 V244"/>
+          <path class="flow" d="M490 196 V244"/>
+          <path class="flow" d="M580 196 V232 H675 V244"/>
+          <path class="flow" d="M680 196 V222 H860 V244"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="10.5" text-anchor="middle">
+          <rect x="72" y="244" width="96" height="40" rx="7" fill="#0f141c" stroke="#2a3644"/><text x="120" y="269" fill="#8b98a6">GitHub</text>
+          <rect x="257" y="244" width="96" height="40" rx="7" fill="#0f141c" stroke="#2a3644"/><text x="305" y="269" fill="#8b98a6">Postgres</text>
+          <rect x="442" y="244" width="96" height="40" rx="7" fill="#0f141c" stroke="#2a3644"/><text x="490" y="269" fill="#8b98a6">Notion</text>
+          <rect x="627" y="244" width="96" height="40" rx="7" fill="#0f141c" stroke="#2a3644"/><text x="675" y="269" fill="#8b98a6">Drive</text>
+          <rect x="812" y="244" width="96" height="40" rx="7" fill="#0f141c" stroke="#22d3ee" stroke-opacity=".4"/><text x="860" y="264" fill="#22d3ee">…1000s</text><text x="860" y="277" fill="#5a6674" font-size="8.5">registered</text>
+        </g>
+      </svg>
+    </div>
+
+    <h3 class="sub">2.1 · The client-facing surface: four meta-tools</h3>
+    <p class="body">The client's <code>tools/list</code> returns these four tools and nothing else, at any catalog size. Serialized, they come to <b>~341 tokens</b> (chars/4 estimate). <code>npm run budget</code> fails if the estimate exceeds 2,000.</p>
+    <div class="tbl">
+      <div class="tbl-row head"><div class="c">meta-tool</div><div class="c">what it does</div></div>
+      <div class="tbl-row"><div class="c k"><code>find_tools(query, k?)</code></div><div class="c v">Ranks the whole catalog against a natural-language query and returns the top <code>k</code> (default 5) tools with their input schemas.</div></div>
+      <div class="tbl-row"><div class="c k"><code>list_servers(filter?)</code></div><div class="c v">Lists registered servers: id, name, category, description, auth type, and whether a session is running. No schemas.</div></div>
+      <div class="tbl-row"><div class="c k"><code>invoke(server, tool, args)</code></div><div class="c v">Calls one tool on one downstream server and returns its result.</div></div>
+      <div class="tbl-row"><div class="c k"><code>connect_server(server)</code></div><div class="c v">Starts auth for a server. Today it only reports the auth type declared in the manifest; the broker is design-stage.</div></div>
+    </div>
+
+    <h3 class="sub">2.2 · Just-in-time schema injection</h3>
+    <div class="steps">
+      <div class="step"><div class="idx"></div><p>The model calls <code>find_tools("open an issue for this bug")</code>.</p></div>
+      <div class="step"><div class="idx"></div><p>The gateway reads each server's tool list via <code>tools/list</code> (cached after the first read) and ranks every tool against the query.</p></div>
+      <div class="step"><div class="idx"></div><p>The top <code>k</code> tools come back with their schemas, compressed to remove JSON-schema boilerplate. <b>This is the only way downstream schemas enter context.</b></p></div>
+      <div class="step"><div class="idx"></div><p>The model picks one and calls <code>invoke(server, tool, args)</code>.</p></div>
+      <div class="step"><div class="idx"></div><p>The gateway forwards the call over a pooled session to that server and returns the result.</p></div>
+    </div>
+
+    <h3 class="sub">2.3 · Routing</h3>
+    <div class="cols2">
+      <div class="card">
+        <h4>Hybrid retrieval <span class="tag plan">design</span></h4>
+        <p>A sparse leg (BM25) and a dense leg (local sentence embeddings), fused with Reciprocal Rank Fusion. The model makes the final choice from the shortlist. Fallback ladder: exact or keyword match, then vector similarity, then category browse via <code>list_servers</code>; on low confidence, widen the shortlist rather than guess.</p>
+      </div>
+      <div class="card">
+        <h4>Two lexical legs <span class="tag go">built</span></h4>
+        <p>Field-weighted keyword overlap with light stemming, and field-weighted Okapi BM25, fused with RRF (k = 30). Matches in the tool name count most, then example utterances and category, then description. The dense leg's interfaces (<code>Embedder</code>, <code>VectorRouter</code>) exist, but <b>no embedding model is wired in</b>. The widen-on-low-confidence fallback is not built.</p>
+      </div>
+    </div>
+    <div class="strip-cap">// offline benchmark · npm run bench · last recorded 2026-09-03</div>
+    <div class="metrics">
+      <div class="metric"><div class="n hi">85.3%</div><div class="l">top-3 (29 of 34). Target is 90%</div></div>
+      <div class="metric"><div class="n">55.9%</div><div class="l">top-1</div></div>
+      <div class="metric"><div class="n">34</div><div class="l">paraphrased queries</div></div>
+      <div class="metric"><div class="n">82</div><div class="l">hand-written tool entries from 13 servers</div></div>
+    </div>
+    <p class="body" style="margin-top:16px">The remaining misses are synonyms ("book" meaning create an event, "jot down" meaning append) that lexical matching cannot catch, which is the dense leg's job. The benchmark measures ranking only; it spawns no servers.</p>
+
+    <h3 class="sub">2.4 · Lazy sessions</h3>
+    <p class="body"><b>Registered is not running.</b> No downstream server starts when the gateway starts. A server is spawned by the first call that needs it; its session is pooled and closed after 60 seconds idle. Its tool list is cached for the life of the gateway process, so later searches do not respawn it.</p>
+    <div class="callout amber">
+      <div class="k">Current limitation</div>
+      <p>The first <code>find_tools</code> call spawns every registered server once to read its tool list. That is acceptable for a handful of servers and not for thousands. Building the catalog at registration time, so discovery never spawns servers, is design-stage.</p>
+    </div>
+
+    <h3 class="sub">2.5 · Schema compression</h3>
+    <p class="body">Shortlisted schemas pass through a compressor before they are returned. <code>light</code> (the default) removes <code>$schema</code>, <code>$id</code>, <code>$ref</code>, <code>title</code>, <code>examples</code>, <code>$comment</code>, and <code>additionalProperties: false</code>, and keeps types, properties, <code>required</code>, and enums. <code>aggressive</code> also removes descriptions. That is smaller, but it can hurt tool selection; how far to go is an open question.</p>
+
+    <h3 class="sub">2.6 · What stays constant and what grows</h3>
+    <div class="t-wrap">
+      <table class="t">
+        <thead><tr><th></th><th>connected directly</th><th>through the gateway</th></tr></thead>
+        <tbody>
+          <tr><td><b>Tool definitions in every request</b></td><td>every tool from every server</td><td>4 meta-tools, ~341 tokens</td></tr>
+          <tr><td><b>Schemas added per discovery</b></td><td>none (already all present)</td><td>up to <code>k</code>, default 5</td></tr>
+          <tr><td><b>Client context cost of adding a server</b></td><td>grows</td><td>none</td></tr>
+          <tr><td><b>Where catalog size costs something</b></td><td>client context, on every request</td><td>gateway memory and ranking time</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 03 CREDENTIALS -->
+  <section id="credentials">
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Credentials: vault and OAuth broker</h2></div>
+    <p class="sec-sub">With every server behind the gateway, every credential is used from the gateway. Holding them there, instead of in each client config, is what makes rotation, audit, and revocation possible from one place.</p>
+
+    <h3 class="sub">Design <span class="tag plan" style="vertical-align:middle;margin-left:6px">design</span></h3>
+    <div class="steps">
+      <div class="step"><div class="idx"></div><p>The client calls <code>connect_server("notion")</code>.</p></div>
+      <div class="step"><div class="idx"></div><p>The gateway reads the server's auth type from its manifest (for example OAuth2).</p></div>
+      <div class="step"><div class="idx"></div><p>The gateway starts the OAuth flow and returns a redirect URL to the user.</p></div>
+      <div class="step"><div class="idx"></div><p>The user approves in the browser. The callback lands on <b>the gateway</b>, not the client.</p></div>
+      <div class="step"><div class="idx"></div><p>Tokens are encrypted and stored in the vault, scoped to that user and server.</p></div>
+      <div class="step"><div class="idx"></div><p>Later calls to that server are authenticated by the gateway.</p></div>
+    </div>
+    <p class="body" style="margin-top:18px">Secrets are never written to client config, never returned to the model, and never logged; they are injected only into the outbound call they authenticate. Around the vault, the design adds a <b>usage ledger</b> (which server, which tool, when, and the result, with bulk access flagged), a <b>kill switch</b> (revoke every session and freeze the vault in one action, or scope it to a server or a user), and <b>one-place rotation</b> (automated for OAuth refresh and for providers with key-management APIs, guided otherwise). Team deployments get per-org scoping, admin MFA, and pluggable backends such as HashiCorp Vault or a cloud KMS.</p>
+
+    <h3 class="sub">Built so far</h3>
+    <div class="t-wrap">
+      <table class="t">
+        <thead><tr><th>component</th><th>what exists</th><th>not yet</th></tr></thead>
+        <tbody>
+          <tr><td class="nowrap"><a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp/blob/master/src/vault.ts"><code>Vault</code></a><br><span class="pill partial">module, tested</span></td><td>AES-256-GCM with a key derived by scrypt from an operator passphrase; secrets scoped to (user, server); encrypted snapshot and reload; <code>freeze()</code>; <code>rotate()</code> replaces a stored secret.</td><td>Not wired into the running gateway. Nothing injects vault secrets into outbound calls yet.</td></tr>
+          <tr><td class="nowrap"><a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp/blob/master/src/ledger.ts"><code>UsageLedger</code></a><br><span class="pill built">wired into invoke</span></td><td>Records every <code>invoke</code> (user, server, tool, result). Flags more than 100 calls to the same (user, server, tool) within 60 seconds; both limits configurable.</td><td>In-memory only. No persistence and no viewer.</td></tr>
+          <tr><td class="nowrap"><a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp/blob/master/src/security.ts"><code>KillSwitch</code></a><br><span class="pill partial">module, tested</span></td><td>Closes all downstream sessions and freezes the vault, or closes one server's session. Each action is recorded in the ledger.</td><td>No operator command or UI triggers it. Per-user revocation is not built.</td></tr>
+          <tr><td class="nowrap"><b>OAuth broker</b><br><span class="pill design">design-stage</span></td><td>Nothing yet; <code>connect_server</code> is a stub.</td><td>The whole flow above.</td></tr>
+          <tr><td class="nowrap"><b>Rotation</b><br><span class="pill partial">manual only</span></td><td>Manual replacement via <code>Vault.rotate()</code>.</td><td>Automated refresh and scheduled rotation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body">The design brief names libsodium. The implementation uses Node's built-in <code>crypto</code> to avoid a dependency; heavier backends remain the plan for team deployments.</p>
+  </section>
+
+  <!-- 04 STATUS -->
+  <section id="status">
+    <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Status</h2></div>
+    <p class="sec-sub">The gateway runs locally over stdio and proxies a demo server end to end. It is not packaged, not published, and not ready for real credentials.</p>
+    <div class="t-wrap">
+      <table class="t">
+        <thead><tr><th>area</th><th>state</th><th>evidence</th></tr></thead>
+        <tbody>
+          <tr><td><b>Four-tool facade over stdio</b></td><td><span class="pill built">built</span> tested</td><td><code>test/gateway.test.ts</code></td></tr>
+          <tr><td><b>Startup surface under 2,000 tokens</b></td><td><span class="pill built">built</span> ~341 tokens (chars/4 estimate)</td><td><code>npm run budget</code></td></tr>
+          <tr><td><b>Downstream proxy: stdio, pooled sessions, 60 s idle timeout</b></td><td><span class="pill built">built</span> tested against a demo echo server</td><td><code>test/gateway.test.ts</code></td></tr>
+          <tr><td><b>Streamable HTTP, client-facing or downstream</b></td><td><span class="pill none">not built</span> manifests accept it; connecting throws</td><td><code>src/registry.ts</code></td></tr>
+          <tr><td><b>Lexical hybrid router (overlap + BM25, RRF)</b></td><td><span class="pill partial">built, below target</span> 85.3% top-3 vs 90%</td><td><code>npm run bench</code></td></tr>
+          <tr><td><b>Dense (embedding) routing leg</b></td><td><span class="pill design">interfaces only</span> no model chosen</td><td><code>src/router.ts</code></td></tr>
+          <tr><td><b>Schema compression</b></td><td><span class="pill built">built</span> tested</td><td><code>test/compress.test.ts</code></td></tr>
+          <tr><td><b>Vault, usage ledger, kill switch</b></td><td><span class="pill partial">modules, tested</span> only the ledger is wired into the gateway</td><td><code>test/security.test.ts</code></td></tr>
+          <tr><td><b>OAuth broker, credential injection, automated rotation</b></td><td><span class="pill design">design-stage</span></td><td></td></tr>
+          <tr><td><b>Seed catalog of 50 servers</b></td><td><span class="pill none">not started</span> one demo manifest (<code>servers/echo.yaml</code>)</td><td></td></tr>
+          <tr><td><b>Multi-tenant deployment, observability</b></td><td><span class="pill none">not started</span></td><td></td></tr>
+          <tr><td><b>npm and Docker packaging</b></td><td><span class="pill none">not started</span> <code>package.json</code> is marked private</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body">The 26 tests (<code>npm test</code>), the budget estimate, and the benchmark result were last recorded on 2026-09-03.</p>
+
+    <h3 class="sub">Running it locally (development only)</h3>
+    <div class="codeblock">
+      <div class="bar"><span class="d" style="background:#ff5f56"></span><span class="d" style="background:#ffbd2e"></span><span class="d" style="background:#27c93f"></span><span class="fname">from the repo root</span></div>
+<pre>npm install
+npm run build
+npm start          <span class="cm"># gateway on stdio; loads manifests from servers/</span>
+npm test           <span class="cm"># client -> gateway -> echo server over stdio</span>
+npm run budget     <span class="cm"># startup-surface size check</span>
+npm run bench      <span class="cm"># routing accuracy on the offline benchmark</span></pre>
+    </div>
+    <p class="body">Point an MCP client at <code>node dist/index.js</code>. The only server included is <code>servers/echo.yaml</code>.</p>
+  </section>
+
+  <!-- 05 ROADMAP -->
+  <section id="roadmap">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Roadmap</h2></div>
+    <div class="road">
+      <div class="phase"><div class="pid">P0<span class="s">Core</span><span class="pill built">done</span></div><div class="pbody"><h4>Four-tool facade</h4><p>One server proxied end to end over stdio.</p><div class="exit">exit → <b>startup surface under 2k tokens</b></div></div></div>
+      <div class="phase"><div class="pid">P1<span class="s">Discovery</span><span class="pill partial">in progress</span></div><div class="pbody"><h4>Manifests, router, just-in-time injection</h4><p>At 85.3% top-3; the dense leg is pending.</p><div class="exit">exit → <b>90% top-3 on the routing benchmark</b></div></div></div>
+      <div class="phase"><div class="pid">P2<span class="s">Auth</span><span class="pill partial">in progress</span></div><div class="pbody"><h4>Vault, OAuth flow, ledger, rotation, kill switch</h4><p>Vault, ledger, and kill switch built as modules; broker not started.</p><div class="exit">exit → <b>an OAuth server activated entirely inside the gateway</b></div></div></div>
+      <div class="phase"><div class="pid">P3<span class="s">Seed</span><span class="pill none">not started</span></div><div class="pbody"><h4>50 server manifests, registry sync</h4><p>The initial catalog.</p><div class="exit">exit → <b>useful on first run</b></div></div></div>
+      <div class="phase"><div class="pid">P4<span class="s">Team</span><span class="pill none">not started</span></div><div class="pbody"><h4>Multi-tenant, per-user secrets, metrics</h4><p>Self-hosted team deployment.</p><div class="exit">exit → <b>self-hosted multi-user deployment</b></div></div></div>
+      <div class="phase"><div class="pid">P5<span class="s">Community</span><span class="pill none">not started</span></div><div class="pbody"><h4>Docs, manifest CI validation, RFC process, governance</h4><p>Contribution machinery.</p><div class="exit">exit → <b>external PRs merging</b></div></div></div>
+    </div>
+    <p class="body" style="margin-top:18px">Open design questions (core language, which 50 servers, embedding model, secret isolation, compression level, registry sync, rotation policy, anomaly detection, governance) are in the <a href="PDR.html#questions">design brief</a>.</p>
+  </section>
+
+  <!-- 06 CONTRIBUTING -->
+  <section id="contributing">
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Contributing: add a server with one file</h2></div>
+    <p class="sec-sub">Adding a server is one YAML file in <code style="background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 6px;border-radius:4px;font-size:13px">servers/</code> and one PR. No gateway code changes. The gateway loads every <code style="background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 6px;border-radius:4px;font-size:13px">*.yaml</code> there at startup and gets the tool list from the server itself via <code style="background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 6px;border-radius:4px;font-size:13px">initialize</code> and <code style="background:var(--panel-2);border:1px solid var(--line);color:var(--signal);padding:1px 6px;border-radius:4px;font-size:13px">tools/list</code>.</p>
+    <div class="codeblock">
+      <div class="bar"><span class="d" style="background:#ff5f56"></span><span class="d" style="background:#ffbd2e"></span><span class="d" style="background:#27c93f"></span><span class="fname">servers/filesystem.yaml</span></div>
+<pre><span class="ky">id</span>: filesystem
+<span class="ky">name</span>: Filesystem
+<span class="ky">category</span>: [dev, files]
+<span class="ky">description</span>: Read, write, and search files under an allowed directory.
+<span class="ky">transport</span>:
+  <span class="ky">type</span>: <span class="nm">stdio</span>
+  <span class="ky">command</span>: npx
+  <span class="ky">args</span>: [<span class="st">"-y"</span>, <span class="st">"@modelcontextprotocol/server-filesystem"</span>, <span class="st">"/path/to/allowed/dir"</span>]
+<span class="ky">auth</span>:
+  <span class="ky">type</span>: <span class="nm">none</span>                <span class="cm"># none | api_key | oauth2</span>
+<span class="ky">routing</span>:
+  <span class="ky">examples</span>:                 <span class="cm"># matched against find_tools queries</span>
+    - <span class="st">"read the config file in my project"</span>
+    - <span class="st">"list the files in the docs folder"</span></pre>
+    </div>
+    <p class="body">Required fields are <code>id</code>, <code>name</code>, <code>transport.type</code>, and <code>command</code> for stdio or <code>url</code> for streamable-http. A malformed manifest fails at load time with the file name.</p>
+
+    <div class="card" style="margin-top:8px">
+      <h4>What works today</h4>
+      <ul class="clean">
+        <li>Only <code>stdio</code> connects. <code>streamable-http</code> passes validation but is not supported yet.</li>
+        <li>Only <code>auth: none</code> works end to end. <code>api_key</code> and <code>oauth2</code> servers register but cannot authenticate until the broker exists.</li>
+        <li><code>routing.examples</code> apply to every tool on the server. Per-tool examples are planned.</li>
+        <li><code>servers/echo.yaml</code> is the only manifest tested end to end. Manifest CI validation is planned (P5), not built.</li>
+      </ul>
+    </div>
+
+    <h3 class="sub">Other useful contributions</h3>
+    <div class="ways">
+      <div class="way"><div class="t">Benchmark queries</div><p>Labeled queries in <code>bench/queries.jsonl</code>, with matching entries in <code>bench/catalog.json</code>. The benchmark is the acceptance gate for routing changes.</p></div>
+      <div class="way"><div class="t">Dense routing leg</div><p>An <code>Embedder</code> implementation backed by a local model.</p></div>
+      <div class="way"><div class="t">Streamable HTTP</div><p>Transport support on both faces of the gateway.</p></div>
+      <div class="way"><div class="t">Open questions</div><p>Input on the questions in the <a href="PDR.html#questions">design brief</a>.</p></div>
+    </div>
+  </section>
+
+  <!-- 07 NON-GOALS -->
+  <section id="non-goals">
+    <div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title">Non-goals</h2></div>
+    <div class="card">
+      <ul class="clean no">
+        <li><b>Building MCP servers.</b> The gateway aggregates existing ones.</li>
+        <li><b>Changing or extending the MCP protocol.</b> Everything is built from standard messages.</li>
+        <li><b>A hosted service.</b> The target is self-hosted. The design should not rule out a hosted version, but none is planned.</li>
+        <li><b>A fine-tuned routing model.</b> Off-the-shelf retrieval and embeddings first.</li>
+        <li><b>Shrinking tool results.</b> The gateway reduces the cost of tool definitions. What a tool returns passes through.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 08 SPEC -->
+  <section id="spec">
+    <div class="sec-head"><span class="sec-num">08</span><h2 class="sec-title">MCP spec compliance</h2></div>
+    <div class="cols3">
+      <div class="card">
+        <h4>Conforms <span class="tag go">current</span></h4>
+        <ul class="clean">
+          <li>Toward the client, a standard MCP server built on the official TypeScript SDK (<code>@modelcontextprotocol/sdk</code> ^1.30). Declares the <code>tools</code> capability and serves <code>tools/list</code> and <code>tools/call</code>.</li>
+          <li>Toward each downstream server, a standard MCP client: <code>initialize</code>, <code>tools/list</code>, and <code>tools/call</code> over stdio.</li>
+          <li>No custom methods, capabilities, or message fields. The meta-tools are ordinary MCP tools.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Differs from a direct connection</h4>
+        <p style="margin-bottom:8px;font-size:13px;color:var(--ink-faint)">Conventions on top of the protocol, not extensions to it.</p>
+        <ul class="clean">
+          <li>Downstream tools are not registered with the client. Schemas arrive as JSON text in a <code>find_tools</code> result and calls go through <code>invoke</code>, so the client cannot validate arguments against the downstream schema (the server still does), and per-tool permission prompts see <code>invoke</code>, not the underlying tool.</li>
+          <li><code>invoke</code> returns the downstream result as JSON in one text content block. Image, audio, and resource content is not passed through natively, and a downstream <code>isError</code> sits inside that JSON.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Not supported yet</h4>
+        <ul class="clean no">
+          <li>Resources, prompts, sampling, elicitation, roots, and <code>notifications/tools/list_changed</code>, in either direction.</li>
+          <li>Streamable HTTP on either side.</li>
+          <li>The MCP authorization flow for HTTP servers. Credential handling is the design-stage vault and broker.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="l"><b>One-Stop MCP</b> · in active build · Apache-2.0 declared in package.json, LICENSE file not yet added</div>
+    <div class="foot-links">
+      <a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp#readme">README</a>
+      <a href="PDR.html">Design brief</a>
+      <a href="https://github.com/Habeeb-MD-Faiz/one-stop-mcp/blob/master/archive/README.md">Previous README</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var svg = document.getElementById('cost-chart');
+  var tip = document.getElementById('cost-tip');
+  if (!svg || !tip) return;
+
+  // Worked-example model (same assumptions as the table above).
+  var DEF = 36000, SURF = 341, SHORT = 1500, DISC = [1, 12, 23, 34, 45];
+  var DIRECT_N = 50, GATE_N = 55;
+  function directAt(n) { return n <= DIRECT_N ? DEF * n : null; }
+  function gateAt(n) {
+    var s = SURF * n;
+    DISC.forEach(function (r) { if (n > r) s += SHORT * (n - r); });
+    return s;
+  }
+
+  var css = getComputedStyle(document.documentElement);
+  var C = {
+    direct: css.getPropertyValue('--series-direct').trim() || '#d97706',
+    gate: css.getPropertyValue('--series-gateway').trim() || '#0891b2',
+    grid: '#1e2733', cross: '#2a3644', ink: '#e6edf3', dim: '#8b98a6', surface: '#0f141c'
+  };
+  var NS = 'http://www.w3.org/2000/svg';
+  var W = 720, H = 330, m = { t: 20, r: 150, b: 50, l: 58 };
+  var iw = W - m.l - m.r, ih = H - m.t - m.b, XMAX = 55, YMAX = 2000000;
+  var MONO = "'JetBrains Mono', ui-monospace, monospace";
+  function x(v) { return m.l + v / XMAX * iw; }
+  function y(v) { return m.t + ih - v / YMAX * ih; }
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  }
+  function fmt(v) { return v.toLocaleString('en-US'); }
+  function shortFmt(v) { return v === 0 ? '0' : v >= 1e6 ? (v / 1e6) + 'M' : (v / 1e3) + 'K'; }
+
+  // Grid + axes (hairline, solid, recessive)
+  [0, 500000, 1000000, 1500000, 2000000].forEach(function (t) {
+    el('line', { x1: m.l, x2: m.l + iw, y1: y(t), y2: y(t), stroke: C.grid, 'stroke-width': 1 });
+    el('text', { x: m.l - 10, y: y(t) + 4, 'text-anchor': 'end', fill: C.dim, 'font-size': 11, 'font-family': MONO }, shortFmt(t));
+  });
+  [0, 10, 20, 30, 40, 50].forEach(function (t) {
+    el('text', { x: x(t), y: m.t + ih + 20, 'text-anchor': 'middle', fill: C.dim, 'font-size': 11, 'font-family': MONO }, String(t));
+  });
+  el('text', { x: m.l + iw / 2, y: H - 8, 'text-anchor': 'middle', fill: C.dim, 'font-size': 11.5 }, 'model requests in the session');
+
+  // Lines (2px, round joins)
+  function path(fn, max) {
+    var d = '';
+    for (var n = 0; n <= max; n++) d += (n ? 'L' : 'M') + x(n).toFixed(1) + ' ' + y(fn(n)).toFixed(1);
+    return d;
+  }
+  var lineAttrs = { fill: 'none', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' };
+  el('path', Object.assign({ d: path(directAt, DIRECT_N), stroke: C.direct }, lineAttrs));
+  el('path', Object.assign({ d: path(gateAt, GATE_N), stroke: C.gate }, lineAttrs));
+
+  // End markers with a surface ring, and direct end labels in text ink
+  function endLabel(n, v, color, name) {
+    el('circle', { cx: x(n), cy: y(v), r: 4, fill: color, stroke: C.surface, 'stroke-width': 2 });
+    var lx = x(n) + 12;
+    el('line', { x1: lx, x2: lx + 12, y1: y(v) - 5, y2: y(v) - 5, stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round' });
+    el('text', { x: lx + 18, y: y(v) - 1, fill: C.dim, 'font-size': 11.5 }, name);
+    el('text', { x: lx, y: y(v) + 15, fill: C.ink, 'font-size': 12, 'font-family': MONO, 'font-weight': 500 }, fmt(v));
+  }
+  endLabel(DIRECT_N, directAt(DIRECT_N), C.direct, 'Direct');
+  endLabel(GATE_N, gateAt(GATE_N), C.gate, 'Gateway');
+
+  // Hover / focus layer: crosshair + readout
+  var cross = el('line', { y1: m.t, y2: m.t + ih, stroke: C.cross, 'stroke-width': 1, visibility: 'hidden' });
+  var dotD = el('circle', { r: 4, fill: C.direct, stroke: C.surface, 'stroke-width': 2, visibility: 'hidden' });
+  var dotG = el('circle', { r: 4, fill: C.gate, stroke: C.surface, 'stroke-width': 2, visibility: 'hidden' });
+  el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent' });
+  var cur = GATE_N;
+
+  function show(n) {
+    cur = n;
+    var px = x(n), dv = directAt(n), gv = gateAt(n);
+    cross.setAttribute('x1', px); cross.setAttribute('x2', px); cross.setAttribute('visibility', 'visible');
+    if (dv === null) dotD.setAttribute('visibility', 'hidden');
+    else { dotD.setAttribute('cx', px); dotD.setAttribute('cy', y(dv)); dotD.setAttribute('visibility', 'visible'); }
+    dotG.setAttribute('cx', px); dotG.setAttribute('cy', y(gv)); dotG.setAttribute('visibility', 'visible');
+    tip.innerHTML =
+      '<div class="h">After request ' + n + '</div>' +
+      '<div class="row"><span><i style="background:' + C.direct + '"></i>Direct</span><span class="v">' + (dv === null ? 'ended at 50' : fmt(dv)) + '</span></div>' +
+      '<div class="row"><span><i style="background:' + C.gate + '"></i>Gateway</span><span class="v">' + fmt(gv) + '</span></div>' +
+      (DISC.indexOf(n) >= 0 ? '<div class="note">find_tools call at this request</div>' : '');
+    // The upper-left of the plot is empty in this chart, so the readout sits there.
+    var r = svg.getBoundingClientRect();
+    tip.style.left = ((m.l + 12) / W * r.width) + 'px';
+    tip.style.top = ((m.t + 8) / H * r.height) + 'px';
+    tip.hidden = false;
+  }
+  function hide() {
+    cross.setAttribute('visibility', 'hidden');
+    dotD.setAttribute('visibility', 'hidden');
+    dotG.setAttribute('visibility', 'hidden');
+    tip.hidden = true;
+  }
+  function nFromEvent(ev) {
+    var r = svg.getBoundingClientRect();
+    var vx = (ev.clientX - r.left) / r.width * W;
+    return Math.max(0, Math.min(XMAX, Math.round((vx - m.l) / iw * XMAX)));
+  }
+  svg.addEventListener('pointermove', function (ev) { show(nFromEvent(ev)); });
+  svg.addEventListener('pointerleave', function () { if (document.activeElement !== svg) hide(); });
+  svg.addEventListener('focus', function () { show(cur); });
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', function (ev) {
+    if (ev.key === 'ArrowLeft') { show(Math.max(0, cur - 1)); ev.preventDefault(); }
+    else if (ev.key === 'ArrowRight') { show(Math.min(XMAX, cur + 1)); ev.preventDefault(); }
+    else if (ev.key === 'Home') { show(0); ev.preventDefault(); }
+    else if (ev.key === 'End') { show(XMAX); ev.preventDefault(); }
+  });
+})();
+</script>
+</body>
+</html>

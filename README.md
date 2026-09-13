@@ -1,297 +1,291 @@
 # One-Stop MCP
 
-<sub>This README is the project's original design brief (PDR v0.1). The previous developer README — build status, quickstart, test commands — is archived at [`archive/README.md`](archive/README.md).</sub>
+![Status: in active build, not released](https://img.shields.io/badge/status-in%20active%20build%20%C2%B7%20not%20released-orange)
 
-**Product Design & Requirements · v0.1 · Draft for RFC**
+**Status: in active build. Nothing is released or published.** The proxy, router, and security modules run and are tested locally; the OAuth broker, embedding-based routing, and the seed catalog are design-stage. [Details](#status).
 
-## One connection. Every MCP server. Zero context bloat.
+One-Stop MCP is a gateway between one MCP client and any number of MCP servers. Connected tool definitions are re-processed, and billed, on every model request, so the cost of a session grows with how many tools you have connected rather than how much work you do. The gateway holds the client-facing surface at four fixed meta-tools regardless of how many servers sit behind it, and injects a downstream tool's full schema only when a task needs it. Because every server is reached through the gateway, it is also the one place credentials are stored and used.
 
-An open-source aggregation gateway for the Model Context Protocol. It puts **hundreds or thousands** of MCP servers behind a single endpoint — without ever flooding your agent's context window with tool definitions.
+[Original design brief (PDR)](docs/PDR.md) · [Styled HTML version of this page](docs/index.html) (open it in a browser; GitHub shows HTML files as source)
 
-`startup surface < 2k tokens` · `flat cost at 5 or 5,000 servers` · `ships with 50 servers` · `add a server = 1-file PR` · `secrets stay yours`
+---
+
+## The problem: tool definitions are billed on every request
+
+Every connected MCP server's tool catalog (names, descriptions, JSON schemas) goes into the model's context at session start. Connect enough servers and that is tens of thousands of tokens of schema before you type anything.
+
+Inference re-processes the whole context on every request: system prompt, tool definitions, conversation so far. So you don't pay for tool definitions once. You pay for them on every request, for the entire session, and in an agent loop every tool call round trip is another request.
+
+Your bill therefore scales with how many tools are connected, not with how much work is being done. Most of that spend buys nothing: any given request uses two or three tools out of a hundred.
+
+**Where this came from.** The problem was found by profiling real Claude Code sessions with `/usage`: most of each session's token spend was going to re-processing context rather than to the work itself. Tool definitions are the part of that re-processing that grows with every server you connect.
+
+### Worked example (illustrative)
+
+These are assumptions, not measurements. Substitute your own numbers.
+
+| assumption | value |
+|---|---|
+| Connected servers | 10 |
+| Tools per server, average | 12, so 120 tools |
+| Tokens per tool definition (name, description, schema) | 300, so 36,000 tokens |
+| Model requests in the session, counting tool-call round trips | 50 |
+| Gateway: `find_tools` calls | 5, spread through the session, each one an extra request (55 total) |
+| Gateway: tools returned per `find_tools` call | 5 (the default `k`) × 300 tokens = 1,500 tokens |
+
+**Connected directly:**
+
+```text
+36,000 tokens × 50 requests                                   = 1,800,000 tokens
+```
+
+**Through the gateway:**
+
+```text
+fixed surface   341 tokens × 55 requests                      =    18,755
+shortlists      1,500 tokens × 160 re-reads                   =   240,000
+                (a find_tools result stays in the conversation and is
+                 re-read by every later request: 54 + 43 + 32 + 21 + 10)
+total                                                         =   258,755 tokens
+```
+
+That is about 86% fewer tool-definition tokens for this session. At an assumed $3 per million input tokens and no caching, it is $5.40 versus $0.78.
+
+The percentage matters less than the slope. Connect ten more servers and the direct figure doubles to 3,600,000. The gateway figure does not change, because neither the fixed surface nor the shortlist size depends on how many servers are registered.
+
+Not counted in this example:
+
+- Each `find_tools` call is an extra model request, and that request re-reads the rest of the conversation too. That overhead is real and is not in the numbers above.
+- Schema compression is ignored; shortlists are counted at full size.
+- 341 is a chars/4 estimate of the gateway's `tools/list` payload (`npm run budget`), not a tokenizer count.
+
+**Prompt caching changes the rate, not the shape.** Where a provider caches the stable prefix of a request, re-reading tool definitions is billed at a discount instead of full price. It is still billed on every request, caches expire during pauses, and any change to the connected tool set invalidates the cached prefix. The gateway's four-tool surface caches as well, and it does not change when servers are added.
+
+**Some clients already defer tool loading.** Where a client or model API has its own tool search, part of this cost is handled there. The gateway does it at the MCP layer, so it works the same with any client, and it is where the credential boundary below lives.
+
+### What follows from fixing it: credential sprawl
+
+A dozen directly connected servers means credentials spread across a dozen client configs, with no shared rotation, no audit trail, and no single place to revoke access. Once every server sits behind one gateway, every credential is used from one process. That is where the vault and OAuth broker go. See [Credentials](#credentials-vault-and-oauth-broker).
+
+---
+
+## How it works
 
 <p align="center">
   <img src="assets/topology.svg" width="100%" alt="One-Stop MCP topology: one client connects to the gateway, which routes to many downstream servers">
 </p>
 
-**Contents** — [01 The N-servers problem](#01--the-n-servers-problem) · [02 Goals & non-goals](#02--goals--non-goals) · [03 Build philosophy](#03--build-philosophy) · [04 Design architecture](#04--design-architecture) · [05 Security](#05--your-secrets-stay-yours) · [06 Manifest](#06--the-server-manifest) · [07 Seed catalog](#07--seed-catalog--50-on-day-one) · [08 Stack](#08--recommended-stack) · [09 Roadmap](#09--phased-roadmap) · [10 Open questions](#10--open-questions--for-the-rfc) · [11 Contributing](#11--contributing)
+<sub>Target architecture. Parts of it are design-stage; see [Status](#status).</sub>
 
----
+The gateway is an MCP server to the client and an MCP client to each downstream server.
 
-## 01 · The N-servers problem
+### The client-facing surface: four meta-tools
 
-The MCP ecosystem has a scaling ceiling built into it. Every server you connect dumps its full tool catalog — names, descriptions, and JSON schemas — straight into the model's context at startup. A single rich server can eat **15–20k tokens**. Past roughly 10–15 active servers, clients slow, degrade, or crash outright. The ecosystem's growth is throttled by the context window itself.
+The client's `tools/list` returns these four tools and nothing else, at any catalog size. Serialized, they come to ~341 tokens (chars/4 estimate). `npm run budget` fails if the estimate exceeds 2,000.
 
-One-Stop MCP is an intelligent membrane between one AI client and an unbounded fleet of downstream servers. It's a spec-compliant MCP **server** to the client, and a spec-compliant MCP **client** to every server behind it. The client sees a lightweight, constant-size interface no matter how many servers are registered.
-
-> [!NOTE]
-> **The one-line pitch**
->
-> Connect once to One-Stop MCP. Every OAuth, secret, and downstream server is initiated, redirected, and managed inside the gateway — so your agent stays lean and your credentials live in exactly one place.
-
----
-
-## 02 · Goals & non-goals
-
-| **&lt;2k** | **≥90%** | **1** | **50** |
-|:--|:--|:--|:--|
-| startup tokens for the gateway surface — at any scale | top-3 routing accuracy on the task benchmark | connection point the user ever configures | servers pre-loaded and ready on first run |
-
-### In scope · v1
-
-- **Flat context** — startup tokens never grow with server count
-- **Hybrid discovery** — meta-tool facade + semantic routing
-- **One vault** — all secrets & OAuth brokered inside the gateway
-- **Batteries included** — 50 common servers seeded
-- **One-file contribution** — add a server via a single manifest
-
-### Non-goals · v1
-
-- Building **new** MCP servers — we aggregate existing ones
-- Forking or extending the MCP spec — fully compliant
-- A hosted SaaS — though the design won't preclude one
-- A fine-tuned routing model — off-the-shelf embeddings first
-
----
-
-## 03 · Build philosophy
-
-Five principles, ordered. When a trade-off is unclear, the earlier principle wins.
-
-1. **Context is the scarcest resource** *(first)* — Every choice is measured first by its effect on the client's window. If a feature adds startup tokens that scale with server count, it's wrong by default.
-2. **Spec-compliant on both faces** — A server to the client, a client to every downstream server. Speak the protocol perfectly in both directions. No extensions the ecosystem can't adopt.
-3. **One connection, one vault** — Connect once. Every OAuth flow and API key is initiated and stored inside the gateway — a single, auditable trust boundary, not a dozen scattered configs.
-4. **Contribution is a one-file PR** — The catalog is the moat, and it only grows if contributing is trivial. Adding a server means writing one declarative manifest — no gateway code, no rebuild.
-5. **Local-first, server-ready** — The same binary runs as a desktop proxy and a self-hosted team gateway. We don't build two products. Deployment mode is config, not a fork.
-
-> [!IMPORTANT]
-> **Design tenet**
->
-> If adding the 1,000th server changes the client's experience at all — in latency, tokens, or reliability — the architecture has failed. Constant-cost scaling is the whole point.
-
----
-
-## 04 · Design architecture
-
-### 4.1 · The meta-tool facade — context control
-
-Instead of exposing every downstream tool, the gateway exposes a tiny, fixed set of **meta-tools**. This is the single most important mechanism for keeping context flat: the client's startup context holds ~4 tool definitions, a constant. Downstream schemas enter context **only** when a task needs them, then leave.
-
-| meta-tool | purpose |
+| meta-tool | what it does |
 |---|---|
-| `find_tools(query)` | Semantic search over the full catalog. Returns a ranked shortlist of relevant tools + their schemas, injected just-in-time for this turn only. |
-| `list_servers(filter?)` | Browse or enumerate registered servers by category, tag, or auth status. Lightweight — no schemas. |
-| `invoke(server, tool, args)` | Execute a specific tool on a specific downstream server. The router resolves ownership and forwards the call. |
-| `connect_server(server)` | Kick off auth (OAuth redirect / key entry) for a server the user wants to activate. |
+| `find_tools(query, k?)` | Ranks the whole catalog against a natural-language query and returns the top `k` (default 5) tools with their input schemas. |
+| `list_servers(filter?)` | Lists registered servers: id, name, category, description, auth type, and whether a session is running. No schemas. |
+| `invoke(server, tool, args)` | Calls one tool on one downstream server and returns its result. |
+| `connect_server(server)` | Starts auth for a server. Today it only reports the auth type declared in the manifest; the broker is design-stage. |
 
-> [!NOTE]
-> **Why this works**
->
-> ~4 tool definitions at startup — a constant. Five servers or five thousand: identical footprint. The catalog can grow without limit because the client never sees it all at once.
+### Just-in-time schema injection
 
-### 4.2 · Hybrid discovery — routing + JIT injection
+1. The model calls `find_tools("open an issue for this bug")`.
+2. The gateway reads each server's tool list via `tools/list` (cached after the first read) and ranks every tool against the query.
+3. The top `k` tools come back with their schemas, compressed to remove JSON-schema boilerplate. This is the only way downstream schemas enter context.
+4. The model picks one and calls `invoke(server, tool, args)`.
+5. The gateway forwards the call over a pooled session to that server and returns the result.
 
-Discovery runs in two cooperating layers, marrying the recall of vector search with the precision of explicit tool selection.
+### Routing
 
-- **Layer A · Semantic pre-filter** — Every tool is embedded — name, description, example utterances — into a local vector index at registration. A task query is scored against the index and the top-K candidates are retrieved **before** any schema touches context.
-- **Layer B · Meta-tool JIT injection** — Only the candidates' full schemas are returned to the model, which makes the final tool choice from a clean shortlist and calls `invoke(...)`. Recall from vectors, precision from the model.
+**Design.** Hybrid retrieval: a sparse leg (BM25) and a dense leg (local sentence embeddings), fused with Reciprocal Rank Fusion. The model makes the final choice from the shortlist. Fallback ladder: exact or keyword match, then vector similarity, then category browse via `list_servers`; on low confidence, widen the shortlist rather than guess.
 
-**Fallback ladder:** exact / keyword match → vector similarity → category browse via `list_servers`. On low confidence, the gateway widens the shortlist rather than guessing.
+**Built.** Two lexical legs, field-weighted keyword overlap with light stemming and field-weighted Okapi BM25, fused with RRF (k = 30). Matches in the tool name count most, then example utterances and category, then description. The dense leg's interfaces (`Embedder`, `VectorRouter`) exist, but no embedding model is wired in. The widen-on-low-confidence fallback is not built.
 
-### 4.3 · Secret vault & OAuth broker — one place for everything
+**Measured.** 85.3% top-3 (29 of 34) and 55.9% top-1 on an offline benchmark: 34 paraphrased queries against 82 hand-written tool entries from 13 servers (`npm run bench`, last recorded 2026-09-03). The target is 90% top-3. The remaining misses are synonyms ("book" meaning create an event, "jot down" meaning append) that lexical matching cannot catch, which is the dense leg's job. The benchmark measures ranking only; it spawns no servers.
 
-This is the **one connection, one vault** principle in practice. The user authenticates to the gateway once; every downstream connection is brokered internally, and secrets never reach the client config or the model.
+### Lazy sessions
+
+Registered is not running. No downstream server starts when the gateway starts. A server is spawned by the first call that needs it; its session is pooled and closed after 60 seconds idle. Its tool list is cached for the life of the gateway process, so later searches do not respawn it.
+
+Current limitation: the first `find_tools` call spawns every registered server once to read its tool list. That is acceptable for a handful of servers and not for thousands. Building the catalog at registration time, so discovery never spawns servers, is design-stage.
+
+### Schema compression
+
+Shortlisted schemas pass through a compressor before they are returned. `light` (the default) removes `$schema`, `$id`, `$ref`, `title`, `examples`, `$comment`, and `additionalProperties: false`, and keeps types, properties, `required`, and enums. `aggressive` also removes descriptions. That is smaller, but it can hurt tool selection; how far to go is an open question.
+
+### What stays constant and what grows
+
+| | connected directly | through the gateway |
+|---|---|---|
+| Tool definitions in every request | every tool from every server | 4 meta-tools, ~341 tokens |
+| Schemas added per discovery | none (already all present) | up to `k`, default 5 |
+| Client context cost of adding a server | grows | none |
+| Where catalog size costs something | client context, on every request | gateway memory and ranking time |
+
+---
+
+## Credentials: vault and OAuth broker
+
+With every server behind the gateway, every credential is used from the gateway. Holding them there, instead of in each client config, is what makes rotation, audit, and revocation possible from one place.
+
+### Design
 
 1. The client calls `connect_server("notion")`.
-2. The gateway looks up Notion's auth model in its manifest (OAuth2).
-3. The gateway initiates the OAuth flow and returns a redirect URL to the user.
-4. The user approves in-browser; the callback lands on **the gateway**, not the client.
-5. Tokens are encrypted and stored in the vault, scoped to that user + server.
-6. All future Notion calls are transparently authenticated by the gateway.
+2. The gateway reads the server's auth type from its manifest (for example OAuth2).
+3. The gateway starts the OAuth flow and returns a redirect URL to the user.
+4. The user approves in the browser. The callback lands on the gateway, not the client.
+5. Tokens are encrypted and stored in the vault, scoped to that user and server.
+6. Later calls to that server are authenticated by the gateway.
 
-> [!WARNING]
-> **Security boundary**
->
-> Secrets never live in client config files and are never returned to the model. The vault is the single trust boundary: encrypt-at-rest, per-user / per-org scoping, admin MFA, and a full audit log of every credential use. Downstream keys are injected only into outbound calls.
+Secrets are never written to client config, never returned to the model, and never logged; they are injected only into the outbound call they authenticate. Around the vault, the design adds a usage ledger (which server, which tool, when, and the result, with bulk access flagged), a kill switch (revoke every session and freeze the vault in one action, or scope it to a server or a user), and one-place rotation (automated for OAuth refresh and for providers with key-management APIs, guided otherwise). Team deployments get per-org scoping, admin MFA, and pluggable backends such as HashiCorp Vault or a cloud KMS.
 
-### 4.4 · Lazy sessions & schema compression
+### Built so far
 
-**Registered ≠ running.** A downstream server consumes zero resources until a tool from it is invoked. On first `invoke`, the gateway spawns or connects, pools the live session, and reaps it on a TTL — so CPU and RAM stay flat even with a huge catalog. As a third context defense, an optional compression pass strips redundant JSON-schema boilerplate from the shortlist before it enters context, compounding the savings.
+| component | what exists | not yet |
+|---|---|---|
+| `Vault` ([`src/vault.ts`](src/vault.ts)) | AES-256-GCM with a key derived by scrypt from an operator passphrase; secrets scoped to (user, server); encrypted snapshot and reload; `freeze()`; `rotate()` replaces a stored secret | Not wired into the running gateway. Nothing injects vault secrets into outbound calls yet. |
+| `UsageLedger` ([`src/ledger.ts`](src/ledger.ts)) | Records every `invoke` (user, server, tool, result). Flags more than 100 calls to the same (user, server, tool) within 60 seconds; both limits configurable. | In-memory only. No persistence and no viewer. |
+| `KillSwitch` ([`src/security.ts`](src/security.ts)) | Closes all downstream sessions and freezes the vault, or closes one server's session. Each action is recorded in the ledger. | No operator command or UI triggers it. Per-user revocation is not built. |
+| OAuth broker | Nothing yet; `connect_server` is a stub. | Design-stage. |
+| Rotation | Manual replacement via `Vault.rotate()`. | Automated refresh and scheduled rotation are design-stage. |
+
+The design brief names libsodium. The implementation uses Node's built-in `crypto` to avoid a dependency; heavier backends remain the plan for team deployments.
 
 ---
 
-## 05 · Your secrets stay yours
+## Status
 
-Centralizing every credential in one place is only acceptable if that place is a fortress. So we treat security not as a checkbox but as the product's headline strength — and we hand you the tools to watch, rotate, and cut off every connection yourself.
+The gateway runs locally over stdio and proxies a demo server end to end. It is not packaged, not published, and not ready for real credentials.
 
-### The core promise — One vault. *Zero* leakage. Complete control.
+| area | state | evidence |
+|---|---|---|
+| Four-tool facade over stdio | Built, tested | `test/gateway.test.ts` |
+| Startup surface under 2,000 tokens | Built; ~341 tokens (chars/4 estimate) | `npm run budget` |
+| Downstream proxy: stdio, pooled sessions, 60 s idle timeout | Built; tested against a demo echo server | `test/gateway.test.ts` |
+| Streamable HTTP, client-facing or downstream | Not built. Manifests accept it; connecting throws. | `src/registry.ts` |
+| Lexical hybrid router (overlap + BM25, RRF) | Built; 85.3% top-3, below the 90% target | `npm run bench` |
+| Dense (embedding) routing leg | Interfaces only; no model chosen | `src/router.ts` |
+| Schema compression | Built, tested | `test/compress.test.ts` |
+| Vault, usage ledger, kill switch | Built as modules, tested; only the ledger is wired into the gateway | `test/security.test.ts` |
+| OAuth broker, credential injection, automated rotation | Design-stage | |
+| Seed catalog of 50 servers | Not started; one demo manifest (`servers/echo.yaml`) | |
+| Multi-tenant deployment, observability | Not started | |
+| npm and Docker packaging | Not started (`package.json` is marked private) | |
 
-Every OAuth token and API key lives encrypted in a single vault, scoped to you. It is **never** written to a client config, **never** returned to the model, and **never** exposed to a downstream server beyond the one outbound call it authenticates. One place to secure means one place to lock down — and we hold that boundary to a strict standard.
+The 26 tests (`npm test`), the budget estimate, and the benchmark result were last recorded on 2026-09-03.
 
-| standard | how |
-|---|---|
-| 🔒 **Encrypted at rest** | libsodium-sealed, per-user / per-org key scoping |
-| 🛡️ **Least-privilege injection** | keys enter outbound calls only — never context, never logs |
-| 🕒 **Admin MFA + audit trail** | every credential use is signed and timestamped |
-| 🔌 **Pluggable backend** | swap to HashiCorp Vault or cloud KMS for teams |
+### Running it locally (development only)
 
-### Usage ledger — see exactly where every secret was used
+From the repo root:
 
-Every time a credential leaves the vault, it's logged: **which server, which tool, when, and the result.** If a platform is calling more than it should — or reaching where it shouldn't — you'll spot the misbehaving connector immediately.
-
-```text
-10:42:07   github       · repos.read                authorized
-10:42:09   notion       · pages.search              authorized
-10:43:15   unknown-crm  · contacts.export ×204      ⚑ FLAGGED
-10:43:22   postgres     · query.read                authorized
+```bash
+npm install
+npm run build
+npm start          # gateway on stdio; loads manifests from servers/
+npm test           # client -> gateway -> echo server over stdio
+npm run budget     # startup-surface size check
+npm run bench      # routing accuracy on the offline benchmark
 ```
 
-Anomalous access is surfaced — a server suddenly exporting in bulk gets flagged, not silently trusted.
-
-### Master kill switch — doubtful? Cut everything from one place
-
-One control revokes every active session and freezes the entire vault instantly. **All downstream access stops** — no per-server hunting, no waiting. Re-enable connectors one at a time once you've found the culprit.
-
-> [!CAUTION]
-> **⏻ REVOKE ALL**
->
-> Kills every session, freezes the vault, and blocks all outbound credential use in one action.
-
-Also scoped: revoke a single server, or every session for one user.
-
-### Secret rotation — rotate every credential from one place, on demand or on a schedule
-
-Rotation is normally a per-service chore: log into each dashboard, re-issue a key, paste it into whatever config uses it. Because the vault already brokers every connection, One-Stop MCP turns that into a single action — **rotate one server, a group, or everything** — and every downstream call keeps working because the gateway swaps the credential inline. Set a policy (e.g. every 90 days) and it happens on its own.
-
-| credential | how it rotates |
-|---|---|
-| 🟢 **OAuth tokens** | The vault holds the refresh token, so it force-refreshes access tokens on demand or on schedule — **fully automated, zero user steps.** |
-| 🟡 **API keys** | Where the provider exposes a key-management API, the gateway issues a new key and retires the old one. Where it doesn't, it **walks you through re-issuing** and swaps it in. |
-| 🟢 **After a scare** | Hit the kill switch, find the bad actor in the ledger, then **rotate everything it might have seen** — one flow from suspicion to clean slate. |
-
-Honest scope: rotation is automated where a provider supports it, and guided everywhere else — no service is left as a manual blind spot.
-
-> [!WARNING]
-> **Why this is a strength, not a risk**
->
-> Scattering secrets across a dozen client configs means a dozen blind spots, no way to pull the plug, and rotation nobody ever gets around to. One vault flips all three: total visibility into where your credentials go, a single lever to stop them cold, and one-action rotation to refresh them. Centralization is what makes real oversight possible.
+Point an MCP client at `node dist/index.js`. The only server included is `servers/echo.yaml`.
 
 ---
 
-## 06 · The server manifest
+## Roadmap
 
-Adding a server is one declarative file and one PR. The gateway needs zero code changes. This is the contract that makes the FOSS flywheel spin.
+| phase | scope | exit criterion | state |
+|---|---|---|---|
+| P0 Core | Four-tool facade; one server proxied over stdio | Startup surface under 2k tokens | Done |
+| P1 Discovery | Manifests, router, just-in-time injection | 90% top-3 on the routing benchmark | In progress: 85.3%, dense leg pending |
+| P2 Auth | Vault, `connect_server` OAuth flow, ledger, rotation, kill switch | An OAuth server activated entirely inside the gateway | In progress: vault, ledger, and kill switch built as modules; broker not started |
+| P3 Seed | 50 server manifests, registry sync | Useful on first run | Not started |
+| P4 Team | Multi-tenant, per-user secrets, metrics | Self-hosted multi-user deployment | Not started |
+| P5 Community | Docs, manifest CI validation, RFC process, governance | External PRs merging | Not started |
 
-`servers/notion.yaml`
+Open design questions (core language, which 50 servers, embedding model, secret isolation, compression level, registry sync, rotation policy, anomaly detection, governance) are in [docs/PDR.md](docs/PDR.md#10--open-questions--for-the-rfc).
+
+---
+
+## Contributing: add a server with one file
+
+Adding a server is one YAML file in `servers/` and one PR. No gateway code changes. The gateway loads every `*.yaml` in `servers/` at startup and gets the tool list from the server itself via `initialize` and `tools/list`.
 
 ```yaml
-# one file. one PR. the gateway derives the rest.
-id: notion
-name: Notion
-category: [productivity, docs, knowledge-base]
-description: >
-  Read, search, and write Notion pages, databases, comments.
-
+# servers/filesystem.yaml
+id: filesystem
+name: Filesystem
+category: [dev, files]
+description: Read, write, and search files under an allowed directory.
 transport:
-  type: streamable-http        # or: stdio
-  url: https://mcp.notion.com/mcp
-
+  type: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"]
 auth:
-  type: oauth2                 # none | api_key | oauth2
-  scopes: [read_content, update_content]
-
-routing:                        # powers the semantic index
-  examples:
-    - "find my meeting notes in notion"
-    - "create a page in my workspace"
-    - "search the docs database"
-
-health:
-  check: initialize
+  type: none                # none | api_key | oauth2
+routing:
+  examples:                 # matched against find_tools queries
+    - "read the config file in my project"
+    - "list the files in the docs folder"
 ```
 
-**Derived automatically:** the tool list (via MCP `initialize` + `tools/list`), embeddings for the router, the OAuth broker config, and the catalog entry. Contributors never touch gateway internals.
+Required fields are `id`, `name`, `transport.type`, and `command` for stdio or `url` for streamable-http. A malformed manifest fails at load time with the file name.
+
+What works today:
+
+- Only `stdio` connects. `streamable-http` passes validation but is not supported yet.
+- Only `auth: none` works end to end. `api_key` and `oauth2` servers register but cannot authenticate until the broker exists.
+- `routing.examples` apply to every tool on the server. Per-tool examples are planned.
+- `servers/echo.yaml` is the only manifest tested end to end. Manifest CI validation is planned (P5), not built.
+
+Other useful contributions:
+
+- Labeled queries in `bench/queries.jsonl`, with matching entries in `bench/catalog.json`. The benchmark is the acceptance gate for routing changes.
+- An `Embedder` implementation backed by a local model, for the dense routing leg.
+- Streamable HTTP transport on both faces.
+- Input on the open questions in [docs/PDR.md](docs/PDR.md#10--open-questions--for-the-rfc).
 
 ---
 
-## 07 · Seed catalog · 50 on day one
+## Non-goals
 
-v1 is useful on first run. Contributors extend from there. The exact 50 is locked during the RFC — selection weighs popularity, maintenance activity, breadth, and clean spec-compliance.
-
-| category | servers |
-|---|---|
-| **Dev & code** | GitHub · GitLab · Filesystem · Git · Sentry · Docker |
-| **Data & DB** | Postgres · MySQL · SQLite · Supabase · Redis |
-| **Productivity** | Notion · Drive · Calendar · Gmail · Slack · Linear · ClickUp · Asana |
-| **Search & web** | Brave Search · Fetch · Puppeteer · scraping servers |
-| **Cloud & infra** | AWS · Cloudflare · Vercel · Kubernetes |
-| **AI & reasoning** | Sequential Thinking · Memory · vector-store servers |
-| **Sales & CRM** | Apollo · HubSpot · Salesforce · Lemlist |
+- **Building MCP servers.** The gateway aggregates existing ones.
+- **Changing or extending the MCP protocol.** Everything is built from standard messages.
+- **A hosted service.** The target is self-hosted. The design should not rule out a hosted version, but none is planned.
+- **A fine-tuned routing model.** Off-the-shelf retrieval and embeddings first.
+- **Shrinking tool results.** The gateway reduces the cost of tool definitions. What a tool returns passes through.
 
 ---
 
-## 08 · Recommended stack
+## MCP spec compliance
 
-Reference implementation in TypeScript / Node — first-class official SDK, the ecosystem's lingua franca, lowest barrier for contributors.
+**Conforms**
 
-| concern | choice · rationale |
-|---|---|
-| `core` | **TypeScript / Node** — official MCP SDK, biggest contributor pool. |
-| `transports` | **stdio + streamable-HTTP** — desktop and remote from one codebase. |
-| `vector index` | **Local embeddings + on-disk ANN** (e.g. hnswlib) — fast, local, no external DB. |
-| `vault` | **Encrypted store** (libsodium), pluggable to Vault / KMS for teams. |
-| `catalog` | **YAML manifests in-repo** — diff-, review-, PR-friendly. |
-| `packaging` | **npx + Docker image** — npx for local, Docker for self-hosted. |
+- Toward the client, the gateway is a standard MCP server built on the official TypeScript SDK (`@modelcontextprotocol/sdk` ^1.30). It declares the `tools` capability and serves `tools/list` and `tools/call`.
+- Toward each downstream server, it is a standard MCP client: `initialize`, `tools/list`, and `tools/call` over stdio.
+- There are no custom methods, capabilities, or message fields. The meta-tools are ordinary MCP tools.
 
-> [!NOTE]
-> **Open to debate**
->
-> Go is a strong alternative for the gateway core — single static binary, concurrency, low memory — with a TS manifest layer. This is an explicit RFC question, not a settled decision.
+**Where behavior differs from a direct connection.** These are conventions on top of the protocol, not extensions to it.
 
----
+- Downstream tools are not registered with the client. Their schemas arrive as JSON text inside a `find_tools` result, and calls go through `invoke`. The client therefore cannot validate arguments against the downstream schema (the downstream server still does), and a client with per-tool permission prompts sees `invoke`, not the underlying tool.
+- `invoke` returns the downstream result serialized as JSON in a single text content block. Image, audio, and resource content is not passed through as native content blocks, and a downstream `isError` appears inside that JSON rather than on the gateway's response.
 
-## 09 · Phased roadmap
+**Not supported yet**
 
-| phase | milestone | scope | exit criteria |
-|---|---|---|---|
-| **P0** · Core | Meta-tool facade | Single downstream server proxied end-to-end over stdio. | one server proxied · startup context < 2k tokens |
-| **P1** · Discovery | Registry + semantic router | Manifests, vector index, JIT injection — N servers behind one endpoint. | routing benchmark ≥ 90% top-3 |
-| **P2** · Auth | Vault, audit log & kill switch | The `connect_server` flow, encrypted storage, per-use logging, one-place rotation, and master revoke. | OAuth server activated entirely inside the gateway |
-| **P3** · Seed | 50 pre-loaded servers | Manifests for the seed catalog + a registry sync worker. | useful on first run · new server = one-file PR |
-| **P4** · Team | Multi-tenant + observability | Org scoping, per-user secrets, audit logs, metrics. | self-hosted multi-user deployment |
-| **P5** · Community | Contribution machinery | Docs, manifest CI validation, public RFC cadence, governance. | external PRs merging · governance in place |
+- Resources, prompts, sampling, elicitation, roots, and `notifications/tools/list_changed`. None are exposed to the client or proxied from downstream servers.
+- Streamable HTTP on either side.
+- The MCP authorization flow for HTTP servers. Credential handling is the design-stage vault and broker described above.
 
 ---
 
-## 10 · Open questions · for the RFC
+## License
 
-| # | question |
-|---|---|
-| Q1 | **Core language** — TypeScript vs Go for the gateway core? |
-| Q2 | **The 50** — which exact servers ship in the seed catalog? |
-| Q3 | **Embeddings** — local small model vs pluggable remote for higher accuracy? |
-| Q4 | **Secret isolation** — per-user encryption keys vs per-org vault partitions? |
-| Q5 | **Compression** — how aggressive before it hurts tool-selection accuracy? |
-| Q6 | **Registry sync** — auto-ingest from public directories, or curated-only? |
-| Q7 | **Rotation policy** — default cadence, and how to handle providers with no key-rotation API? |
-| Q8 | **Anomaly detection** — rule-based flagging for the usage ledger, or a learned baseline per connector? |
-| Q9 | **Governance** — BDFL, core-team consensus, or foundation-style from day one? |
+`package.json` declares Apache-2.0; a LICENSE file has not been added yet. Vendored agent skills under `.claude/` carry their own licenses.
 
----
+## Further reading
 
-## 11 · Contributing
-
-### Built in the open. Yours to extend.
-
-One-Stop MCP invites contributors from day one. The design deliberately makes the highest-volume contribution — adding a server — the easiest possible action.
-
-| way to contribute | what it involves |
-|---|---|
-| **Add a server** `good first issue` | Submit one manifest under `/servers`. CI validates it and probes the endpoint. |
-| **Sharpen routing** `good first issue` | Add example utterances to existing manifests to improve semantic retrieval. |
-| **Core work** | Gateway internals, transports, vault backends, compression — tracked as labeled issues. |
-| **Shape the RFC** | Weigh in on the seven open questions before the architecture sets. |
-
----
-
-<sub>**One-Stop MCP** · PDR v0.1 · draft for community RFC · August 2026 · License · Apache-2.0 (proposed)</sub>
+- [docs/PDR.md](docs/PDR.md): the original design brief (PDR v0.1, August 2026), with build principles, the full security design, the seed catalog plan, and open questions. Its styled original is [docs/PDR.html](docs/PDR.html).
+- [docs/index.html](docs/index.html): this README as a styled page. Both HTML files render when opened in a browser.
+- [archive/README.md](archive/README.md): the previous developer README.
