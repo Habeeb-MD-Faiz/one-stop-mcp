@@ -1,0 +1,4 @@
+{"query":"dig up the receipt email from the airline","server":"gmail","tool":"search_threads"}
+{"query":"show me everything in this email chain","server":"gmail","tool":"get_thread"}
+{"query":"prepare an email to my manager but don't send it yet","server":"gmail","tool":"create_draft"}
+{"query":"what custom labels do I have set up","server":"gmail","tool":"list_labels"}

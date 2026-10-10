@@ -1,0 +1,410 @@
+{
+  "server": "notion",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "notion-search",
+      "description": "Searches Notion for content, or looks up a workspace user by name or email.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search text."
+          },
+          "query_type": {
+            "type": "string",
+            "description": "Use \"user\" to look up a workspace user; omit or use \"internal\" for content search.",
+            "enum": [
+              "internal",
+              "user"
+            ]
+          },
+          "teamspace_id": {
+            "type": "string",
+            "description": "Restrict the search to one teamspace."
+          },
+          "filters": {
+            "type": "object",
+            "description": "Optional filters, e.g. teamspace_ids and title_only."
+          },
+          "sort": {
+            "type": "object",
+            "description": "Sort order for results."
+          }
+        }
+      }
+    },
+    {
+      "name": "notion-fetch",
+      "description": "Retrieves content from a Notion page, database, data source, or saved database view by its URL or ID.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-pages",
+      "description": "Creates one or more Notion pages with specified properties and content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "parent": {
+            "type": "object",
+            "description": "Parent page_id or teamspace_id."
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Pages to create, each with properties, content, icon and cover."
+          },
+          "is_skill": {
+            "type": "boolean",
+            "description": "Create the page as a Notion Skill."
+          },
+          "creation_mode": {
+            "type": "string",
+            "description": "Set to \"draft\" to create a draft."
+          },
+          "allow_async": {
+            "type": "boolean",
+            "description": "Allow the operation to complete asynchronously."
+          }
+        }
+      }
+    },
+    {
+      "name": "notion-update-page",
+      "description": "Update a Notion page's properties, content, icon, or cover.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page_id": {
+            "type": "string",
+            "description": "Page to update."
+          },
+          "command": {
+            "type": "string",
+            "description": "Update command such as update_content or replace_content."
+          },
+          "old_str": {
+            "type": "string",
+            "description": "Text to replace."
+          },
+          "new_str": {
+            "type": "string",
+            "description": "Replacement text."
+          },
+          "replace_all_matches": {
+            "type": "boolean",
+            "description": "Replace every match instead of one."
+          },
+          "icon": {
+            "type": "string",
+            "description": "New page icon."
+          },
+          "cover": {
+            "type": "string",
+            "description": "New page cover."
+          },
+          "is_skill": {
+            "type": "boolean",
+            "description": "Mark or unmark the page as a Skill."
+          },
+          "allow_async": {
+            "type": "boolean",
+            "description": "Allow the operation to complete asynchronously."
+          }
+        },
+        "required": [
+          "page_id"
+        ]
+      }
+    },
+    {
+      "name": "notion-move-pages",
+      "description": "Move one or more Notion pages or databases to a new parent.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-duplicate-page",
+      "description": "Duplicate a Notion page within your workspace. This action completes asynchronously.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-database",
+      "description": "Creates a database with an initial data source and view.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-update-data-source",
+      "description": "Updates a data source's properties, name, or description.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-view",
+      "description": "Creates a database view with optional filters, sorts, and grouping.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-update-view",
+      "description": "Changes a view's name, filters, sorts, or display settings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-folder",
+      "description": "Creates an empty folder under a parent page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-query-data-sources",
+      "description": "Query Notion data sources with SQL, read rows from one data source, or run a saved view.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "\"rows\" reads rows from one data source; \"view\" runs a saved view.",
+            "enum": [
+              "rows",
+              "view"
+            ]
+          },
+          "data_source_url": {
+            "type": "string",
+            "description": "Data source to read."
+          },
+          "filter": {
+            "type": "object",
+            "description": "Row filter."
+          },
+          "sort": {
+            "type": "object",
+            "description": "Row sort."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Max rows, default 50, maximum 100."
+          }
+        }
+      }
+    },
+    {
+      "name": "notion-query-meeting-notes",
+      "description": "Queries the current user's meeting notes. Requires Business plan or higher with Notion AI.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-comment",
+      "description": "Add a comment to a page or specific content, or reply to a discussion.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-comments",
+      "description": "Lists all comments and discussions on a page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-users",
+      "description": "Lists workspace members and guests, searches users by name or email, or retrieves one user by ID or \"self\".",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-teams",
+      "description": "Lists the teamspaces in the workspace.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-self",
+      "description": "Returns the connected workspace and the current user.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-tool-access",
+      "description": "Reports which tools and parameters the workspace's plan allows.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tool_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional filter to specific tools."
+          }
+        }
+      }
+    },
+    {
+      "name": "notion-create-file-upload",
+      "description": "Creates a short-lived upload URL for one local file (up to 20 MiB).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-create-attachment",
+      "description": "Creates an attachment from inline text, a public HTTPS URL, or a completed upload.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source_file_id": {
+            "type": "string",
+            "description": "ID of a completed file upload."
+          }
+        }
+      }
+    },
+    {
+      "name": "notion-download-attachment",
+      "description": "Downloads the text content of an attachment (up to 200 KiB).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_upload_id": {
+            "type": "string",
+            "description": "Attachment file upload ID."
+          }
+        },
+        "required": [
+          "file_upload_id"
+        ]
+      }
+    },
+    {
+      "name": "notion-convert-page-to-skill",
+      "description": "Marks a page as a Notion Skill without changing its content.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-download-skill",
+      "description": "Downloads a Notion Skill and its supporting files as a tar.gz archive.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-async-task",
+      "description": "Checks the status of an asynchronous task such as a page duplication.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Async task ID."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "notion-list-agents",
+      "description": "Lists available Notion Custom Agents.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-search-agents",
+      "description": "Finds a Custom Agent's URL, which is needed to start a session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-query-sessions",
+      "description": "Lists Custom Agent sessions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-search-sessions",
+      "description": "Searches Custom Agent sessions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-spawn-session",
+      "description": "Starts a Custom Agent session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-get-session-status",
+      "description": "Gets the status of a Custom Agent session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-wait-session",
+      "description": "Waits for a session's current run to finish.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-send-message-to-session",
+      "description": "Sends a follow-up message to a Custom Agent session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-stop-session",
+      "description": "Stops a session's run.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-list-session-events",
+      "description": "Lists the events of a Custom Agent session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "notion-read-session-event",
+      "description": "Reads one event of a Custom Agent session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

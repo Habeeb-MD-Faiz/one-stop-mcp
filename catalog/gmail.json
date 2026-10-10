@@ -1,0 +1,299 @@
+{
+  "server": "gmail",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "search_threads",
+      "description": "Lists email threads from the authenticated user's Gmail account, optionally filtered with a Gmail-syntax query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Gmail-syntax filter for threads."
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum threads to return; default 20, max 50."
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "Token for a specific page of results."
+          },
+          "includeTrash": {
+            "type": "boolean",
+            "description": "Include threads from the trash."
+          },
+          "view": {
+            "type": "string",
+            "description": "Which fields are populated in the thread list.",
+            "enum": [
+              "THREAD_VIEW_UNSPECIFIED",
+              "THREAD_VIEW_METADATA_ONLY",
+              "THREAD_VIEW_MINIMAL"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "get_thread",
+      "description": "Retrieves a specific email thread from the authenticated user's Gmail account, including a list of its messages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "threadId": {
+            "type": "string",
+            "description": "The unique identifier of the thread to fetch."
+          },
+          "messageFormat": {
+            "type": "string",
+            "description": "Format of the messages returned.",
+            "enum": [
+              "MINIMAL",
+              "FULL_CONTENT",
+              "METADATA_ONLY"
+            ]
+          }
+        },
+        "required": [
+          "threadId"
+        ]
+      }
+    },
+    {
+      "name": "get_message",
+      "description": "Retrieves a specific email message by its unique message ID. For full conversations use get_thread.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "description": "The unique identifier of the message to fetch."
+          },
+          "messageFormat": {
+            "type": "string",
+            "description": "Format of the message returned.",
+            "enum": [
+              "MINIMAL",
+              "FULL_CONTENT",
+              "METADATA_ONLY"
+            ]
+          }
+        },
+        "required": [
+          "messageId"
+        ]
+      }
+    },
+    {
+      "name": "create_draft",
+      "description": "Creates a new draft email in the authenticated user's Gmail account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Primary recipients, plain email addresses."
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Carbon copy recipients."
+          },
+          "bcc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Blind carbon copy recipients."
+          },
+          "subject": {
+            "type": "string",
+            "description": "Subject line."
+          },
+          "body": {
+            "type": "string",
+            "description": "Main body content; plain-text alternative if htmlBody is set."
+          },
+          "htmlBody": {
+            "type": "string",
+            "description": "HTML body content."
+          },
+          "replyToMessageId": {
+            "type": "string",
+            "description": "ID of the message to reply to."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_drafts",
+      "description": "Lists draft emails from the authenticated user's Gmail account, optionally filtered with a query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search filter for drafts."
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum drafts to return; default 20, max 50."
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "Token from a previous nextPageToken."
+          },
+          "view": {
+            "type": "string",
+            "description": "Which fields are populated.",
+            "enum": [
+              "DRAFT_VIEW_FULL",
+              "DRAFT_VIEW_METADATA_ONLY"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "list_labels",
+      "description": "Lists all user-defined labels in the authenticated user's Gmail account. Call first to find a label's ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum labels to return."
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "Page token."
+          }
+        }
+      }
+    },
+    {
+      "name": "create_label",
+      "description": "Creates a new label in the authenticated user's Gmail account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "The display name of the label to create."
+          },
+          "color": {
+            "type": "object",
+            "description": "Optional textColor and backgroundColor hex strings."
+          }
+        },
+        "required": [
+          "displayName"
+        ]
+      }
+    },
+    {
+      "name": "label_message",
+      "description": "Adds one or more labels to a specific message.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "description": "The ID of the message to add the labels to."
+          },
+          "labelIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the labels to add. System label IDs (INBOX, STARRED, UNREAD, IMPORTANT) or user label IDs, not names."
+          }
+        },
+        "required": [
+          "messageId",
+          "labelIds"
+        ]
+      }
+    },
+    {
+      "name": "unlabel_message",
+      "description": "Removes one or more labels from a specific message.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "description": "The ID of the message to remove the labels from."
+          },
+          "labelIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the labels to remove. System label IDs (INBOX, STARRED, UNREAD, IMPORTANT) or user label IDs, not names."
+          }
+        },
+        "required": [
+          "messageId",
+          "labelIds"
+        ]
+      }
+    },
+    {
+      "name": "label_thread",
+      "description": "Adds labels to an entire thread, applying to all current and future messages in it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "threadId": {
+            "type": "string",
+            "description": "The unique identifier of the thread to add labels to."
+          },
+          "labelIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the labels to add. System label IDs (INBOX, STARRED, UNREAD, IMPORTANT) or user label IDs, not names."
+          }
+        },
+        "required": [
+          "threadId",
+          "labelIds"
+        ]
+      }
+    },
+    {
+      "name": "unlabel_thread",
+      "description": "Removes labels from an entire thread.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "threadId": {
+            "type": "string",
+            "description": "The unique identifier of the thread to remove labels from."
+          },
+          "labelIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The IDs of the labels to remove. System label IDs (INBOX, STARRED, UNREAD, IMPORTANT) or user label IDs, not names."
+          }
+        },
+        "required": [
+          "threadId",
+          "labelIds"
+        ]
+      }
+    }
+  ]
+}

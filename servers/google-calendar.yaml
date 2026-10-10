@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.google.com/workspace/guides/configure-mcp-servers and
+#   https://developers.google.com/workspace/calendar/api/v3/reference/mcp (official, hosted by Google)
+# Per-tool pages: .../calendar/api/v3/reference/mcp/tools_list/<tool>
+# Scopes: the overview page lists read-only scopes only, but the create/update/delete tool pages document
+# calendar or calendar.events as the required scope, so calendar.events is listed here.
+# Google's docs say to create your own OAuth client; MCP auth discovery/DCR is NOT documented, so explicit
+# Google OAuth 2.0 endpoints are used. clientId is supplied per deployment.
+id: google-calendar
+name: Google Calendar
+category: [productivity]
+tags: [official, remote]
+description: >
+  List calendars and events, search events, find free time across attendees, and create, update,
+  delete or respond to Google Calendar events.
+homepage: https://developers.google.com/workspace/calendar/api/v3/reference/mcp
+transport:
+  type: streamable-http
+  url: https://calendarmcp.googleapis.com/mcp/v1
+auth:
+  type: oauth2
+  scopes:
+    - https://www.googleapis.com/auth/calendar.calendarlist.readonly
+    - https://www.googleapis.com/auth/calendar.events
+    - https://www.googleapis.com/auth/calendar.events.freebusy
+  authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+  tokenUrl: https://oauth2.googleapis.com/token
+routing:
+  examples:
+    - "what's on my calendar tomorrow"
+    - "schedule a meeting with the design team"
+    - "find a time that works for everyone next week"
+    - "cancel my 3pm call"
+  tools:
+    list_events: ["show my meetings for this week"]
+    create_event: ["book a 30 minute sync with Priya on Friday"]
+    suggest_time: ["when are Sam and I both free on Thursday"]
+    respond_to_event: ["accept the invite for the offsite"]
+health:
+  check: initialize

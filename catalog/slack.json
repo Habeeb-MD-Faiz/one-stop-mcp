@@ -1,0 +1,208 @@
+{
+  "server": "slack",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "slack_search_public",
+      "description": "Searches messages and files in public channels only. No user consent required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query with Slack search modifiers."
+          },
+          "content_types": {
+            "type": "string",
+            "description": "messages (default) or files."
+          },
+          "sort": {
+            "type": "string",
+            "description": "score (default) or timestamp."
+          },
+          "sort_dir": {
+            "type": "string",
+            "description": "asc or desc."
+          },
+          "only_my_channels": {
+            "type": "boolean",
+            "description": "Restrict results to channels you belong to."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Results per page, capped at 20."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor from a previous result."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "slack_search_public_and_private",
+      "description": "Searches messages and files in all channels, including private channels, DMs and group DMs. Requires user consent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query with Slack search modifiers."
+          },
+          "content_types": {
+            "type": "string",
+            "description": "messages (default) or files."
+          },
+          "sort": {
+            "type": "string",
+            "description": "score (default) or timestamp."
+          },
+          "sort_dir": {
+            "type": "string",
+            "description": "asc or desc."
+          },
+          "only_my_channels": {
+            "type": "boolean",
+            "description": "Restrict results to channels you belong to."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Results per page, capped at 20."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor from a previous result."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "slack_search_channels",
+      "description": "Finds public and private channels by name or description.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_search_users",
+      "description": "Finds users by name, email or role.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_read_channel",
+      "description": "Reads a channel's message history, around a point in time for context.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "oldest": {
+            "type": "string",
+            "description": "Oldest message timestamp to include."
+          },
+          "latest": {
+            "type": "string",
+            "description": "Latest message timestamp to include."
+          }
+        }
+      }
+    },
+    {
+      "name": "slack_read_thread",
+      "description": "Gets the full thread context for a threaded message.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_read_user_profile",
+      "description": "Gets a user's profile details, custom fields and status from their user ID.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_read_file",
+      "description": "Reads the contents of a file surfaced by a file search.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_list_channel_members",
+      "description": "Lists the user IDs of a channel's members.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_send_message",
+      "description": "Sends a message to any type of conversation (channel, thread, DM or group DM). Body accepts standard markdown.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_send_message_draft",
+      "description": "Creates a draft message for the user to review before sending. Body accepts standard markdown.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_schedule_message",
+      "description": "Schedules a message to post at a future time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "post_at": {
+            "type": "integer",
+            "description": "Unix timestamp, at least 2 minutes and at most 120 days in the future."
+          }
+        }
+      }
+    },
+    {
+      "name": "slack_create_canvas",
+      "description": "Creates and shares a Slack canvas, a formatted document written in Canvas-flavored Markdown.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_add_reaction",
+      "description": "Adds an emoji reaction to a message.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_get_reactions",
+      "description": "Reads the existing reactions on a message.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_get_file_upload_url",
+      "description": "Step 1 of file upload: returns a signed upload URL and a file ID to POST the file bytes to.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "slack_complete_file_upload",
+      "description": "Step 2 of file upload: finalizes the upload by file ID and can share the file to a channel with a message.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

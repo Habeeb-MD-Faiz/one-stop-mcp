@@ -1,0 +1,4 @@
+{"query":"look up the Q4 roadmap page in our wiki","server":"notion","tool":"notion-search"}
+{"query":"pull up the full text of this notion link","server":"notion","tool":"notion-fetch"}
+{"query":"make a fresh meeting-notes page under the Projects page","server":"notion","tool":"notion-create-pages"}
+{"query":"show me every row in the CRM table where stage is closed","server":"notion","tool":"notion-query-data-sources"}
