@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "One-Stop MCP server manifest",
+  "description": "One declarative file per downstream MCP server (servers/<id>.yaml). Mirrors src/types.ts; the hand-written validator in src/manifest.ts is the CI source of truth and test/manifest.test.ts keeps the two in step. Editor completion: add `# yaml-language-server: $schema=../schema/manifest.schema.json` as the first line of the YAML.",
+  "type": "object",
+  "required": ["id", "name", "category", "description", "transport"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Lowercase-kebab, permanent, and equal to the file name without .yaml (servers/notion.yaml -> notion)."
+    },
+    "name": { "type": "string", "pattern": "\\S", "description": "Display name." },
+    "category": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "dev", "code", "data", "database", "productivity", "docs", "knowledge-base", "communication",
+          "search", "web", "browser", "cloud", "infra", "ai", "memory", "crm", "sales", "marketing",
+          "payments", "design", "testing", "utility"
+        ]
+      },
+      "description": "What the server is for. list_servers can filter on these, and low-confidence find_tools suggests them to browse."
+    },
+    "description": {
+      "type": "string",
+      "pattern": "\\S",
+      "description": "One or two sentences on what the server reads and writes. Feeds the router."
+    },
+    "transport": {
+      "description": "How the gateway reaches the server.",
+      "oneOf": [
+        {
+          "title": "stdio",
+          "type": "object",
+          "required": ["type", "command"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "stdio" },
+            "command": { "type": "string", "pattern": "\\S", "description": "Executable to spawn, e.g. npx or uvx." },
+            "args": { "type": "array", "items": { "type": "string" }, "description": "Arguments. Pin packages to an exact version." },
+            "env": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "Static, non-secret environment for the child. Credentials are injected from auth.env, never written here."
+            }
+          }
+        },
+        {
+          "title": "streamable-http",
+          "type": "object",
+          "required": ["type", "url"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "streamable-http" },
+            "url": { "type": "string", "pattern": "^https?://", "description": "The server's MCP endpoint." },
+            "headers": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "Static, non-secret request headers. Credentials go through auth.header, never here."
+            }
+          }
+        }
+      ]
+    },
+    "auth": {
+      "description": "How a user authorises the server. Absent = none.",
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["none", "api_key", "oauth2"] },
+        "scopes": { "type": "array", "items": { "type": "string" }, "description": "oauth2: scopes to request." },
+        "env": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "stdio only: env var the credential (API key or OAuth access token) is injected into."
+        },
+        "header": {
+          "type": "string",
+          "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$",
+          "description": "streamable-http only: header that carries the credential. Default Authorization."
+        },
+        "prefix": {
+          "type": "string",
+          "description": "streamable-http only: prefix for the header value. Default \"Bearer \" when the header is Authorization, else empty."
+        },
+        "keyUrl": {
+          "type": "string",
+          "pattern": "^https?://",
+          "description": "api_key: where the user creates or re-issues a key. Shown on the guided key-entry page."
+        },
+        "rotation": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "api_key: id of a provider adapter that can rotate the key by API. Absent = guided rotation."
+        },
+        "authorizationUrl": {
+          "type": "string",
+          "pattern": "^https?://",
+          "description": "oauth2 without MCP auth discovery (most stdio servers): the authorization endpoint. Absent on an HTTP server = discover per the MCP authorization spec."
+        },
+        "tokenUrl": {
+          "type": "string",
+          "pattern": "^https?://",
+          "description": "oauth2 without MCP auth discovery: the token endpoint. Must be given together with authorizationUrl."
+        },
+        "clientId": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "oauth2: public OAuth client id (PKCE). A client secret, if a provider needs one, lives in the vault, not here."
+        }
+      },
+      "dependentRequired": { "authorizationUrl": ["tokenUrl"], "tokenUrl": ["authorizationUrl"] },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "none" } } }, "then": { "maxProperties": 1 } },
+        {
+          "if": { "properties": { "type": { "const": "api_key" } } },
+          "then": { "properties": { "scopes": false, "authorizationUrl": false, "tokenUrl": false, "clientId": false } }
+        },
+        {
+          "if": { "properties": { "type": { "const": "oauth2" } } },
+          "then": { "properties": { "keyUrl": false, "rotation": false } }
+        }
+      ]
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Example utterances that power routing (the semantic index).",
+      "properties": {
+        "examples": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "\\S" },
+          "description": "3-5 things a user might say that this server should handle."
+        },
+        "tools": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "string", "pattern": "\\S" } },
+          "description": "Per-tool utterances keyed by tool name. Every key must exist in catalog/<id>.json (checked by npm run validate)."
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "required": ["check"],
+      "additionalProperties": false,
+      "properties": {
+        "check": { "enum": ["initialize", "tools/list", "none"], "description": "What the PR probe and health checks exercise." }
+      }
+    },
+    "tags": { "type": "array", "items": { "type": "string", "pattern": "\\S" }, "description": "Free-form labels, e.g. official, remote." },
+    "homepage": { "type": "string", "pattern": "^https?://", "description": "The server's documentation or project page." }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["transport"], "properties": { "transport": { "properties": { "type": { "const": "stdio" } }, "required": ["type"] } } },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "header": false, "prefix": false },
+            "allOf": [
+              { "if": { "properties": { "type": { "const": "api_key" } } }, "then": { "required": ["env"] } },
+              { "if": { "properties": { "type": { "const": "oauth2" } } }, "then": { "required": ["env", "authorizationUrl", "tokenUrl"] } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "required": ["transport"], "properties": { "transport": { "properties": { "type": { "const": "streamable-http" } }, "required": ["type"] } } },
+      "then": { "properties": { "auth": { "properties": { "env": false } } } }
+    }
+  ]
+}
