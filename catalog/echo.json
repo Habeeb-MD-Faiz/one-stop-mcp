@@ -1,0 +1,16 @@
+{
+  "server": "echo",
+  "source": "live",
+  "fetchedAt": "2026-10-10T17:10:00Z",
+  "tools": [
+    {
+      "name": "echo",
+      "description": "Echo a message straight back. Useful for testing the round trip.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "message": { "type": "string", "description": "Text to echo back." } },
+        "required": ["message"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+# Decisions — burn-down 2026-10-10
+
+Habeeb's instruction: "Decide for me. Don't interrupt me … log all the decisions
+you are making, even the reversible ones or irreversible ones." Every decision
+below was made by the orchestrator in this session without him. Each is tagged
+**reversible** (cheap to undo) or **sticky** (other things will build on it;
+costly to undo later). Nothing here is outward-facing: the repo stays private,
+nothing is published, no money is spent.
+
+Format: `D<n> · time IST · tag — decision. Why. (source)`
+
+## Process
+
+- **D1 · 18:00 · reversible** — Branch is `OneStop-MCP` (git refs cannot contain spaces, so "OneStop MCP" became `OneStop-MCP`). Lane work happens on `OneStop-MCP-<lane>` branches, pushed for durability and merged into `OneStop-MCP` at gates. `master` is not touched; no PR is opened; no branch is deleted.
+- **D2 · 18:00 · reversible** — Scope is every PDR feature, not an MVP. This overrides BURNDOWN.md §3's "park decisions you'd normally ask about": Habeeb explicitly delegated all decisions for this session.
+- **D3 · 18:00 · reversible** — There is no "decision maker" subagent in this environment, so the orchestrator decides and records here.
+- **D27 · 18:10 · reversible** — Model per lane: opus for routing, security, downstream/OAuth and server (correctness-critical code); sonnet for catalog-core, the two seed-catalog lanes and community/packaging (high-volume, lower-risk). Eight parallel lanes, disjoint paths, one worktree each.
+- **D28 · 18:10 · reversible** — The orchestrator is the only writer of `package.json`, the lockfile, `tsconfig*`, `src/contracts.ts`, `src/types.ts`, `README.md` and brain. Lanes report dependency/contract needs instead of editing them (brain docs/MULTIAGENT.md "one writer to the index").
+
+## The RFC's open questions (PDR §10)
+
+- **D4 · Q1 · sticky** — Stay TypeScript/Node. The working code, the official SDK and the contributor pool are all TS; Go would throw that away for memory/binary-size wins that don't matter at gateway scale. (PDR §8; MCP TypeScript SDK https://github.com/modelcontextprotocol/typescript-sdk)
+- **D5 · Q3 · reversible** — Local embeddings via `@huggingface/transformers` (ONNX runtime, no API, model downloaded once from the Hugging Face hub — free). Candidates all-MiniLM-L6-v2 and bge-small-en-v1.5; the routing bench picks. Loaded lazily; if the package or model is unavailable, routing degrades to lexical+BM25 rather than failing. Exact cosine over an on-disk embedding cache; an ANN index (hnswlib) only past ~50k tools, because exact search is faster to build, has perfect recall, and is milliseconds at our size. Remote embedding providers stay pluggable through the `Embedder` interface but none is wired (no paid APIs). (Reimers & Gurevych, Sentence-BERT, EMNLP 2019, arXiv:1908.10084; Wang et al., MiniLM, arXiv:2002.10957; Xiao et al., C-Pack/BGE, arXiv:2309.07597; Thakur et al., BEIR, arXiv:2104.08663)
+- **D6 · Q2 · reversible** — The 50: PDR §7's list, filled out per category, preferring official vendor servers (remote Streamable HTTP where the vendor hosts one), then the modelcontextprotocol reference servers, then the most-adopted community server. Exact list in lanes/L5 and lanes/L6.
+- **D7 · Q4 · sticky** — Both, layered: per-org partitions *and* per-user keys. One root key; org key = HKDF(root, org); user key = HKDF(org key, user); every record also binds its (org, user, server) cell as AES-GCM additional data so a ciphertext cannot be moved to another cell. Isolation is cryptographic, not just a lookup filter. (RFC 5869 HKDF; NIST SP 800-38D GCM)
+- **D8 · Q5 · reversible** — Compression default stays `light` (strip boilerplate only: `$schema`, `additionalProperties:false`, titles, examples). `aggressive` (also trims descriptions) is measured in the bench for token savings and must keep every `type`, `required`, `enum` and property name — the fields tool selection and argument construction depend on.
+- **D9 · Q6 · reversible** — Curated only. The sync worker refreshes tool snapshots and imports candidates from the official MCP Registry into `servers/_candidates/` for human review; nothing is auto-added to the live catalog. Auto-ingest is a supply-chain risk for a component that holds every credential. (MCP Registry https://registry.modelcontextprotocol.io)
+- **D10 · Q7 · reversible** — 90-day default rotation policy, checked on a schedule. OAuth: refresh-token grant, fully automated. API keys: a provider adapter where the provider has a key-management API (Cloudflare token roll ships as the first), otherwise a guided re-issue flow that opens the key-entry page with the provider's key URL.
+- **D11 · Q8 · reversible** — Both: rules first (burst per user/server/tool, bulk-export-shaped tool names at volume, denied-rate) plus a per-connector EWMA baseline of call rate with a z-score threshold after warm-up. Rules are explainable and work from call one; the baseline catches connectors whose normal is very different from the defaults. No learned model.
+- **D12 · Q9 · sticky** — BDFL (Habeeb) plus maintainers, with a lightweight public RFC process for design changes; revisit a foundation once there are several regular outside maintainers. Written up in GOVERNANCE.md. Note: governance is an outward-facing choice; recorded now because Habeeb delegated it, and nothing is public until he makes the repo public.
+
+## Architecture
+
+- **D13 · sticky** — Add an Apache-2.0 `LICENSE` file (package.json already says Apache-2.0, PDR proposes it). The repo stays private.
+- **D14 · reversible** — Keep node:crypto AES-256-GCM + scrypt rather than libsodium: same AEAD security class, stdlib, no native dependency. Backends: local file (default), HashiCorp Vault KV v2 (over `fetch`), with key providers local passphrase, HashiCorp Vault Transit and AWS KMS (SigV4 signed with node:crypto). GCP/Azure KMS sit behind the same `KeyProvider` interface, not built. (HashiCorp Vault KV v2 and Transit API docs; AWS KMS GenerateDataKey/Decrypt; AWS SigV4)
+- **D15 · sticky** — Both faces speak stdio and Streamable HTTP; the HTTP server is node:http (no express). Downstream HTTP falls back to legacy SSE when a server rejects Streamable HTTP. (MCP spec, transports, 2025-06-18)
+- **D16 · reversible** — Team auth to the gateway: per-user bearer tokens, stored only as SHA-256 hashes; orgs group users. Remote admin endpoints need an admin token *and* a TOTP code (RFC 6238). Becoming a full OAuth authorization server for clients is a later upgrade. (RFC 6238; MCP authorization spec makes auth optional for servers)
+- **D17 · reversible** — Admin powers (kill switch, rotation, ledger) are not meta-tools. A model must never be able to unfreeze the vault or rotate keys. They live in the CLI, the MFA-protected admin API and a minimal admin page.
+- **D18 · sticky** — Secrets never pass through the model. `connect_server` returns a URL (OAuth authorization or the gateway's own key-entry page); the user types keys into the gateway, not the chat.
+- **D19 · reversible** — The ledger is append-only JSONL, SHA-256 hash-chained, each entry Ed25519-signed; `ledger verify` checks chain and signatures with the public key alone. Ed25519 over HMAC because a verifier then needs no secret.
+- **D20 · reversible** — CI runs on pull requests, pushes to `master` and `OneStop-MCP`, and manual dispatch, with `concurrency: cancel-in-progress` so rapid burn-down pushes don't burn Actions minutes. Ubuntu, Node 22. No release is triggered.
+- **D21 · reversible** — Packaging: npx-ready package (`bin`), multi-stage Dockerfile (non-root, embeddings optional at build time) and docker-compose for team mode. Nothing is published to npm or a registry.
+- **D22 · sticky** — `Router.rank` and `Embedder.embed` are async so a model-backed leg fits the same interface.
+- **D23 · reversible** — One binary, two modes from config: `local` (stdio to the client, loopback HTTP on 127.0.0.1 only for OAuth callbacks and key entry) and `team` (Streamable HTTP for clients, bearer tokens, admin API). Config file `one-stop-mcp.config.yaml` + `OSMCP_*` env overrides; state in `OSMCP_HOME` (default `~/.one-stop-mcp`).
+- **D24 · reversible** — Hand-rolled Prometheus text exposition at `/metrics` rather than prom-client: a few counters and one histogram don't justify a dependency. (Prometheus exposition format docs)
+- **D25 · sticky** — Tool catalogs are snapshots on disk (`catalog/<id>.json`, refreshable into the state dir). `find_tools` never spawns a server — this fixes the P0 behaviour where discovery started every registered server, which breaks the flat-cost tenet at 50+ servers.
+- **D26 · sticky** — Manifest extension `routing.tools.<tool>: [utterances]` for per-tool examples, plus `auth.env/header/prefix/keyUrl/rotation/authorizationUrl/tokenUrl/clientId`, `tags`, `homepage`, `health.check`. All optional; the PDR's example manifest stays valid.
+- **D29 · reversible** — Local mode uses a generated master key file (`$OSMCP_HOME/master.key`, mode 0600) when `OSMCP_MASTER_KEY` is not set — the SSH-key model, so desktop use has no passphrase prompt. Team mode refuses to start without `OSMCP_MASTER_KEY` or a KMS key provider.
+- **D30 · reversible** — Kill-switch state is a file that every check re-reads on change, so `one-stop-mcp kill all` from a terminal takes effect inside an already-running local gateway immediately.
+- **D31 · reversible** — Downstream stdio servers get a minimal environment (the SDK's default safe variables + manifest env + injected credential), never the gateway's own environment — otherwise `OSMCP_MASTER_KEY` would leak to every child process.
+- **D32 · reversible** — Default HTTP port 8420.
+- **D33 · reversible** — Seed-catalog bench queries are written per server by the seed lanes as paraphrases that must not reuse the manifest's example wording. Caveat logged: same author for examples and queries inflates scores somewhat; a held-out set written by a different agent is the honest number.
