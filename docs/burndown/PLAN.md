@@ -73,11 +73,11 @@ A lane that needs a contract change stops and reports it instead of editing.
 | L1 routing | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L2 security | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L3 downstream+auth | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L4 catalog-core | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L4 catalog-core | merged cc1b17d | |
 | L5 seed A | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L6 seed B | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L7 server | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L8 community | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L8 community | merged | |
 | S2 integrate | pending | |
 | S3 end-to-end | pending | |
 | S4 hardening | pending | |
@@ -97,3 +97,11 @@ A lane that needs a contract change stops and reports it instead of editing.
   (listen on 0); no network beyond 127.0.0.1 in tests.
 - Code style: match the existing files — short header comment saying why,
   `ponytail:` comments on deliberate ceilings, stdlib first.
+
+## Integration notes (reconcile at S2/S4)
+
+- L8: Dockerfile CMD uses `dist/index.js` (the `bin`); `package.json` needs `private: false`-ready fields (`files`, `bin`) for `npm pack`/npx — keep `private: true` until Habeeb publishes.
+- L8: container must bind 0.0.0.0 — needs the real env var name from L7's config; 23 `<!-- verify -->` markers in docs to reconcile against integrated code.
+- L8: CI typecheck runs with `--omit=optional` — L1 must import `@huggingface/transformers` without a literal specifier tsc resolves, or typecheck fails in CI.
+- L8: README must link the new docs.
+- L4: `knowledge-base` added to CATEGORIES. Probe spawns stdio commands from PRs — fine under `pull_request` (no secrets, read-only token), review in S4.
