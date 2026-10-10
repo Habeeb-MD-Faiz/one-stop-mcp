@@ -15,7 +15,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
-type Handler = (req: IncomingMessage, res: ServerResponse, url: URL) => void | Promise<void>;
+type Handler = (req: IncomingMessage, res: ServerResponse, url: URL) => unknown;
 
 async function listen(handler: Handler): Promise<{ url: string; close(): Promise<void> }> {
   const http: HttpServer = createServer((req, res) => {
