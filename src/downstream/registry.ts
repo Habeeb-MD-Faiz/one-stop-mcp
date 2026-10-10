@@ -1,10 +1,10 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
-import type { DownstreamTool, Manifest } from "./types.js";
-import { HybridRouter, type RoutableTool, type Router } from "./router.js";
-import { compressSchema, type CompressLevel } from "./compress.js";
-import type { UsageLedger } from "./ledger.js";
+import type { DownstreamTool, Manifest } from "../types.js";
+import { HybridRouter, type RoutableTool, type Router } from "../routing/router.js";
+import { compressSchema, type CompressLevel } from "../routing/compress.js";
+import type { UsageLedger } from "../security/ledger.js";
 
 interface Session {
   client: Client;
@@ -75,7 +75,7 @@ export class Registry {
         });
       }
     }
-    return this.router.rank(query, routable, k).map((r) => ({
+    return (await this.router.rank(query, routable, k)).map((r) => ({
       server: r.server,
       tool: r.tool,
       description: r.description,

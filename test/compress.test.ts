@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compressSchema, estTokens } from "../src/compress.js";
+import { compressSchema, estTokens } from "../src/routing/compress.js";
 
 // A realistically verbose downstream tool schema — the kind that bloats context.
 const verbose = {

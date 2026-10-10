@@ -18,7 +18,7 @@ export interface ScoredTool extends RoutableTool {
 }
 
 export interface Router {
-  rank(query: string, tools: RoutableTool[], k: number): ScoredTool[];
+  rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]>;
 }
 
 // Field weights: what a term is worth toward the score depending on where it
@@ -29,7 +29,7 @@ const W_CATEGORY = 2;
 const W_DESC = 1;
 
 export class LexicalRouter implements Router {
-  rank(query: string, tools: RoutableTool[], k: number): ScoredTool[] {
+  async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     const qTerms = [...new Set(terms(query))];
     if (qTerms.length === 0) return [];
     const qNorm = norm(query);
@@ -74,7 +74,7 @@ function docBag(t: RoutableTool): Map<string, number> {
 }
 
 export class Bm25Router implements Router {
-  rank(query: string, tools: RoutableTool[], k: number): ScoredTool[] {
+  async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     const qStems = [...new Set(terms(query).map(stem))];
     if (qStems.length === 0) return [];
     const qNorm = norm(query);
@@ -111,7 +111,7 @@ export class Bm25Router implements Router {
 // interface so nothing above it changes when the model lands.
 export interface Embedder {
   /** One vector per input text. Same dimensionality across calls. */
-  embed(texts: string[]): number[][];
+  embed(texts: string[]): Promise<number[][]>;
 }
 
 // Dense retrieval: cosine similarity between the query vector and each tool's
@@ -122,14 +122,14 @@ export class VectorRouter implements Router {
   private cache = new WeakMap<RoutableTool[], number[][]>();
   constructor(private embedder: Embedder) {}
 
-  rank(query: string, tools: RoutableTool[], k: number): ScoredTool[] {
+  async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     if (tools.length === 0) return [];
     let docVecs = this.cache.get(tools);
     if (!docVecs) {
-      docVecs = this.embedder.embed(tools.map(docText));
+      docVecs = await this.embedder.embed(tools.map(docText));
       this.cache.set(tools, docVecs);
     }
-    const [qVec] = this.embedder.embed([query]);
+    const [qVec] = await this.embedder.embed([query]);
     return tools
       .map((t, i) => ({ ...t, score: cosine(qVec, docVecs![i]) }))
       .filter((t) => t.score > 0)
@@ -158,12 +158,12 @@ export class HybridRouter implements Router {
     private rrfK = RRF_K,
   ) {}
 
-  rank(query: string, tools: RoutableTool[], k: number): ScoredTool[] {
+  async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     if (this.legs.length === 1) return this.legs[0].rank(query, tools, k);
     // Retrieve a deeper pool from each leg than we return, so a tool that a single
     // leg ranks just outside top-k can still be rescued by fusion (recall lever).
     const pool = Math.max(k * 4, 20);
-    const lists = this.legs.map((r) => r.rank(query, tools, pool));
+    const lists = await Promise.all(this.legs.map((r) => r.rank(query, tools, pool)));
     return rrfFuse(lists, this.rrfK).slice(0, k);
   }
 }

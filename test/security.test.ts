@@ -1,10 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
-import { Vault, VaultFrozenError, secretEquals } from "../src/vault.js";
-import { UsageLedger } from "../src/ledger.js";
-import { KillSwitch } from "../src/security.js";
-import { Registry } from "../src/registry.js";
+import { Vault, VaultFrozenError, secretEquals } from "../src/security/vault.js";
+import { UsageLedger } from "../src/security/ledger.js";
+import { KillSwitch } from "../src/security/killswitch.js";
+import { Registry } from "../src/downstream/registry.js";
 import type { Manifest } from "../src/types.js";
 
 test("vault round-trips a secret and scopes it to (user, server)", () => {

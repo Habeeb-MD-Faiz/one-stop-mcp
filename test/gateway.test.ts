@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { buildGateway } from "../src/gateway.js";
-import { Registry } from "../src/registry.js";
+import { buildGateway } from "../src/server/gateway.js";
+import { Registry } from "../src/downstream/registry.js";
 import { parseManifest } from "../src/manifest.js";
-import { META_TOOLS } from "../src/meta-tools.js";
+import { META_TOOLS } from "../src/server/meta-tools.js";
 import type { Manifest } from "../src/types.js";
 
 const echoPath = fileURLToPath(new URL("../examples/echo-server.mjs", import.meta.url));

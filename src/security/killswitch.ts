@@ -1,4 +1,4 @@
-import type { Registry } from "./registry.js";
+import type { Registry } from "../downstream/registry.js";
 import type { UsageLedger } from "./ledger.js";
 import type { Vault } from "./vault.js";
 

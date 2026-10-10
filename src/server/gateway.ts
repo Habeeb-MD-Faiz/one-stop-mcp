@@ -1,7 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { META_TOOLS } from "./meta-tools.js";
-import type { Registry } from "./registry.js";
+import type { Registry } from "../downstream/registry.js";
 
 /** Build the gateway as an MCP server. It advertises only the four meta-tools;
  *  everything downstream is reached through `invoke`. */

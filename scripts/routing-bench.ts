@@ -12,7 +12,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { HybridRouter, type RoutableTool } from "../src/router.js";
+import { HybridRouter, type RoutableTool } from "../src/routing/router.js";
 
 const TARGET_TOP3 = 0.9;
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -39,7 +39,7 @@ let top3 = 0;
 const misses: string[] = [];
 
 for (const q of queries) {
-  const ranked = router.rank(q.query, catalog, 3);
+  const ranked = await router.rank(q.query, catalog, 3);
   const gold = `${q.server}/${q.tool}`;
   const ids = ranked.map((r) => `${r.server}/${r.tool}`);
   if (ids[0] === gold) top1++;

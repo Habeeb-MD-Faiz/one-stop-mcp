@@ -2,10 +2,10 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { buildGateway } from "./gateway.js";
+import { buildGateway } from "./server/gateway.js";
 import { loadManifests } from "./manifest.js";
-import { Registry } from "./registry.js";
-import { UsageLedger } from "./ledger.js";
+import { Registry } from "./downstream/registry.js";
+import { UsageLedger } from "./security/ledger.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 // servers/ sits at the repo root, one level up from dist/ (or src/ under tsx).

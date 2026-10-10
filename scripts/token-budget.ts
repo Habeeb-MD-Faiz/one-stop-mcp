@@ -3,7 +3,7 @@
 // client sees — the four meta-tools — and nothing else, at any catalog size.
 //
 // Run: npm run budget   (exits non-zero if the budget is blown)
-import { META_TOOLS } from "../src/meta-tools.js";
+import { META_TOOLS } from "../src/server/meta-tools.js";
 
 const BUDGET = 2000;
 
