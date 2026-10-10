@@ -1,0 +1,4 @@
+{"query":"what changed in the newest version of tailwind and how do I configure it","server":"context7","tool":"query-docs"}
+{"query":"I need accurate api reference for express middleware, not stale training data","server":"context7","tool":"query-docs"}
+{"query":"which documentation source matches the library called zod","server":"context7","tool":"resolve-library-id"}
+{"query":"show me working snippets from the official FastAPI docs","server":"context7","tool":"query-docs"}

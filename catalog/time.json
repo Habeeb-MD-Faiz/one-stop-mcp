@@ -1,0 +1,49 @@
+{
+  "server": "time",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "get_current_time",
+      "description": "Returns the current time in a given timezone, or in the system timezone.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "description": "IANA timezone name, e.g. Europe/London."
+          }
+        },
+        "required": [
+          "timezone"
+        ]
+      }
+    },
+    {
+      "name": "convert_time",
+      "description": "Converts a time from one timezone to another.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source_timezone": {
+            "type": "string",
+            "description": "Source IANA timezone name."
+          },
+          "time": {
+            "type": "string",
+            "description": "Time to convert in 24-hour HH:MM format."
+          },
+          "target_timezone": {
+            "type": "string",
+            "description": "Target IANA timezone name."
+          }
+        },
+        "required": [
+          "source_timezone",
+          "time",
+          "target_timezone"
+        ]
+      }
+    }
+  ]
+}

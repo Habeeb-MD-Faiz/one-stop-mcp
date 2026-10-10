@@ -1,0 +1,4 @@
+{"query":"keep a note that Dana is the new tech lead","server":"memory","tool":"create_entities"}
+{"query":"link Alice to the Apollo project as its owner","server":"memory","tool":"create_relations"}
+{"query":"find anything you stored about our deployment setup","server":"memory","tool":"search_nodes"}
+{"query":"forget the person Bob and everything connected to him","server":"memory","tool":"delete_entities"}

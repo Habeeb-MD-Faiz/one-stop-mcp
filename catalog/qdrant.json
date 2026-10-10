@@ -1,0 +1,53 @@
+{
+  "server": "qdrant",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "qdrant-store",
+      "description": "Saves information to the Qdrant database, with optional metadata.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "information": {
+            "type": "string",
+            "description": "The information to store."
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Extra data to store with it."
+          },
+          "collection_name": {
+            "type": "string",
+            "description": "The target collection. Required if no default collection is set."
+          }
+        },
+        "required": [
+          "information",
+          "collection_name"
+        ]
+      }
+    },
+    {
+      "name": "qdrant-find",
+      "description": "Searches the Qdrant database for relevant stored information.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query."
+          },
+          "collection_name": {
+            "type": "string",
+            "description": "The collection to search. Required if no default collection is set."
+          }
+        },
+        "required": [
+          "query",
+          "collection_name"
+        ]
+      }
+    }
+  ]
+}

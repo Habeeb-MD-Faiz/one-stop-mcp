@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/qdrant/mcp-server-qdrant (official, by Qdrant). PyPI mcp-server-qdrant 0.8.1.
+# Tools qdrant-store / qdrant-find per the README. Embeddings are computed locally with fastembed (downloads a
+# model on first use). QDRANT_URL below is the README's local example; a deployment overrides it (Qdrant Cloud URL).
+# COLLECTION_NAME is deliberately unset so the tools expose collection_name; setting it hides that parameter.
+# Qdrant Cloud API key: Cloud Dashboard -> cluster -> API Keys -> Create (https://qdrant.tech/documentation/cloud/authentication/).
+id: qdrant
+name: Qdrant
+category: [database, memory, ai]
+tags: [official, local]
+description: >
+  Store information in a Qdrant vector database and retrieve it later by semantic search; usable as a
+  semantic memory layer.
+homepage: https://github.com/qdrant/mcp-server-qdrant
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-qdrant==0.8.1"]
+  env:
+    QDRANT_URL: http://localhost:6333
+auth:
+  type: api_key
+  env: QDRANT_API_KEY
+  keyUrl: https://cloud.qdrant.io/login
+routing:
+  examples:
+    - "save this snippet to my vector database"
+    - "search my qdrant collection for similar notes"
+    - "store this information for semantic retrieval"
+  tools:
+    qdrant-store: ["remember this paragraph in the vector store"]
+    qdrant-find: ["find documents related to refund policy in qdrant"]
+health:
+  check: initialize

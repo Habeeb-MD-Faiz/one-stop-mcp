@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/upstash/context7 (official, by Upstash; hosted remote https://mcp.context7.com/mcp).
+# README: optional "Authorization: Bearer <API key>" header for higher rate limits; free key at
+# https://context7.com/dashboard. Without a key it works at lower limits. Tools: resolve-library-id and
+# query-docs (the README names them; older docs call the second one get-library-docs).
+# npm @upstash/context7-mcp 4.3.0 exists (npm view) but the README gives no stdio command, so the remote is used.
+id: context7
+name: Context7
+category: [dev, docs, search]
+tags: [official, remote]
+description: >
+  Fetch current, version-specific documentation and code examples for programming libraries and
+  frameworks, resolving a library name to its Context7 ID first.
+homepage: https://context7.com
+transport:
+  type: streamable-http
+  url: https://mcp.context7.com/mcp
+auth:
+  type: api_key
+  header: Authorization
+  prefix: "Bearer "
+  keyUrl: https://context7.com/dashboard
+routing:
+  examples:
+    - "look up the latest docs for this library"
+    - "how do I use the new next.js app router api"
+    - "get up to date code examples for react hooks"
+    - "check the current documentation before writing this code"
+  tools:
+    resolve-library-id: ["find the context7 id for supabase"]
+    query-docs: ["pull the official docs on prisma migrations"]
+health:
+  check: initialize
