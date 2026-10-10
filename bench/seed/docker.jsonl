@@ -1,0 +1,4 @@
+{"query":"is anything still up on this box from yesterday's test","server":"docker","tool":"list_containers"}
+{"query":"my service keeps crashing, I need to see what it printed before dying","server":"docker","tool":"fetch_container_logs"}
+{"query":"launch redis locally so I can try something","server":"docker","tool":"run_container"}
+{"query":"free up disk by deleting the old unused tags","server":"docker","tool":"remove_image"}

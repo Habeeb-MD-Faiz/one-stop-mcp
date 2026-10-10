@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers-archived/tree/main/src/sqlite (reference,
+# moved to servers-archived). PyPI mcp-server-sqlite, version pinned (PyPI = 2025.4.25). Run with
+# `uvx mcp-server-sqlite --db-path <file>`; the README names no replacement, so it is kept.
+# "./sqlite.db" is a placeholder: edit the --db-path arg to the database you want.
+id: sqlite
+name: SQLite
+category: [database, data]
+tags: [reference, local]
+description: >
+  Query and modify a local SQLite database file: run SELECT, INSERT, UPDATE, DELETE and CREATE
+  TABLE statements, list tables and describe a table's schema.
+homepage: https://github.com/modelcontextprotocol/servers-archived/tree/main/src/sqlite
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-sqlite@2025.4.25", "--db-path", "./sqlite.db"]
+auth:
+  type: none
+routing:
+  examples:
+    - "query my sqlite database"
+    - "create a table in the sqlite file"
+    - "list the tables in this sqlite db"
+    - "insert a row into a local sqlite database"
+  tools:
+    read_query: ["select rows from a table in the sqlite database"]
+    write_query: ["update a record in the local sqlite file"]
+    create_table: ["make a new sqlite table with these columns"]
+    describe-table: ["show the column types of this sqlite table"]
+health:
+  check: initialize

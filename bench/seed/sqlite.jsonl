@@ -1,0 +1,4 @@
+{"query":"how many rows does the notes table hold","server":"sqlite","tool":"read_query"}
+{"query":"what columns does the expenses table have","server":"sqlite","tool":"describe-table"}
+{"query":"remove the records older than a year from my local db file","server":"sqlite","tool":"write_query"}
+{"query":"which tables does this .db file contain","server":"sqlite","tool":"list_tables"}

@@ -1,0 +1,23 @@
+{
+  "server": "mysql",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "mysql_query",
+      "description": "Execute SQL queries against the connected MySQL database. Read-only by default; INSERT, UPDATE and DELETE must be enabled by environment flags.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "SQL query to execute."
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      }
+    }
+  ]
+}

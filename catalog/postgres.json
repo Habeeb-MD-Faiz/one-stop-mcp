@@ -1,0 +1,173 @@
+{
+  "server": "postgres",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "List all database schemas available in the PostgreSQL instance.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_objects",
+      "description": "List objects in a schema: tables, views, sequences or extensions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "schema_name": {
+            "type": "string",
+            "description": "Schema to list."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "Kind of object to list."
+          }
+        },
+        "required": [
+          "schema_name"
+        ]
+      }
+    },
+    {
+      "name": "get_object_details",
+      "description": "Show detailed information about a database object, such as a table's columns, constraints and indexes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "schema_name": {
+            "type": "string",
+            "description": "Schema of the object."
+          },
+          "object_name": {
+            "type": "string",
+            "description": "Name of the object."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "Kind of object."
+          }
+        },
+        "required": [
+          "schema_name",
+          "object_name"
+        ]
+      }
+    },
+    {
+      "name": "execute_sql",
+      "description": "Execute SQL statements on the database; limited to read-only operations in restricted mode.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "SQL statement to execute."
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      }
+    },
+    {
+      "name": "explain_query",
+      "description": "Explain the execution plan for a SQL query, optionally with hypothetical indexes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "Query to explain."
+          },
+          "analyze": {
+            "type": "boolean",
+            "description": "Actually run the query to get real timings."
+          },
+          "hypothetical_indexes": {
+            "type": "array",
+            "description": "Hypothetical indexes to simulate."
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      }
+    },
+    {
+      "name": "get_top_queries",
+      "description": "Report the slowest SQL queries by total or mean execution time, using pg_stat_statements.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sort_by": {
+            "type": "string",
+            "description": "total or mean execution time."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of queries to return."
+          }
+        }
+      }
+    },
+    {
+      "name": "analyze_workload_indexes",
+      "description": "Analyze the database workload to identify resource-intensive queries and recommend indexes for them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "max_index_size_mb": {
+            "type": "integer",
+            "description": "Maximum total size of recommended indexes."
+          },
+          "method": {
+            "type": "string",
+            "description": "Analysis method."
+          }
+        }
+      }
+    },
+    {
+      "name": "analyze_query_indexes",
+      "description": "Analyze a list of up to 10 specific SQL queries and recommend indexes for them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "queries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Queries to analyze."
+          },
+          "max_index_size_mb": {
+            "type": "integer",
+            "description": "Maximum total size of recommended indexes."
+          },
+          "method": {
+            "type": "string",
+            "description": "Analysis method."
+          }
+        },
+        "required": [
+          "queries"
+        ]
+      }
+    },
+    {
+      "name": "analyze_db_health",
+      "description": "Run database health checks: buffer cache, connections, constraints, indexes, sequences and vacuum.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "health_type": {
+            "type": "string",
+            "description": "Which checks to run."
+          }
+        }
+      }
+    }
+  ]
+}

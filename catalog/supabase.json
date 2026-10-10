@@ -1,0 +1,475 @@
+{
+  "server": "supabase",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "list_organizations",
+      "description": "List all organizations the user is a member of.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_organization",
+      "description": "Get the details of an organization, including subscription plan.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Organization id."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "List all Supabase projects the user has access to.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_project",
+      "description": "Get the details of a Supabase project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_project",
+      "description": "Create a new Supabase project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Project name."
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "Organization to create it in."
+          },
+          "region": {
+            "type": "string",
+            "description": "Region for the project."
+          }
+        },
+        "required": [
+          "name",
+          "organization_id"
+        ]
+      }
+    },
+    {
+      "name": "pause_project",
+      "description": "Pause a Supabase project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "restore_project",
+      "description": "Restore a paused Supabase project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "list_tables",
+      "description": "List the tables in one or more schemas of the database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "schemas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Schemas to list tables from."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "list_extensions",
+      "description": "List the available and installed Postgres extensions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "list_migrations",
+      "description": "List the database migrations applied to the project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "apply_migration",
+      "description": "Apply a named SQL migration to the database; use for schema changes (DDL).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "name": {
+            "type": "string",
+            "description": "Migration name in snake_case."
+          },
+          "query": {
+            "type": "string",
+            "description": "SQL of the migration."
+          }
+        },
+        "required": [
+          "project_id",
+          "name",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "execute_sql",
+      "description": "Execute raw SQL in the database; use apply_migration for schema changes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "query": {
+            "type": "string",
+            "description": "SQL to execute."
+          }
+        },
+        "required": [
+          "project_id",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "query_logs",
+      "description": "Run a read-only SQL query against the project logs to debug services.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "sql": {
+            "type": "string",
+            "description": "SQL query over the log tables."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_advisors",
+      "description": "Get security and performance advisories for the project, such as missing row level security.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_project_url",
+      "description": "Get the API URL of a project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_publishable_keys",
+      "description": "Get the project's publishable API keys and the legacy anon key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "generate_typescript_types",
+      "description": "Generate TypeScript types from the database schema.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "list_edge_functions",
+      "description": "List all Edge Functions in the project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_edge_function",
+      "description": "Retrieve the code and details of an Edge Function.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "function_slug": {
+            "type": "string",
+            "description": "Slug of the function."
+          }
+        },
+        "required": [
+          "project_id",
+          "function_slug"
+        ]
+      }
+    },
+    {
+      "name": "deploy_edge_function",
+      "description": "Deploy an Edge Function to the project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "name": {
+            "type": "string",
+            "description": "Function name."
+          },
+          "files": {
+            "type": "array",
+            "description": "Source files to deploy."
+          }
+        },
+        "required": [
+          "project_id",
+          "name",
+          "files"
+        ]
+      }
+    },
+    {
+      "name": "search_docs",
+      "description": "Search the Supabase documentation for up-to-date guides and references.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "graphql_query": {
+            "type": "string",
+            "description": "GraphQL query against the docs search API."
+          }
+        },
+        "required": [
+          "graphql_query"
+        ]
+      }
+    },
+    {
+      "name": "create_branch",
+      "description": "Create a development branch of the project (experimental, paid plan).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          },
+          "name": {
+            "type": "string",
+            "description": "Branch name."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "list_branches",
+      "description": "List the development branches of the project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "delete_branch",
+      "description": "Delete a development branch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "description": "Branch id."
+          }
+        },
+        "required": [
+          "branch_id"
+        ]
+      }
+    },
+    {
+      "name": "merge_branch",
+      "description": "Merge a development branch into production.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "description": "Branch id."
+          }
+        },
+        "required": [
+          "branch_id"
+        ]
+      }
+    },
+    {
+      "name": "reset_branch",
+      "description": "Reset a development branch to a previous migration version.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "description": "Branch id."
+          }
+        },
+        "required": [
+          "branch_id"
+        ]
+      }
+    },
+    {
+      "name": "rebase_branch",
+      "description": "Rebase a development branch onto production to pick up its migrations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "string",
+            "description": "Branch id."
+          }
+        },
+        "required": [
+          "branch_id"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"count the orders placed yesterday in our MariaDB or MySQL store","server":"mysql","tool":"mysql_query"}
+{"query":"fetch the five most expensive products from the shop database","server":"mysql","tool":"mysql_query"}
+{"query":"find duplicate email addresses in the accounts table","server":"mysql","tool":"mysql_query"}
+{"query":"list every table that exists in the connected schema","server":"mysql","tool":"mysql_query"}
