@@ -31,7 +31,7 @@ export const ALLOWED_KEYS = {
   health: ["check"],
 } as const;
 
-const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+export const ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const ENV_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
 
@@ -81,7 +81,7 @@ export function validateManifest(raw: unknown, source: string): string[] {
   // id, name, description, category
   requireString("id");
   if (nonEmpty(raw.id)) {
-    if (!KEBAB.test(raw.id)) err("id", "must be lowercase-kebab (a-z, 0-9, single hyphens)");
+    if (!ID_PATTERN.test(raw.id)) err("id", "must be lowercase-kebab (a-z, 0-9, single hyphens)");
     const stem = fileStem(source);
     if (stem && stem !== raw.id) err("id", `must equal the file name (${stem})`);
   }
