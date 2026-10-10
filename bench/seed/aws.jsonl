@@ -1,0 +1,4 @@
+{"query":"how many EBS volumes are sitting unattached in my account","server":"aws","tool":"aws___call_aws"}
+{"query":"loop through every region and tally the running instances","server":"aws","tool":"aws___run_script"}
+{"query":"is Bedrock offered in Frankfurt","server":"aws","tool":"aws___get_regional_availability"}
+{"query":"read me the user guide page about IAM roles","server":"aws","tool":"aws___read_documentation"}

@@ -1,0 +1,70 @@
+{
+  "server": "aws",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "aws___call_aws",
+      "description": "Make authenticated AWS API calls (the AWS CLI surface) with validation and error handling.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___run_script",
+      "description": "Run sandboxed Python that chains multiple AWS API calls in one invocation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___search_documentation",
+      "description": "Search the AWS documentation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___read_documentation",
+      "description": "Read an AWS documentation page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___retrieve_skill",
+      "description": "Retrieve a curated AWS skill: step-by-step guidance for a task.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___list_regions",
+      "description": "List the AWS Regions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___get_regional_availability",
+      "description": "Check the regional availability of AWS services and features.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___get_presigned_url",
+      "description": "Generate a presigned URL for an AWS resource.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aws___get_tasks",
+      "description": "Get the status of asynchronous tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

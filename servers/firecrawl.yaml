@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/firecrawl/firecrawl-mcp-server and https://docs.firecrawl.dev/mcp-server
+# (official, Firecrawl). Hosted endpoint https://mcp.firecrawl.dev/v2/mcp with the key sent as
+# `Authorization: Bearer <key>` (never in the URL); an OAuth variant exists at /v2/mcp-oauth.
+# Stdio alternative: `env FIRECRAWL_API_KEY=... npx -y firecrawl-mcp` (npm firecrawl-mcp 3.29.1).
+# The README lists 28 tools; all are in the snapshot. Parameter detail is documented only for
+# scrape/search/crawl/map, so the rest keep open schemas.
+id: firecrawl
+name: Firecrawl
+category: [web, search]
+tags: [official, remote]
+description: >
+  Scrape, crawl, map and search the web with Firecrawl, extract structured data with an
+  async research agent, interact with pages, parse files and monitor pages for changes.
+homepage: https://docs.firecrawl.dev/mcp-server
+transport:
+  type: streamable-http
+  url: https://mcp.firecrawl.dev/v2/mcp
+auth:
+  type: api_key
+  header: Authorization
+  prefix: "Bearer "
+  keyUrl: https://www.firecrawl.dev/app/api-keys
+routing:
+  examples:
+    - "scrape this web page into markdown"
+    - "crawl an entire website and collect its pages"
+    - "extract structured data from these urls"
+    - "find all the urls on a site"
+  tools:
+    firecrawl_scrape: ["pull the main content off this article"]
+    firecrawl_crawl: ["crawl the docs site up to 50 pages"]
+    firecrawl_map: ["list every page url under this domain"]
+    firecrawl_search: ["search the web and return the page contents"]
+    firecrawl_agent: ["research this question and return structured json"]
+health:
+  check: initialize

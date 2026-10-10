@@ -1,0 +1,280 @@
+{
+  "server": "apify",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "search-actors",
+      "description": "Search for Actors in the Apify Store.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "fetch-actor-details",
+      "description": "Retrieve an Actor's input schema, README, pricing and output schema.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "call-actor",
+      "description": "Run an Actor and return its results.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-run",
+      "description": "Get details about a specific Actor run.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-dataset-items",
+      "description": "Retrieve dataset items with filtering and pagination.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-key-value-store-record",
+      "description": "Get the value stored under a key in a key-value store.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "abort-actor-run",
+      "description": "Abort a running Actor run, optionally gracefully.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "delete-actor",
+      "description": "Permanently delete an Actor from your account.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search-apify-docs",
+      "description": "Search the Apify documentation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "fetch-apify-docs",
+      "description": "Fetch an Apify documentation page by URL.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "apify--rag-web-browser",
+      "description": "Browse the web using the RAG Web Browser Actor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "apify--web-fetch",
+      "description": "Fetch a URL and return its content using the Web Fetch Actor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "report-problem",
+      "description": "Report a problem with an Apify tool or Actor to Apify.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-list",
+      "description": "List your Actors, including private and shared ones.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-run-list",
+      "description": "List Actor runs, filterable by Actor and status.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-run-log",
+      "description": "Retrieve the logs of an Actor run.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-dataset",
+      "description": "Get metadata about a dataset.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-dataset-schema",
+      "description": "Generate a JSON schema from dataset items.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-key-value-store",
+      "description": "Get metadata about a key-value store.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-key-value-store-keys",
+      "description": "List the keys in a key-value store.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-dataset-list",
+      "description": "List your datasets.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-key-value-store-list",
+      "description": "List your key-value stores.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create-actor-task",
+      "description": "Create a saved, reusable Actor task.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-task",
+      "description": "Get a saved task and its publication state.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-actor-task",
+      "description": "Update a task's input, run options or display settings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "publish-actor-task",
+      "description": "Publish a task on its public landing page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "unpublish-actor-task",
+      "description": "Unpublish a task from its landing page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create-schedule",
+      "description": "Create a cron schedule that runs Actors or tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-schedule",
+      "description": "Get a schedule's cron expression, state and actions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-schedule",
+      "description": "Update a schedule's cron expression, time zone, state or actions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "delete-schedule",
+      "description": "Delete a schedule.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-build",
+      "description": "Get the status of an Actor build.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-build-log",
+      "description": "Retrieve the logs of an Actor build.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-build-list",
+      "description": "List builds for your account or for one Actor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "build-actor",
+      "description": "Build an Actor version and wait a bounded time for completion.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-actor-version",
+      "description": "List the files of an Actor version and return requested file contents.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "apify-api-search",
+      "description": "Search the Apify API reference for operations.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "apify-api-details",
+      "description": "Get parameters and request schemas for the API operations on a path.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "apify-api-read",
+      "description": "Send a GET request to an Apify API path.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

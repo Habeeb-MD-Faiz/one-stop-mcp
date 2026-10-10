@@ -1,0 +1,4 @@
+{"query":"turn that blog post into clean text I can read","server":"firecrawl","tool":"firecrawl_scrape"}
+{"query":"I want every page of competitor.com downloaded","server":"firecrawl","tool":"firecrawl_crawl"}
+{"query":"which urls exist on this website without fetching them all","server":"firecrawl","tool":"firecrawl_map"}
+{"query":"go figure out the pricing tiers of these five vendors and give me a table","server":"firecrawl","tool":"firecrawl_agent"}

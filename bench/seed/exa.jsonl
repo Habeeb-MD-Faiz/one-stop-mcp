@@ -1,0 +1,4 @@
+{"query":"what are people saying about this new framework","server":"exa","tool":"web_search_exa"}
+{"query":"grab the whole text of that article","server":"exa","tool":"web_fetch_exa"}
+{"query":"only results from arxiv.org published after January","server":"exa","tool":"web_search_advanced_exa"}
+{"query":"enrich this spreadsheet of companies with their headcount and website","server":"exa","tool":"agent_run"}

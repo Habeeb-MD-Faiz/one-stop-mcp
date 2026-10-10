@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/microsoft/playwright-mcp (official, Microsoft). npm @playwright/mcp,
+# version pinned (npm view = 0.0.83). Snapshot = the 25 default tools (core automation + tabs).
+# Opt-in capability groups (--caps=network|storage|devtools|vision|pdf|testing|config) add more
+# tools and are not enabled here; add the flag to args to turn one on.
+id: playwright
+name: Playwright
+category: [browser, testing]
+tags: [official, local]
+description: >
+  Drive a real browser through Playwright using accessibility snapshots: navigate, click, type,
+  fill forms, take screenshots, manage tabs, inspect console and network activity, and run
+  JavaScript in the page.
+homepage: https://github.com/microsoft/playwright-mcp
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@playwright/mcp@0.0.83"]
+auth:
+  type: none
+routing:
+  examples:
+    - "open this website in a browser and click through it"
+    - "fill out and submit a web form"
+    - "take a screenshot of a web page"
+    - "test the login flow in the browser"
+  tools:
+    browser_navigate: ["go to this url"]
+    browser_snapshot: ["show me what is on the page right now"]
+    browser_click: ["press the sign in button"]
+    browser_fill_form: ["enter my details into the registration form"]
+    browser_take_screenshot: ["screenshot this page"]
+health:
+  check: initialize

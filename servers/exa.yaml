@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/exa-labs/exa-mcp-server and https://mcp.exa.ai/mcp (official, Exa).
+# Hosted endpoint; works anonymously with rate limits. A key (Authorization: Bearer, or x-api-key,
+# or ?exaApiKey=) raises limits and is required for agent_run. Dashboard: https://dashboard.exa.ai/api-keys.
+# Default tools are web_search_exa and web_fetch_exa; the README enables optional tools by listing
+# them in the `tools` URL parameter (replaces the defaults), done here so the snapshot matches.
+# The README documents no input parameters: `query` (search) and `urls` (fetch) are the
+# conventional names, NOT verified; agent_run is left open. npm exa-mcp-server 3.4.2 is the stdio form.
+id: exa
+name: Exa
+category: [search, web]
+tags: [official, remote]
+description: >
+  Exa's AI search engine. Search the web for clean, ready-to-use content, fetch full pages as
+  markdown, run advanced filtered searches, and run a multi-step research agent.
+homepage: https://github.com/exa-labs/exa-mcp-server
+transport:
+  type: streamable-http
+  url: https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa,agent_run
+auth:
+  type: api_key
+  header: Authorization
+  prefix: "Bearer "
+  keyUrl: https://dashboard.exa.ai/api-keys
+routing:
+  examples:
+    - "search the web for articles about a topic"
+    - "find companies that match this description"
+    - "get the full text of this page as markdown"
+    - "do deep research and compile a list"
+  tools:
+    web_search_exa: ["look up recent coverage of this subject online"]
+    web_fetch_exa: ["read these two urls in full"]
+    web_search_advanced_exa: ["search only these domains within the last month"]
+    agent_run: ["build me a list of startups in this niche with their funding"]
+health:
+  check: initialize

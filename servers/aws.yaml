@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/awslabs/mcp/blob/main/src/aws-api-mcp-server/MIGRATION.md (official, AWS).
+# The awslabs.aws-api-mcp-server package (call_aws / suggest_aws_commands) is superseded by the
+# managed "AWS MCP Server" at https://aws-mcp.us-east-1.api.aws/mcp (MIGRATION.md; overview at
+# https://docs.aws.amazon.com/agent-toolkit/latest/userguide/mcp-server.html). That endpoint is
+# SigV4/IAM-authenticated, so it is reached through the `mcp-proxy-for-aws` stdio proxy, which uses
+# the local AWS credential chain (aws configure / aws login; --profile <name> picks a profile,
+# --read-only restricts actions). PyPI mcp-proxy-for-aws pinned at 1.7.0 (PyPI); MIGRATION.md's
+# example uses 1.6.3. --metadata AWS_REGION is the default Region for operations (default us-east-1).
+# No credential is injected by the gateway: auth is the user's own AWS credentials. NOTE for L3/L7:
+# the stdio child needs HOME/USERPROFILE (and AWS_PROFILE if used) to find ~/.aws, which D31's
+# minimal child environment may not pass.
+# Tool names are from MIGRATION.md; it gives names only, so descriptions are written from the
+# names and its one-line notes, and input schemas are left open.
+id: aws
+name: AWS
+category: [cloud, infra]
+tags: [official, remote]
+description: >
+  AWS's managed MCP server. Make authenticated AWS API calls, run sandboxed Python scripts that
+  chain several calls, search and read AWS documentation, and look up Regions and service
+  availability.
+homepage: https://docs.aws.amazon.com/agent-toolkit/latest/userguide/mcp-server.html
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-proxy-for-aws@1.7.0", "https://aws-mcp.us-east-1.api.aws/mcp", "--metadata", "AWS_REGION=us-east-1"]
+auth:
+  type: none
+routing:
+  examples:
+    - "list my S3 buckets"
+    - "run an AWS CLI command for me"
+    - "search the AWS documentation for a service"
+    - "which AWS regions offer this service"
+  tools:
+    aws___call_aws: ["describe my EC2 instances in this region"]
+    aws___run_script: ["write a python script that loops over all my lambdas"]
+    aws___search_documentation: ["how does S3 versioning work"]
+    aws___list_regions: ["what AWS regions can I use"]
+health:
+  check: initialize

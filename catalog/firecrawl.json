@@ -1,0 +1,346 @@
+{
+  "server": "firecrawl",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "firecrawl_scrape",
+      "description": "Scrape content from a single URL; supports markdown, JSON extraction and branding formats.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to scrape."
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Output formats such as markdown, json or branding."
+          },
+          "jsonOptions": {
+            "type": "object",
+            "description": "Prompt and schema for JSON extraction."
+          },
+          "onlyMainContent": {
+            "type": "boolean",
+            "description": "Return only the main content."
+          },
+          "redactPII": {
+            "type": "boolean",
+            "description": "Redact personal data."
+          },
+          "profile": {
+            "type": "string",
+            "description": "Browser profile to use."
+          }
+        }
+      }
+    },
+    {
+      "name": "firecrawl_map",
+      "description": "Discover the indexed URLs on a website.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Site URL to map."
+          }
+        }
+      }
+    },
+    {
+      "name": "firecrawl_search",
+      "description": "Search the web and optionally scrape the results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of results."
+          },
+          "highlights": {
+            "type": "boolean",
+            "description": "Return highlights."
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language."
+          },
+          "country": {
+            "type": "string",
+            "description": "Country."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sources to search, such as web."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Result categories."
+          },
+          "scrapeOptions": {
+            "type": "object",
+            "description": "Options for scraping the results."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "firecrawl_search_feedback",
+      "description": "Send feedback on a search result.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_feedback",
+      "description": "Send feedback on a completed Firecrawl job.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_crawl",
+      "description": "Start a crawl of a website and return the final status and data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Start URL."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum pages."
+          },
+          "maxDiscoveryDepth": {
+            "type": "integer",
+            "description": "Maximum link depth."
+          },
+          "includePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths to include."
+          },
+          "excludePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths to exclude."
+          },
+          "allowExternalLinks": {
+            "type": "boolean",
+            "description": "Follow external links."
+          },
+          "deduplicateSimilarURLs": {
+            "type": "boolean",
+            "description": "Skip near-duplicate URLs."
+          }
+        }
+      }
+    },
+    {
+      "name": "firecrawl_check_crawl_status",
+      "description": "Check the status of an existing crawl job by id.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_parse",
+      "description": "Parse local files or hosted upload references into text.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_agent",
+      "description": "Start an asynchronous research agent that returns structured data for a prompt.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "What to research or extract."
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "URLs to start from."
+          },
+          "schema": {
+            "type": "object",
+            "description": "JSON schema of the output."
+          },
+          "maxCredits": {
+            "type": "integer",
+            "description": "Credit budget."
+          },
+          "effort": {
+            "type": "string",
+            "description": "Effort level."
+          },
+          "strictConstrainToURLs": {
+            "type": "boolean",
+            "description": "Stay on the given URLs."
+          }
+        }
+      }
+    },
+    {
+      "name": "firecrawl_agent_status",
+      "description": "Check an agent job and retrieve its results.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_interact",
+      "description": "Click, type or navigate on a URL or an already scraped page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_interact_stop",
+      "description": "End a Firecrawl interact session.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_research_search_papers",
+      "description": "Search research paper metadata and abstracts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_research_inspect_paper",
+      "description": "Retrieve the metadata of one research paper by id.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_research_related_papers",
+      "description": "Expand from anchor papers through citations.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_research_read_paper",
+      "description": "Read full-text passages from a research paper.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_create",
+      "description": "Create a recurring monitor that watches a page for changes.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_list",
+      "description": "List page monitors.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_get",
+      "description": "Get one page monitor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_update",
+      "description": "Update a page monitor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_run",
+      "description": "Trigger a monitor check now.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_delete",
+      "description": "Delete a page monitor.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_checks",
+      "description": "List monitor checks, optionally filtered by status.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_monitor_check",
+      "description": "Get page-level results of a monitor check, including diffs.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_developer_search",
+      "description": "Search the developer index: issues, pull requests, READMEs and docs.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_gov_search",
+      "description": "Search US government legal and regulatory sources.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_find_tools",
+      "description": "Browse the Alexandria provider catalogue.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "firecrawl_credit_usage",
+      "description": "Return current or historical Firecrawl credit usage.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

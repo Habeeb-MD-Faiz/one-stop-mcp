@@ -1,0 +1,4 @@
+{"query":"log in to the admin panel with the credentials I gave and tell me what the dashboard shows","server":"playwright","tool":"browser_fill_form"}
+{"query":"I need to know the structure of the page before clicking anything","server":"playwright","tool":"browser_snapshot"}
+{"query":"is the checkout page throwing errors in the dev console","server":"playwright","tool":"browser_console_messages"}
+{"query":"switch to the second tab","server":"playwright","tool":"browser_tabs"}
