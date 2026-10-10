@@ -1,0 +1,67 @@
+name: Add a server
+description: Ask for an MCP server to be added to the catalog, or claim one you will add yourself.
+title: "Add server: "
+labels: ["add-server", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a server is one manifest in `servers/`, a tool snapshot in `catalog/`, and four routing queries in `bench/seed/`.
+        See [CONTRIBUTING.md](../blob/HEAD/CONTRIBUTING.md#1-add-a-server) for the steps. You can open the PR directly; this issue is for requests and for claiming work.
+  - type: input
+    id: name
+    attributes:
+      label: Server name
+      placeholder: Notion
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Where is the server?
+      description: Vendor docs page, GitHub repo, or npm / PyPI package.
+      placeholder: https://github.com/example/example-mcp
+    validations:
+      required: true
+  - type: dropdown
+    id: origin
+    attributes:
+      label: Who maintains it?
+      options:
+        - Official (the vendor)
+        - Reference (modelcontextprotocol/servers)
+        - Community
+    validations:
+      required: true
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options:
+        - streamable-http (hosted by the vendor)
+        - stdio (npx / uvx / binary)
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: auth
+    attributes:
+      label: Authentication
+      options:
+        - none
+        - api_key
+        - oauth2
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why should it be in the catalog?
+      description: Who uses it, and is it maintained? Popularity, recent releases and a clean MCP implementation all count.
+  - type: checkboxes
+    id: claim
+    attributes:
+      label: Who will write the manifest?
+      options:
+        - label: I will open the PR myself

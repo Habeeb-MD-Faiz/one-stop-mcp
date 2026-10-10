@@ -1,0 +1,46 @@
+name: RFC
+description: Start a design change. This is the discussion issue; the proposal itself is a Markdown file in a PR.
+title: "RFC: "
+labels: ["rfc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The process is in [docs/rfcs/README.md](../blob/HEAD/docs/rfcs/README.md). In short: copy `docs/rfcs/0000-template.md`
+        to `docs/rfcs/NNNN-short-title.md`, open a PR, and a comment period of at least 14 days follows. The maintainer decides.
+        Use this issue to float the idea first, or to point at the PR once it exists.
+  - type: textarea
+    id: summary
+    attributes:
+      label: One-paragraph summary
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why now?
+      description: What breaks or stays impossible without this change.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Routing and discovery
+        - Vault, ledger and security
+        - Auth and OAuth broker
+        - Manifest format
+        - Transports and HTTP API
+        - CLI and configuration
+        - Packaging and deployment
+        - Governance and process
+    validations:
+      required: true
+  - type: input
+    id: pr
+    attributes:
+      label: RFC pull request
+      description: Link it once it exists.
+      placeholder: https://github.com/Habeeb-MD-Faiz/one-stop-mcp/pull/...

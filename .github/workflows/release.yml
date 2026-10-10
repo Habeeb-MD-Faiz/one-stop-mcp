@@ -1,0 +1,71 @@
+# Manual only. Builds the npm tarball and the Docker image so a maintainer can
+# inspect them. It never publishes to npm. It pushes the image to GHCR only when
+# you start the run with `push: true` (default false), per D21.
+name: Release (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      push:
+        description: "Push the Docker image to ghcr.io (default: build only)"
+        type: boolean
+        default: false
+      tag:
+        description: "Docker image tag"
+        type: string
+        default: dev
+      embeddings:
+        description: "Keep the optional local-embedding dependencies in the image"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --omit=optional
+      - run: npm run build
+      - name: Pack the tarball (does not publish)
+        run: npm pack --pack-destination out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-tarball
+          path: out/*.tgz
+          if-no-files-found: error
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write # only exercised when inputs.push is true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        env:
+          TAG: ${{ inputs.tag }}
+          EMBEDDINGS: ${{ inputs.embeddings && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          docker build --build-arg "EMBEDDINGS=${EMBEDDINGS}" -t "${image}:${TAG}" .
+          echo "IMAGE=${image}:${TAG}" >> "$GITHUB_ENV"
+      - name: Smoke test the image
+        run: |
+          docker run --rm --entrypoint node "$IMAGE" -e "console.log('node', process.version)"
+      - name: Push to ghcr.io (only when push=true)
+        if: ${{ inputs.push }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push "$IMAGE"

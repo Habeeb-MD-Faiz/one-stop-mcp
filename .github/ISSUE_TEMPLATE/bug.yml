@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in the gateway, CLI or catalog does not work as documented.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste a token, API key, `OSMCP_MASTER_KEY` or the contents of `vault.json`.
+        If you think the bug is a security problem, stop and follow [SECURITY.md](../blob/HEAD/SECURITY.md) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The command or the MCP client call, and the manifest if one is involved.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - local (stdio)
+        - team (Streamable HTTP)
+        - Docker / compose
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "output of git rev-parse --short HEAD"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Node version and OS
+      placeholder: "node 22.11, Ubuntu 24.04"
+  - type: input
+    id: client
+    attributes:
+      label: MCP client
+      placeholder: "Claude Desktop, Claude Code, Cursor, ..."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: stderr output or "one-stop-mcp ledger tail" lines. Redact anything sensitive first.
+      render: text

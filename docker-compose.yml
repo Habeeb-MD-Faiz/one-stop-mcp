@@ -1,0 +1,54 @@
+# One-Stop MCP in team mode (D21, D23).
+#
+#   1. cp docs/examples/team.env.example .env      # then set OSMCP_MASTER_KEY
+#   2. docker compose run --rm gateway node dist/index.js init   # first admin user + TOTP
+#   3. docker compose up -d
+#
+# Try the HashiCorp Vault backend against a throwaway dev server:
+#   docker compose --profile vault up -d
+# and set vault.backend: hashicorp in the config file (see docs/deployment.md).
+#
+# The gateway speaks plain HTTP. By default the port is published on loopback
+# only; put a TLS-terminating reverse proxy in front before exposing it.
+# Full guide: docs/deployment.md.
+
+name: one-stop-mcp
+
+services:
+  gateway:
+    build:
+      context: .
+      args:
+        EMBEDDINGS: ${EMBEDDINGS:-0} # 1 keeps the local-embedding dependencies
+    image: one-stop-mcp:local
+    restart: unless-stopped
+    # OSMCP_MASTER_KEY lives in .env, never in this file. Team mode refuses to
+    # start without it (D29).
+    env_file: ${OSMCP_ENV_FILE:-.env}
+    environment:
+      OSMCP_HOME: /data
+      OSMCP_CONFIG: /config/one-stop-mcp.config.yaml
+    ports:
+      - "${OSMCP_BIND:-127.0.0.1}:${OSMCP_PORT:-8420}:8420"
+    volumes:
+      - osmcp-data:/data
+      - ${OSMCP_CONFIG_FILE:-./docs/examples/team.config.yaml}:/config/one-stop-mcp.config.yaml:ro
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+  # Dev-mode HashiCorp Vault for trying the KV v2 backend. Dev mode keeps
+  # everything in memory, is unsealed, and uses a fixed root token: never use it
+  # for real secrets.
+  vault:
+    profiles: [vault]
+    image: hashicorp/vault:1.18
+    command: ["server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: dev-only-token
+    cap_add: [IPC_LOCK]
+    ports:
+      - "127.0.0.1:8200:8200"
+
+volumes:
+  osmcp-data:

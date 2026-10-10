@@ -1,0 +1,41 @@
+# CI for every PR and for pushes to the two long-lived branches (D20).
+# Optional dependencies are skipped on purpose: CI never downloads an embedding
+# model, so routing runs on the lexical + BM25 legs (the dense leg has its own
+# fake-embedder tests). Nothing here publishes anything.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master, OneStop-MCP]
+  workflow_dispatch:
+
+# A newer push to the same ref cancels the run in flight (burn-down pushes are rapid).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --omit=optional
+      - name: Typecheck (src, tests, scripts)
+        run: npm run typecheck
+      - name: Unit and end-to-end tests
+        run: npm test
+      - name: Startup surface under 2k tokens
+        run: npm run budget
+      - name: Routing benchmark
+        run: npm run bench
+      - name: Validate server manifests and catalog snapshots
+        run: npm run validate
