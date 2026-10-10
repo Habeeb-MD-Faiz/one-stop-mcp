@@ -67,14 +67,19 @@ const ROUTES: Array<[string, Handler]> = [
 
 /** Run one admin call as `by`. Throws HttpError for bad input / unknown routes. */
 export async function adminCall(app: App, by: Principal, method: string, path: string, q = new URLSearchParams(), body: Body = {}): Promise<unknown> {
-  const segs = path.split("/").filter(Boolean);
+  let segs: string[];
+  try {
+    segs = path.split("/").filter(Boolean).map(decodeURIComponent);
+  } catch {
+    throw new HttpError(400, "malformed path");
+  }
   let match: { name: string; handler: Handler; params: Record<string, string> } | undefined;
   for (const [route, handler] of ROUTES) {
     const [m, pattern] = route.split(" ");
     const parts = pattern.split("/");
     if (m !== method || parts.length !== segs.length) continue;
     const params: Record<string, string> = {};
-    if (parts.every((p, i) => (p.startsWith(":") ? ((params[p.slice(1)] = decodeURIComponent(segs[i])), true) : p === segs[i]))) {
+    if (parts.every((p, i) => (p.startsWith(":") ? ((params[p.slice(1)] = segs[i]), true) : p === segs[i]))) {
       match = { name: parts.filter((p) => !p.startsWith(":")).join("."), handler, params };
       break;
     }
