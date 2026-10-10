@@ -1,0 +1,263 @@
+{
+  "server": "filesystem",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "read_text_file",
+      "description": "Read the complete contents of a file as UTF-8 text, with optional head or tail line limits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path of the file."
+          },
+          "head": {
+            "type": "number",
+            "description": "Return only the first N lines."
+          },
+          "tail": {
+            "type": "number",
+            "description": "Return only the last N lines."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "read_media_file",
+      "description": "Read an image or audio file and return it as base64 data with its MIME type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path of the file."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "read_multiple_files",
+      "description": "Read the contents of several files at once; a failed read does not stop the others.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths of the files to read."
+          }
+        },
+        "required": [
+          "paths"
+        ]
+      }
+    },
+    {
+      "name": "write_file",
+      "description": "Create a new file or completely overwrite an existing file with new content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path of the file."
+          },
+          "content": {
+            "type": "string",
+            "description": "Content to write."
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ]
+      }
+    },
+    {
+      "name": "edit_file",
+      "description": "Make selective text replacements in a file, with an optional dry-run preview.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path of the file."
+          },
+          "edits": {
+            "type": "array",
+            "description": "List of oldText/newText replacement pairs."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Preview the diff without writing."
+          }
+        },
+        "required": [
+          "path",
+          "edits"
+        ]
+      }
+    },
+    {
+      "name": "create_directory",
+      "description": "Create a directory, including any missing parents, or confirm it already exists.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory to create."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "list_directory",
+      "description": "List the files and directories in a path, marked [FILE] or [DIR].",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory to list."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "list_directory_with_sizes",
+      "description": "List the files and directories in a path with file sizes and summary totals.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory to list."
+          },
+          "sortBy": {
+            "type": "string",
+            "enum": [
+              "name",
+              "size"
+            ],
+            "description": "Sort by name or size."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "move_file",
+      "description": "Move or rename a file or directory; fails if the destination already exists.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Current path."
+          },
+          "destination": {
+            "type": "string",
+            "description": "New path."
+          }
+        },
+        "required": [
+          "source",
+          "destination"
+        ]
+      }
+    },
+    {
+      "name": "search_files",
+      "description": "Recursively search a directory for files and directories matching a glob-style pattern.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory to search in."
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Glob-style pattern."
+          },
+          "excludePatterns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Patterns to exclude."
+          }
+        },
+        "required": [
+          "path",
+          "pattern"
+        ]
+      }
+    },
+    {
+      "name": "directory_tree",
+      "description": "Return a recursive JSON tree view of a directory.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Root directory."
+          },
+          "excludePatterns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Patterns to exclude."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "get_file_info",
+      "description": "Get metadata for a file or directory: size, timestamps, type and permissions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to inspect."
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "list_allowed_directories",
+      "description": "List the directories this server is allowed to access.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

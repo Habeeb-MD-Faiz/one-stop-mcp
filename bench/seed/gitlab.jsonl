@@ -1,0 +1,4 @@
+{"query":"any of my colleagues' merge requests that I still owe a code review on","server":"gitlab","tool":"list_merge_requests"}
+{"query":"break down which jobs in pipeline 5521 went red","server":"gitlab","tool":"get_pipeline"}
+{"query":"read the stdout of that CI job that timed out last night","server":"gitlab","tool":"get_job"}
+{"query":"log a ticket in our tracker saying the checkout page 500s","server":"gitlab","tool":"save_work_item"}

@@ -1,0 +1,4 @@
+{"query":"what is the status of pull request 118 and who reviewed it","server":"github","tool":"pull_request_read"}
+{"query":"I need to report a crash I just found in my project's tracker","server":"github","tool":"issue_write"}
+{"query":"grep every public repo for usages of this deprecated helper","server":"github","tool":"search_code"}
+{"query":"the nightly build keeps going red, pull the output of the broken step","server":"github","tool":"get_job_logs"}
