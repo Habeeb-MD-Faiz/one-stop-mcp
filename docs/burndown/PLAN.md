@@ -70,14 +70,14 @@ A lane that needs a contract change stops and reports it instead of editing.
 | Item | State | Note |
 |---|---|---|
 | S0 skeleton | done | 7606c9d, a9de974 |
-| L1 routing | launched 22:50 | |
-| L2 security | launched | |
-| L3 downstream+auth | launched | |
-| L4 catalog-core | launched | |
-| L5 seed A | launched | |
-| L6 seed B | launched | |
-| L7 server | launched | |
-| L8 community | launched | |
+| L1 routing | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L2 security | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L3 downstream+auth | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L4 catalog-core | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L5 seed A | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L6 seed B | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L7 server | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L8 community | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | S2 integrate | pending | |
 | S3 end-to-end | pending | |
 | S4 hardening | pending | |
