@@ -35,7 +35,10 @@ export const META_TOOLS: MetaTool[] = [
     inputSchema: {
       type: "object",
       properties: {
-        filter: { type: "string", description: "Optional substring over id, name, or category." },
+        filter: { type: "string", description: "Substring over id, name, or description." },
+        category: { type: "string" },
+        tag: { type: "string" },
+        auth: { type: "string", enum: ["none", "api_key", "oauth2", "connected", "not_connected"] },
       },
     },
   },
