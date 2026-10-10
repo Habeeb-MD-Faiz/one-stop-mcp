@@ -72,7 +72,7 @@ A lane that needs a contract change stops and reports it instead of editing.
 | S0 skeleton | done | 7606c9d, a9de974 |
 | L1 routing | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L2 security | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L3 downstream+auth | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L3 downstream+auth | done 9aaa4c3 — merge with L2+L7 (old Registry API callers break until then) | |
 | L4 catalog-core | merged cc1b17d | |
 | L5 seed A | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
 | L6 seed B | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
@@ -105,3 +105,4 @@ A lane that needs a contract change stops and reports it instead of editing.
 - L8: CI typecheck runs with `--omit=optional` — L1 must import `@huggingface/transformers` without a literal specifier tsc resolves, or typecheck fails in CI.
 - L8: README must link the new docs.
 - L4: `knowledge-base` added to CATEGORIES. Probe spawns stdio commands from PRs — fine under `pull_request` (no secrets, read-only token), review in S4.
+- L3: Registry deps add `secrets: SecretStore` (list() only, for `connected`). Swap L3's local `toRoutable` for L1's `src/routing/index.ts` and local `redact`/`redactText` for L2's `src/security/redact.ts`. No `unindexed` in DiscoveryResult. Vault value shapes: api_key `{key}`, oauth2 token response + `expires_at`, client `{client_id, client_secret?}` (L2 rotation adapters must match).
