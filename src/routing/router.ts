@@ -1,8 +1,9 @@
-// Discovery routing, behind an interface so the backend can change without the
-// facade noticing. P0/P1 default: LexicalRouter — field-weighted keyword
-// overlap, zero deps, fully offline. A vector/embedding router (Q3) implements
-// the same interface and drops in when the catalog grows enough that lexical
-// collisions start costing top-3 accuracy.
+// Retrieval legs behind one Router interface: LexicalRouter (field-weighted term
+// overlap), Bm25Router (the same fields scored with BM25) and VectorRouter (a local
+// embedding model), fused with Reciprocal Rank Fusion. HybridDiscovery
+// (./discovery.ts) runs them as find_tools' fallback ladder.
+
+import { EmbeddingStore } from "./index-store.js";
 
 export interface RoutableTool {
   server: string;
@@ -104,37 +105,60 @@ export class Bm25Router implements Router {
   }
 }
 
-// The dense leg's plug point. A real local sentence-embedding model
-// (bge-small-en-v1.5 / gte-small / all-MiniLM-L6-v2 — all offline, no paid API)
-// implements this and drops into HybridRouter; the model download + wiring is the
-// one deferred step (see projects/one-stop-mcp.md "Waiting on you"). Kept an
-// interface so nothing above it changes when the model lands.
+// The dense leg's plug point. LocalEmbedder (./embedder.ts) runs a local
+// sentence-embedding model through ONNX; tests use deterministic fakes. No hosted
+// embedding API is wired (D5): one would implement this same interface.
 export interface Embedder {
   /** One vector per input text. Same dimensionality across calls. */
   embed(texts: string[]): Promise<number[][]>;
+  /** Prepended to queries (never to tool documents) for models trained with an
+   *  asymmetric retrieval instruction. */
+  readonly queryPrefix?: string;
 }
 
 // Dense retrieval: cosine similarity between the query vector and each tool's
-// document vector. Brute-force (exact) — correct and simplest at our scale
-// (dozens→low thousands of tools); an ANN index is a later upgrade, not needed
-// now (research doc §"keep it brute-force").
+// document vector. Brute-force (exact) — correct, perfect recall, and milliseconds
+// at our scale. ponytail: exact scan is O(tools) per query; past ~50k tools swap in
+// an ANN index (hnswlib) behind this same class (D5).
+// Document vectors live in an EmbeddingStore (on disk when given a dir), so only
+// tools whose text changed are embedded, and a restart re-embeds nothing.
 export class VectorRouter implements Router {
-  private cache = new WeakMap<RoutableTool[], number[][]>();
-  constructor(private embedder: Embedder) {}
+  private filling: Promise<void> = Promise.resolve();
+
+  constructor(
+    private embedder: Embedder,
+    private store = new EmbeddingStore(""),
+  ) {}
 
   async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     if (tools.length === 0) return [];
-    let docVecs = this.cache.get(tools);
-    if (!docVecs) {
-      docVecs = await this.embedder.embed(tools.map(docText));
-      this.cache.set(tools, docVecs);
-    }
-    const [qVec] = await this.embedder.embed([query]);
+    const docVecs = await this.docVectors(tools);
+    const [qVec] = await this.embedder.embed([(this.embedder.queryPrefix ?? "") + query]);
     return tools
-      .map((t, i) => ({ ...t, score: cosine(qVec, docVecs![i]) }))
+      .map((t, i) => ({ ...t, score: cosine(qVec, docVecs[i]) }))
       .filter((t) => t.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, k);
+  }
+
+  private async docVectors(tools: RoutableTool[]): Promise<number[][]> {
+    const texts = tools.map(docText);
+    const keys = texts.map((t) => this.store.key(t));
+    if (keys.some((key) => !this.store.get(key))) {
+      // Serialized: concurrent first queries must not each embed the whole catalog.
+      // The chain swallows a failure so one bad fill does not poison later calls.
+      const run = this.filling.then(async () => {
+        const miss = new Map<string, string>();
+        keys.forEach((key, i) => this.store.get(key) || miss.set(key, texts[i]));
+        if (!miss.size) return;
+        const vecs = await this.embedder.embed([...miss.values()]);
+        [...miss.keys()].forEach((key, i) => this.store.set(key, vecs[i]));
+        this.store.save();
+      });
+      this.filling = run.catch(() => {});
+      await run;
+    }
+    return keys.map((key) => this.store.get(key)!);
   }
 }
 
