@@ -4,6 +4,7 @@
 // Change a contract here first, then its implementer and consumers.
 
 import type { DownstreamTool, Manifest } from "./types.js";
+import type { RoutableTool, ScoredTool } from "./routing/router.js";
 
 // --- identity -----------------------------------------------------------------
 
@@ -104,6 +105,31 @@ export interface AccessGuard {
   check(p: Principal, server: string): void;
 }
 
+/** Live downstream sessions, so the kill switch can cut them. Implemented by the
+ *  Registry (src/downstream). Each returns how many sessions it closed. */
+export interface SessionControl {
+  closeAll(): Promise<number>;
+  closeServer(server: string): Promise<number>;
+  closeUser(user: string, org?: string): Promise<number>;
+}
+
+// --- discovery (implemented by src/routing) ------------------------------------
+
+/** find_tools result. Fallback ladder: exact name -> hybrid (lexical + BM25 +
+ *  dense) -> on low confidence, widen the shortlist and suggest categories to
+ *  browse with list_servers rather than guess. */
+export interface DiscoveryResult {
+  hits: ScoredTool[];
+  confidence: "high" | "low";
+  widened: boolean;
+  /** Categories worth browsing when confidence is low. */
+  browse?: string[];
+}
+
+export interface Discovery {
+  discover(query: string, tools: RoutableTool[], k: number): Promise<DiscoveryResult>;
+}
+
 // --- catalog (implemented by src/catalog) --------------------------------------
 
 /** A server's tool list, captured once and kept on disk so discovery never has to
@@ -150,6 +176,8 @@ export interface AuthBroker {
   outbound(p: Principal, m: Manifest): Promise<OutboundAuth>;
   /** Force an OAuth refresh-token grant. False when there is no refresh token. */
   refresh(scope: SecretScope): Promise<boolean>;
+  /** What the key-entry page shows for a ticket; undefined when unknown/expired. */
+  ticketInfo(ticket: string): { server: string; name: string; keyUrl?: string; kind: "api_key" | "client" } | undefined;
   /** A fresh key-entry URL for guided API-key rotation. */
   keyEntryUrl(scope: SecretScope): Promise<string>;
 }

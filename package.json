@@ -14,7 +14,10 @@
     "dev": "tsx src/index.ts",
     "test": "tsx --test test/*.test.ts",
     "budget": "tsx scripts/token-budget.ts",
-    "bench": "tsx scripts/routing-bench.ts"
+    "bench": "tsx scripts/routing-bench.ts",
+    "validate": "tsx scripts/validate-manifests.ts",
+    "probe": "tsx scripts/probe-manifests.ts",
+    "cli": "tsx src/cli.ts"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -25,5 +28,8 @@
     "@types/node": "^26.4.0",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
+  },
+  "optionalDependencies": {
+    "@huggingface/transformers": "^4.3.1"
   }
 }
