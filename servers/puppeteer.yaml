@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers-archived/tree/main/src/puppeteer
+# (reference; moved to servers-archived and the npm package is no longer released, last 2025.5.12).
+# npm @modelcontextprotocol/server-puppeteer, version pinned. The README shows no deprecation
+# notice. Opens a visible browser unless PUPPETEER_LAUNCH_OPTIONS sets headless (README); launch
+# options that weaken security also need ALLOW_DANGEROUS=true.
+# Prefer the `playwright` server for new work; this entry exists because PDR section 7 lists it.
+id: puppeteer
+name: Puppeteer
+category: [browser, testing]
+tags: [reference, local]
+description: >
+  Drive a Chrome browser with Puppeteer: navigate to pages, click, fill and select form fields,
+  take screenshots and run JavaScript in the page.
+homepage: https://github.com/modelcontextprotocol/servers-archived/tree/main/src/puppeteer
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-puppeteer@2025.5.12"]
+auth:
+  type: none
+routing:
+  examples:
+    - "open a website in a browser and take a screenshot"
+    - "click the login button on the page"
+    - "fill in the form fields on a web page"
+    - "run javascript in the browser tab"
+  tools:
+    puppeteer_navigate: ["go to this url in a headless browser"]
+    puppeteer_screenshot: ["capture a screenshot of the page"]
+    puppeteer_click: ["press the submit button"]
+    puppeteer_fill: ["type my email into the input box"]
+    puppeteer_evaluate: ["execute this script in the page context"]
+health:
+  check: initialize

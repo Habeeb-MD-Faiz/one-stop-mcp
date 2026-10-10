@@ -1,0 +1,35 @@
+{
+  "server": "fetch",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "fetch",
+      "description": "Fetches a URL from the internet and extracts its contents as markdown.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to fetch."
+          },
+          "max_length": {
+            "type": "integer",
+            "description": "Maximum number of characters to return (default 5000)."
+          },
+          "start_index": {
+            "type": "integer",
+            "description": "Start content from this character index (default 0)."
+          },
+          "raw": {
+            "type": "boolean",
+            "description": "Get the raw content without markdown conversion."
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    }
+  ]
+}

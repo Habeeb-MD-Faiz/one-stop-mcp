@@ -1,0 +1,968 @@
+{
+  "server": "redis",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "set",
+      "description": "Set a Redis string value with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Redis key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value to store."
+          },
+          "expiration": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "get",
+      "description": "Get a Redis string value.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Redis key."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "hset",
+      "description": "Set a field in a hash stored at a key, with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Hash key."
+          },
+          "key": {
+            "type": "string",
+            "description": "Field name."
+          },
+          "value": {
+            "type": "string",
+            "description": "Field value."
+          },
+          "expire_seconds": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "key",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "hget",
+      "description": "Get the value of a field in a Redis hash.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Hash key."
+          },
+          "key": {
+            "type": "string",
+            "description": "Field name."
+          }
+        },
+        "required": [
+          "name",
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "hdel",
+      "description": "Delete a field from a Redis hash.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Hash key."
+          },
+          "key": {
+            "type": "string",
+            "description": "Field name."
+          }
+        },
+        "required": [
+          "name",
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "hgetall",
+      "description": "Get all fields and values from a Redis hash.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Hash key."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "hexists",
+      "description": "Check if a field exists in a Redis hash.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Hash key."
+          },
+          "key": {
+            "type": "string",
+            "description": "Field name."
+          }
+        },
+        "required": [
+          "name",
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "json_set",
+      "description": "Set a JSON value in Redis at a given path, with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Key."
+          },
+          "path": {
+            "type": "string",
+            "description": "JSON path."
+          },
+          "value": {
+            "type": "string",
+            "description": "JSON value."
+          },
+          "expire_seconds": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "path",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "json_get",
+      "description": "Retrieve a JSON value from Redis at a given path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Key."
+          },
+          "path": {
+            "type": "string",
+            "description": "JSON path."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "json_del",
+      "description": "Delete a JSON value from Redis at a given path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Key."
+          },
+          "path": {
+            "type": "string",
+            "description": "JSON path."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "lpush",
+      "description": "Push a value onto the left of a Redis list, optionally setting an expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value to push."
+          },
+          "expire": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "rpush",
+      "description": "Push a value onto the right of a Redis list, optionally setting an expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value to push."
+          },
+          "expire": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "lpop",
+      "description": "Remove and return the first element of a Redis list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "rpop",
+      "description": "Remove and return the last element of a Redis list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "lrange",
+      "description": "Get elements from a Redis list within a specific range.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          },
+          "start": {
+            "type": "integer",
+            "description": "Start index."
+          },
+          "stop": {
+            "type": "integer",
+            "description": "Stop index."
+          }
+        },
+        "required": [
+          "name",
+          "start",
+          "stop"
+        ]
+      }
+    },
+    {
+      "name": "llen",
+      "description": "Get the length of a Redis list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List key."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "sadd",
+      "description": "Add a value to a Redis set, with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Set key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Member to add."
+          },
+          "expire_seconds": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "srem",
+      "description": "Remove a value from a Redis set.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Set key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Member to remove."
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "smembers",
+      "description": "Get all members of a Redis set.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Set key."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "zadd",
+      "description": "Add a member to a Redis sorted set, with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Sorted set key."
+          },
+          "score": {
+            "type": "number",
+            "description": "Member score."
+          },
+          "member": {
+            "type": "string",
+            "description": "Member."
+          },
+          "expiration": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "key",
+          "score",
+          "member"
+        ]
+      }
+    },
+    {
+      "name": "zrange",
+      "description": "Retrieve a range of members from a Redis sorted set.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Sorted set key."
+          },
+          "start": {
+            "type": "integer",
+            "description": "Start index."
+          },
+          "end": {
+            "type": "integer",
+            "description": "End index."
+          },
+          "with_scores": {
+            "type": "boolean",
+            "description": "Include scores."
+          }
+        },
+        "required": [
+          "key",
+          "start",
+          "end"
+        ]
+      }
+    },
+    {
+      "name": "zrem",
+      "description": "Remove a member from a Redis sorted set.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Sorted set key."
+          },
+          "member": {
+            "type": "string",
+            "description": "Member to remove."
+          }
+        },
+        "required": [
+          "key",
+          "member"
+        ]
+      }
+    },
+    {
+      "name": "xadd",
+      "description": "Add an entry to a Redis stream, with an optional expiration time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stream key."
+          },
+          "fields": {
+            "type": "object",
+            "description": "Entry fields."
+          },
+          "expiration": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "key",
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "xrange",
+      "description": "Read entries from a Redis stream.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stream key."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Maximum entries."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "xgroup_create",
+      "description": "Create a consumer group for a Redis stream.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stream key."
+          },
+          "group_name": {
+            "type": "string",
+            "description": "Group name."
+          },
+          "start_id": {
+            "type": "string",
+            "description": "Start id."
+          },
+          "mkstream": {
+            "type": "boolean",
+            "description": "Create the stream if missing."
+          }
+        },
+        "required": [
+          "key",
+          "group_name"
+        ]
+      }
+    },
+    {
+      "name": "xreadgroup",
+      "description": "Read entries from a Redis stream using a consumer group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stream key."
+          },
+          "group_name": {
+            "type": "string",
+            "description": "Group name."
+          },
+          "consumer_name": {
+            "type": "string",
+            "description": "Consumer name."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Maximum entries."
+          },
+          "block_ms": {
+            "type": "integer",
+            "description": "Block for this many milliseconds."
+          },
+          "stream_id": {
+            "type": "string",
+            "description": "Stream id."
+          }
+        },
+        "required": [
+          "key",
+          "group_name",
+          "consumer_name"
+        ]
+      }
+    },
+    {
+      "name": "xack",
+      "description": "Acknowledge entries that were processed by a consumer group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stream key."
+          },
+          "group_name": {
+            "type": "string",
+            "description": "Group name."
+          },
+          "entry_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Entry ids to acknowledge."
+          }
+        },
+        "required": [
+          "key",
+          "group_name",
+          "entry_ids"
+        ]
+      }
+    },
+    {
+      "name": "publish",
+      "description": "Publish a message to a Redis pub/sub channel.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Channel."
+          },
+          "message": {
+            "type": "string",
+            "description": "Message."
+          }
+        },
+        "required": [
+          "channel",
+          "message"
+        ]
+      }
+    },
+    {
+      "name": "subscribe",
+      "description": "Subscribe to a Redis channel and return a reusable subscription handle.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Channel."
+          }
+        },
+        "required": [
+          "channel"
+        ]
+      }
+    },
+    {
+      "name": "psubscribe",
+      "description": "Subscribe to Redis channels using a pattern.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Channel pattern."
+          }
+        },
+        "required": [
+          "pattern"
+        ]
+      }
+    },
+    {
+      "name": "read_messages",
+      "description": "Read pending pub/sub messages for an existing subscription.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "subscription_id": {
+            "type": "string",
+            "description": "Subscription handle."
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "Timeout in milliseconds."
+          },
+          "max_messages": {
+            "type": "integer",
+            "description": "Maximum messages."
+          }
+        },
+        "required": [
+          "subscription_id"
+        ]
+      }
+    },
+    {
+      "name": "unsubscribe",
+      "description": "Unsubscribe and close an existing pub/sub subscription.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "subscription_id": {
+            "type": "string",
+            "description": "Subscription handle."
+          }
+        },
+        "required": [
+          "subscription_id"
+        ]
+      }
+    },
+    {
+      "name": "delete",
+      "description": "Delete a Redis key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Redis key."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "type",
+      "description": "Return the type of the value stored at a Redis key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Redis key."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "expire",
+      "description": "Set an expiration time for a Redis key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Redis key."
+          },
+          "expire_seconds": {
+            "type": "integer",
+            "description": "Expiration in seconds."
+          }
+        },
+        "required": [
+          "name",
+          "expire_seconds"
+        ]
+      }
+    },
+    {
+      "name": "rename",
+      "description": "Rename a Redis key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "old_key": {
+            "type": "string",
+            "description": "Current key."
+          },
+          "new_key": {
+            "type": "string",
+            "description": "New key."
+          }
+        },
+        "required": [
+          "old_key",
+          "new_key"
+        ]
+      }
+    },
+    {
+      "name": "scan_keys",
+      "description": "Scan keys in the Redis database with the SCAN command (non-blocking, production-safe).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Match pattern."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Hint for keys per iteration."
+          },
+          "cursor": {
+            "type": "integer",
+            "description": "Cursor from a previous scan."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_redis_documents",
+      "description": "Search Redis documentation and the knowledge base to learn about Redis concepts and use cases.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "Natural-language question."
+          }
+        },
+        "required": [
+          "question"
+        ]
+      }
+    },
+    {
+      "name": "get_indexes",
+      "description": "List the indexes in the Redis database.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_index_info",
+      "description": "Retrieve the schema and information of a Redis index using FT.INFO.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index_name": {
+            "type": "string",
+            "description": "Index name."
+          }
+        },
+        "required": [
+          "index_name"
+        ]
+      }
+    },
+    {
+      "name": "vector_search_hash",
+      "description": "Perform a KNN vector similarity search on vectors stored in Redis hashes (Redis 8 or later).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query_vector": {
+            "type": "array",
+            "description": "Query vector."
+          },
+          "index_name": {
+            "type": "string",
+            "description": "Index name."
+          },
+          "vector_field": {
+            "type": "string",
+            "description": "Vector field."
+          },
+          "k": {
+            "type": "integer",
+            "description": "Number of neighbours."
+          },
+          "return_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fields to return."
+          }
+        },
+        "required": [
+          "query_vector",
+          "index_name",
+          "vector_field"
+        ]
+      }
+    },
+    {
+      "name": "hybrid_search",
+      "description": "Perform a hybrid search combining a Redis filter expression with KNN vector similarity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query_vector": {
+            "type": "array",
+            "description": "Query vector."
+          },
+          "filter_expression": {
+            "type": "string",
+            "description": "Filter expression."
+          },
+          "index_name": {
+            "type": "string",
+            "description": "Index name."
+          },
+          "vector_field": {
+            "type": "string",
+            "description": "Vector field."
+          },
+          "k": {
+            "type": "integer",
+            "description": "Number of neighbours."
+          },
+          "return_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fields to return."
+          }
+        },
+        "required": [
+          "query_vector",
+          "filter_expression",
+          "index_name",
+          "vector_field"
+        ]
+      }
+    },
+    {
+      "name": "dbsize",
+      "description": "Get the number of keys stored in the Redis database.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "info",
+      "description": "Get Redis server information and statistics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Info section, such as memory or clients."
+          }
+        }
+      }
+    },
+    {
+      "name": "client_list",
+      "description": "Get a list of the clients connected to the Redis server.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

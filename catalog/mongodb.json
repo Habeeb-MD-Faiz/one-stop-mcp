@@ -1,0 +1,462 @@
+{
+  "server": "mongodb",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "connect",
+      "description": "Connect to a MongoDB instance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "connectionString": {
+            "type": "string",
+            "description": "MongoDB connection string."
+          }
+        }
+      }
+    },
+    {
+      "name": "disconnect",
+      "description": "Close the connection and revoke its connectionId.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-connections",
+      "description": "List the active connections and their connectionIds.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-databases",
+      "description": "List all databases for a MongoDB connection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-collections",
+      "description": "List all collections in a MongoDB database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          }
+        },
+        "required": [
+          "database"
+        ]
+      }
+    },
+    {
+      "name": "find",
+      "description": "Run a find query against a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "aggregate",
+      "description": "Run an aggregation pipeline against a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "aggregate-db",
+      "description": "Run an aggregation pipeline at the database level.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          }
+        },
+        "required": [
+          "database"
+        ]
+      }
+    },
+    {
+      "name": "count",
+      "description": "Get the number of documents in a MongoDB collection, with an optional filter.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "insert-many",
+      "description": "Insert an array of documents into a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "update-many",
+      "description": "Update all documents that match a filter in a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "delete-many",
+      "description": "Delete all documents that match a filter from a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "create-collection",
+      "description": "Create a new collection in a MongoDB database, creating the database if needed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "rename-collection",
+      "description": "Rename a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "drop-collection",
+      "description": "Remove a collection or view, with its indexes, from a MongoDB database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "drop-database",
+      "description": "Delete a MongoDB database and all its data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          }
+        },
+        "required": [
+          "database"
+        ]
+      }
+    },
+    {
+      "name": "create-index",
+      "description": "Create an index on a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "drop-index",
+      "description": "Drop an index from a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "collection-indexes",
+      "description": "Describe the indexes of a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "collection-schema",
+      "description": "Describe the schema of a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "collection-storage-size",
+      "description": "Get the storage size of a MongoDB collection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "db-stats",
+      "description": "Return usage statistics for a MongoDB database.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          }
+        },
+        "required": [
+          "database"
+        ]
+      }
+    },
+    {
+      "name": "explain",
+      "description": "Show the query optimizer's execution plan for a MongoDB method.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "export",
+      "description": "Export the results of a query or aggregation in EJSON format.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database": {
+            "type": "string",
+            "description": "Database name."
+          },
+          "collection": {
+            "type": "string",
+            "description": "Collection name."
+          }
+        },
+        "required": [
+          "database",
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "mongodb-logs",
+      "description": "Return the most recent mongod log events.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-knowledge-sources",
+      "description": "List the data sources in the MongoDB documentation knowledge base.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search-knowledge",
+      "description": "Search the MongoDB documentation knowledge base, with optional filters for source and version.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

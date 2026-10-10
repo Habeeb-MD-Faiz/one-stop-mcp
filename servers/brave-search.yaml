@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/brave/brave-search-mcp-server (official, Brave). npm
+# @brave/brave-search-mcp-server, version pinned (npm view = 2.1.4). Key in BRAVE_API_KEY.
+# The README says to create the key in the Brave Search API developer dashboard; the sign-up URL
+# below is the one brave.com/search/api links to (a credit card is required even on free plans).
+id: brave-search
+name: Brave Search
+category: [search, web]
+tags: [official, local]
+description: >
+  Search the web, news, images, videos and local places with the Brave Search API, get
+  AI-generated summaries, and fetch pre-extracted page context for RAG.
+homepage: https://github.com/brave/brave-search-mcp-server
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@brave/brave-search-mcp-server@2.1.4", "--transport", "stdio"]
+auth:
+  type: api_key
+  env: BRAVE_API_KEY
+  keyUrl: https://api-dashboard.search.brave.com/register
+routing:
+  examples:
+    - "search the web for the latest on this topic"
+    - "find recent news articles about an event"
+    - "look up nearby restaurants and their opening hours"
+    - "search for images of a landmark"
+  tools:
+    brave_web_search: ["google this for me and give me the top links"]
+    brave_news_search: ["what is in the news today about this company"]
+    brave_local_search: ["coffee shops near the city centre"]
+    brave_image_search: ["find pictures of this animal"]
+    brave_summarizer: ["summarize the search results into a short answer"]
+health:
+  check: initialize

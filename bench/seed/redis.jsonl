@@ -1,0 +1,4 @@
+{"query":"is there anything cached under user:42","server":"redis","tool":"get"}
+{"query":"what keys do I have that look like cart:*","server":"redis","tool":"scan_keys"}
+{"query":"enqueue this task at the head of the work list","server":"redis","tool":"lpush"}
+{"query":"how many connections and how much RAM is the cache using","server":"redis","tool":"info"}
