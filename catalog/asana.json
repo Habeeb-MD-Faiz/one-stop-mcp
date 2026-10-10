@@ -1,0 +1,196 @@
+{
+  "server": "asana",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "search_objects",
+      "description": "Search across tasks, projects, portfolios, goals, teams, users, tags, custom fields and AI Teammates. Useful when you do not know an object's GID.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_task",
+      "description": "Return full details for one task, including subtasks, comments and dependencies.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_tasks",
+      "description": "List tasks filtered by project, section, tag, user task list or assignee. At least one filter is required.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_my_tasks",
+      "description": "List tasks assigned to the authenticated user, with optional completion filtering.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_tasks",
+      "description": "Advanced task search across names, descriptions and comments with multiple filters. Premium accounts only.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_project",
+      "description": "Return details for one project, optionally including its sections.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_projects",
+      "description": "List projects, optionally by team or including archived ones.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_portfolio",
+      "description": "Return details for one portfolio and its projects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_portfolios",
+      "description": "List portfolios owned by the authenticated user in the current workspace.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_items_for_portfolio",
+      "description": "List the projects and goals inside a portfolio.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_status_overview",
+      "description": "Build an aggregated status report for projects or portfolios matched by keyword.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_attachments",
+      "description": "List attachments for a task, project or project brief.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_user",
+      "description": "Return a user by GID, email or \"me\".",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_me",
+      "description": "Return the authenticated user's name, email and workspace memberships.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_users",
+      "description": "List workspace users, optionally filtered by team, with pagination.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_teams",
+      "description": "List workspace teams, optionally filtered to a specific user's teams.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_agent",
+      "description": "Return the full record for one AI Teammate by GID.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_workspace_agents",
+      "description": "List AI Teammates in the workspace, with pagination.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_tasks",
+      "description": "Create up to 50 tasks per call immediately, with no confirmation step.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_project",
+      "description": "Create a project immediately, optionally with sections and tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update_tasks",
+      "description": "Update up to 50 tasks per call: name, assignee, dates, completion and more.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "delete_task",
+      "description": "Permanently delete a task and its subtasks that are not in other projects. Cannot be undone.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add_comment",
+      "description": "Add a plain text or HTML comment to a task, including @-mentions and pinned comments.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_project_status_update",
+      "description": "Post a status update to a project or portfolio with a color and body text.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_task_preview",
+      "description": "Draft a single task for review before creating it.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_project_preview",
+      "description": "Draft a full project plan with sections, tasks and assignees for review before creating it.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_tasks_preview",
+      "description": "Search tasks and show results in an interactive UI.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

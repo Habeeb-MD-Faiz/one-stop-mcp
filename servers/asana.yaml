@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.asana.com/docs/using-asanas-mcp-server (official, hosted by Asana, v2). The v1 SSE
+#   endpoint https://mcp.asana.com/sse shuts down 2026-05-11, so only v2 is used.
+# Tools: 27 names + descriptions from https://developers.asana.com/docs/mcp-tools-reference ; parameters are not
+#   documented there (tools/list is authoritative), so inputSchema is left open.
+# Auth: Asana does NOT support dynamic client registration for v2. A deployment must create an "MCP app" at
+#   https://app.asana.com/0/my-apps (client id + secret). Endpoints from
+#   https://app.asana.com/.well-known/oauth-authorization-server ; PKCE S256; no scopes (omit the scope parameter).
+id: asana
+name: Asana
+category: [productivity]
+tags: [official, remote]
+description: >
+  Search and manage Asana tasks, projects, portfolios, goals and status updates, and look up users,
+  teams and attachments.
+homepage: https://developers.asana.com/docs/using-asanas-mcp-server
+transport:
+  type: streamable-http
+  url: https://mcp.asana.com/v2/mcp
+auth:
+  type: oauth2
+  scopes: []
+  authorizationUrl: https://app.asana.com/-/oauth_authorize
+  tokenUrl: https://app.asana.com/-/oauth_token
+routing:
+  examples:
+    - "show my asana tasks due this week"
+    - "create a task in the marketing project"
+    - "post a status update on the launch project"
+    - "what is the status of the q4 portfolio"
+  tools:
+    get_my_tasks: ["what's on my plate in asana"]
+    create_tasks: ["add three tasks to the website redesign project"]
+    update_tasks: ["mark these asana tasks complete"]
+    get_status_overview: ["give me a status report on the launch project"]
+health:
+  check: initialize

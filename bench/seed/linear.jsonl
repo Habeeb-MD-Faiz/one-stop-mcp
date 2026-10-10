@@ -1,0 +1,4 @@
+{"query":"log a bug about the checkout page freezing","server":"linear","tool":"save_issue"}
+{"query":"what tickets did the backend team leave unassigned","server":"linear","tool":"list_issues"}
+{"query":"pull up the details for ENG-77","server":"linear","tool":"get_issue"}
+{"query":"which sprints does the mobile team have","server":"linear","tool":"list_cycles"}

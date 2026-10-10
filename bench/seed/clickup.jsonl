@@ -1,0 +1,4 @@
+{"query":"make a new to-do called review contracts in the legal list","server":"clickup","tool":"clickup_create_task"}
+{"query":"list everything overdue that is assigned to Ravi","server":"clickup","tool":"clickup_filter_tasks"}
+{"query":"log two hours of work on the onboarding task from yesterday","server":"clickup","tool":"clickup_add_time_entry"}
+{"query":"push that task to the backlog list","server":"clickup","tool":"clickup_move_task"}

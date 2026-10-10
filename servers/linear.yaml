@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://linear.app/docs/mcp (official, hosted by Linear). Interactive OAuth 2.1 with dynamic client
+#   registration; a Linear API key / OAuth token can also be sent as "Authorization: Bearer" (same page).
+# NOT FULLY VERIFIED: Linear's docs do not list tool names. Confirmed by https://linear.app/changelog entries
+#   (Apr-Oct 2026): list_comments, save_issue, save_project, save_document, list_teams, get_team,
+#   list_customer_needs, save_customer_need. The remaining snapshot names (list_issues, get_issue, save_comment,
+#   list_projects, get_project, list_users, get_user, list_issue_statuses, list_issue_labels, list_cycles,
+#   list_documents, get_document, search_documentation) are recalled from the server's tool list and should be
+#   replaced by a live tools/list snapshot (source: live) via the sync worker. Their parameters are best-effort.
+id: linear
+name: Linear
+category: [productivity, dev]
+tags: [official, remote]
+description: >
+  Find, create and update Linear issues, projects, comments, documents, cycles and customer requests
+  across teams.
+homepage: https://linear.app/docs/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.linear.app/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "create a linear issue for this bug"
+    - "what issues are assigned to me in linear"
+    - "update the status of ENG-123"
+    - "list the projects on the platform team"
+  tools:
+    list_issues: ["show my open linear issues"]
+    save_issue: ["file a ticket for the login crash and assign it to Dana"]
+    get_issue: ["open ENG-482 and read the description"]
+    list_projects: ["which projects are in progress"]
+health:
+  check: initialize

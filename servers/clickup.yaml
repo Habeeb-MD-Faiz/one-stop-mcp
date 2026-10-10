@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server (official, hosted by
+#   ClickUp). OAuth only ("We only support OAuth", OAuth 2.1 with PKCE); API keys are not accepted.
+# Tools: https://developer.clickup.com/docs/mcp-tools lists display names only. Tool identifiers and descriptions
+#   in catalog/clickup.json come from the tool list the live ClickUp connector (mcp.clickup.com/mcp) exposes
+#   (31 of ~70 included). NOT VERIFIED: whether dynamic client registration is offered; discovery is assumed.
+id: clickup
+name: ClickUp
+category: [productivity]
+tags: [official, remote]
+description: >
+  Search, create, update and organise ClickUp tasks, lists, folders, docs and chat, track time, and
+  manage comments, tags, dependencies and custom fields.
+homepage: https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server
+transport:
+  type: streamable-http
+  url: https://mcp.clickup.com/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "create a task in my clickup sprint list"
+    - "what tasks are due this week in clickup"
+    - "start a timer on the redesign task"
+    - "add a comment to the clickup ticket"
+  tools:
+    clickup_create_task: ["add a task called fix invoices to the finance list"]
+    clickup_filter_tasks: ["show high priority tasks assigned to me"]
+    clickup_start_time_tracking: ["track my time on this task"]
+    clickup_update_task: ["mark that clickup task as complete"]
+health:
+  check: initialize

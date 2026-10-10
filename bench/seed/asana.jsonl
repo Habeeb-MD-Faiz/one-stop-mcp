@@ -1,0 +1,4 @@
+{"query":"what do I still need to finish today","server":"asana","tool":"get_my_tasks"}
+{"query":"add a to-do for the design review to the brand project","server":"asana","tool":"create_tasks"}
+{"query":"leave a note on that task saying the client approved","server":"asana","tool":"add_comment"}
+{"query":"who is on the engineering team","server":"asana","tool":"get_teams"}

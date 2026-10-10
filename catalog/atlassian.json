@@ -1,0 +1,371 @@
+{
+  "server": "atlassian",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "atlassianUserInfo",
+      "description": "Get the authenticated user's Atlassian account info.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getAccessibleAtlassianResources",
+      "description": "List accessible Atlassian sites and their cloudId values; call this first.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search",
+      "description": "Semantic search across Jira, Confluence and connected apps.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural-language search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "searchJiraIssuesUsingJql",
+      "description": "Search Jira work items with JQL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "jql": {
+            "type": "string",
+            "description": "JQL query."
+          }
+        }
+      }
+    },
+    {
+      "name": "getJiraIssue",
+      "description": "Get a Jira work item by ID or key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "issueIdOrKey": {
+            "type": "string",
+            "description": "Issue ID or key such as PROJ-123."
+          }
+        }
+      }
+    },
+    {
+      "name": "createJiraIssue",
+      "description": "Create a Jira work item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "projectKey": {
+            "type": "string",
+            "description": "Project (space) key."
+          },
+          "issueTypeName": {
+            "type": "string",
+            "description": "Work item type."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Title."
+          }
+        }
+      }
+    },
+    {
+      "name": "editJiraIssue",
+      "description": "Edit a Jira work item's editable fields.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "issueIdOrKey": {
+            "type": "string",
+            "description": "Issue ID or key."
+          }
+        }
+      }
+    },
+    {
+      "name": "transitionJiraIssue",
+      "description": "Change a Jira work item's status and/or sprint or backlog placement.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "issueIdOrKey": {
+            "type": "string",
+            "description": "Issue ID or key."
+          }
+        }
+      }
+    },
+    {
+      "name": "addOrEditJiraIssueComment",
+      "description": "Add or edit a comment on a Jira work item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "issueIdOrKey": {
+            "type": "string",
+            "description": "Issue ID or key."
+          }
+        }
+      }
+    },
+    {
+      "name": "listJiraIssueComments",
+      "description": "List comments on a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraIssueTransitions",
+      "description": "List the workflow transitions available for a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraProjects",
+      "description": "List visible Jira spaces (projects).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraProjectIssueTypesMetadata",
+      "description": "List work item types in a Jira space.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getJiraIssueTypeMetaWithFields",
+      "description": "Get field metadata for a Jira work item type.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "lookupJiraAccountId",
+      "description": "Find a Jira account ID by name or email.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraIssueAssignableUsers",
+      "description": "List users that can be assigned to a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "addOrEditJiraIssueWorklog",
+      "description": "Log or edit time on a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraIssueWorklogs",
+      "description": "List time logs on a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "createJiraIssueLink",
+      "description": "Link two Jira work items.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraIssueChangelogs",
+      "description": "Get the field change history of a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraStatuses",
+      "description": "List possible Jira statuses.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraBoards",
+      "description": "List visible Jira boards.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getJiraBoardIssueData",
+      "description": "Get board, backlog, or both for a Jira board, with filters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listJiraBoardSprints",
+      "description": "List sprints of a Jira board, optionally filtered by state.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getJiraBoardSprintData",
+      "description": "Get sprint data for a board, defaulting to the active sprint.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manageJiraSprint",
+      "description": "Create, populate, start, update or close a Jira sprint.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "watchJiraIssue",
+      "description": "Watch or unwatch a Jira work item.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "searchConfluence",
+      "description": "Search Confluence with CQL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "Atlassian site cloudId from getAccessibleAtlassianResources."
+          },
+          "cql": {
+            "type": "string",
+            "description": "CQL query."
+          }
+        }
+      }
+    },
+    {
+      "name": "getConfluenceContent",
+      "description": "Read any Confluence content type (page, blog post, whiteboard, database).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listConfluenceContent",
+      "description": "List one Confluence content type in a space.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "createConfluenceContent",
+      "description": "Create a Confluence page, blog post, whiteboard, database and more.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "updateConfluenceContent",
+      "description": "Update Confluence docs, whiteboards or databases.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listConfluenceSpaces",
+      "description": "List accessible Confluence spaces.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getConfluenceSpace",
+      "description": "Get a Confluence space's details and instructions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "listConfluenceComments",
+      "description": "List comments on a Confluence page or blog post.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "createConfluenceComment",
+      "description": "Create a footer or inline Confluence comment, or reply to one.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "moveConfluenceContent",
+      "description": "Move Confluence content to a new parent or position.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "copyConfluenceContent",
+      "description": "Copy Confluence content to a new parent.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "addLabelsToConfluenceContent",
+      "description": "Add labels to Confluence content.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "getTeamworkGraphContext",
+      "description": "Get connected context and relationships for a Jira or Confluence entity.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

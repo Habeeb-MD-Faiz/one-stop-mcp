@@ -1,0 +1,320 @@
+{
+  "server": "linear",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "list_issues",
+      "description": "List issues in the workspace, filterable by team, assignee, state, label, project, cycle and text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Text to search in issue titles and descriptions."
+          },
+          "team": {
+            "type": "string",
+            "description": "Team name or ID."
+          },
+          "assignee": {
+            "type": "string",
+            "description": "User name, ID or \"me\"."
+          },
+          "state": {
+            "type": "string",
+            "description": "Workflow state name or ID."
+          },
+          "label": {
+            "type": "string",
+            "description": "Label name or ID."
+          },
+          "project": {
+            "type": "string",
+            "description": "Project name or ID."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum issues to return."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_issue",
+      "description": "Retrieve a Linear issue by its ID or identifier (e.g. ENG-123), including description and attachments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Issue ID or identifier."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "save_issue",
+      "description": "Create or update a Linear issue: title, description, team, assignee, state, priority, labels, project, links.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Issue ID to update; omit to create a new issue."
+          },
+          "title": {
+            "type": "string",
+            "description": "Issue title."
+          },
+          "description": {
+            "type": "string",
+            "description": "Markdown description."
+          },
+          "team": {
+            "type": "string",
+            "description": "Team name or ID."
+          },
+          "assignee": {
+            "type": "string",
+            "description": "User name, ID or \"me\"."
+          },
+          "state": {
+            "type": "string",
+            "description": "Workflow state."
+          },
+          "priority": {
+            "type": "integer",
+            "description": "0 none, 1 urgent, 2 high, 3 normal, 4 low."
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Label names or IDs."
+          },
+          "project": {
+            "type": "string",
+            "description": "Project name or ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_comments",
+      "description": "List the comments on a Linear issue.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "issueId": {
+            "type": "string",
+            "description": "Issue ID or identifier."
+          }
+        }
+      }
+    },
+    {
+      "name": "save_comment",
+      "description": "Create or update a comment on a Linear issue.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "List projects in the workspace, filterable by team, state and member.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Text to search project names."
+          },
+          "team": {
+            "type": "string",
+            "description": "Team name or ID."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum projects to return."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_project",
+      "description": "Retrieve a Linear project by name or ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Project name or ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "save_project",
+      "description": "Create or update a Linear project: name, summary, teams, lead, dates, labels, state.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_teams",
+      "description": "List teams in the workspace, including each team's visibility and retired status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Text to search team names."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_team",
+      "description": "Retrieve a Linear team by name or ID, including its visibility and retired status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Team name or ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_users",
+      "description": "List users in the Linear workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Filter by name or email."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_user",
+      "description": "Retrieve a Linear user by ID, name, email or \"me\".",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "User ID, name, email or \"me\"."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_issue_statuses",
+      "description": "List the workflow states available for a team.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "team": {
+            "type": "string",
+            "description": "Team name or ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_issue_labels",
+      "description": "List the issue labels available in the workspace or a team.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "team": {
+            "type": "string",
+            "description": "Team name or ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_cycles",
+      "description": "List the cycles (sprints) of a team.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "description": "Team ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_documents",
+      "description": "List Linear documents, including documents under a team.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Text to search documents."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_document",
+      "description": "Retrieve a Linear document by ID or slug.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Document ID or slug."
+          }
+        }
+      }
+    },
+    {
+      "name": "save_document",
+      "description": "Create or update a Linear document, optionally tied to a project, initiative, cycle or team.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_customer_needs",
+      "description": "List customer requests linked to an issue, project or initiative, one page at a time.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "save_customer_need",
+      "description": "Create or update a customer need (customer request), including a source URL.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_documentation",
+      "description": "Search Linear's own product documentation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"put buy milk on my list for tonight","server":"todoist","tool":"add-tasks"}
+{"query":"show everything I have scheduled for next Monday","server":"todoist","tool":"find-tasks-by-date"}
+{"query":"move my overdue chores to the weekend","server":"todoist","tool":"reschedule-tasks"}
+{"query":"how productive was I this week","server":"todoist","tool":"get-productivity-stats"}
