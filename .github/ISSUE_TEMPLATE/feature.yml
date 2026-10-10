@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a small, self-contained change. Anything that changes a design decision needs an RFC instead.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Does it change how the client sees the gateway, the security model, the manifest format or the HTTP API?
+        Then it is an RFC: use the "RFC" template. This form is for changes that fit inside the existing design.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What do you want to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: checkboxes
+    id: tenets
+    attributes:
+      label: Context cost check
+      description: The first design tenet is that adding the 1,000th server must not change what the client sees.
+      options:
+        - label: This adds no startup tokens and nothing that grows with the number of servers.
+          required: true

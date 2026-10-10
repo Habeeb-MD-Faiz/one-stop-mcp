@@ -1,0 +1,6 @@
+# Everything needs the maintainer's review while the project is a BDFL project
+# (see GOVERNANCE.md). Add per-area owners here as maintainers join.
+*                      @Habeeb-MD-Faiz
+/src/security/         @Habeeb-MD-Faiz
+/servers/              @Habeeb-MD-Faiz
+/docs/rfcs/            @Habeeb-MD-Faiz

@@ -1,0 +1,52 @@
+# Runs when a PR touches the catalog: validates every manifest, then probes the
+# ones the PR changed (PDR section 11: "CI validates it and probes the endpoint").
+# The probe makes real network calls: an HTTP server answering 2xx, or 401 with a
+# WWW-Authenticate header, counts as reachable. Servers that need credentials to
+# start are skipped with a note, so a missing key never fails the check.
+name: Manifests
+
+on:
+  pull_request:
+    paths:
+      - "servers/**"
+      - "catalog/**"
+      - "bench/seed/**"
+      - "schema/**"
+
+concurrency:
+  group: manifests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the changed-file list needs the base branch
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --omit=optional
+      - name: Validate all manifests and snapshots
+        run: npm run validate
+      - name: Probe the manifests this PR changed
+        env:
+          BASE_REF: ${{ github.base_ref }} # via env, never interpolated into the script
+        run: |
+          set -euo pipefail
+          ids=$(git diff --name-only "origin/${BASE_REF}...HEAD" -- servers catalog \
+            | sed -nE 's#^(servers/([a-z0-9-]+)\.yaml|catalog/([a-z0-9-]+)\.json)$#\2\3#p' \
+            | sort -u | tr '\n' ' ')
+          if [ -z "${ids// /}" ]; then
+            echo "No manifest or snapshot changed; nothing to probe."
+            exit 0
+          fi
+          echo "Probing: $ids"
+          # shellcheck disable=SC2086
+          npm run probe -- $ids
