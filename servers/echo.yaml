@@ -15,3 +15,5 @@ routing:
   examples:
     - "echo this message back"
     - "test the gateway round trip"
+  tools:
+    echo: ["repeat this message back to me exactly", "send a test string through and show what comes back", "ping the server with hello to confirm it is alive"]
