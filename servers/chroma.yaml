@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/chroma-core/chroma-mcp (official, by Chroma). PyPI chroma-mcp 0.2.6; run with uvx.
+# README lists 12 tools with descriptions only (no parameter schemas), so inputSchema is left open.
+# Client types: ephemeral (default), persistent (--data-dir), http, cloud. This manifest targets Chroma Cloud via env;
+# a deployment must add CHROMA_TENANT and CHROMA_DATABASE (non-secret) and the API key is injected as CHROMA_API_KEY.
+# NOT VERIFIED: the exact Chroma Cloud page for creating an API key (docs mention only the web dashboard);
+# keyUrl points at the Chroma site.
+id: chroma
+name: Chroma
+category: [database, memory, ai]
+tags: [official, local]
+description: >
+  Create and manage Chroma collections, add and update documents with metadata, and run semantic
+  search over them.
+homepage: https://github.com/chroma-core/chroma-mcp
+transport:
+  type: stdio
+  command: uvx
+  args: ["chroma-mcp==0.2.6"]
+  env:
+    CHROMA_CLIENT_TYPE: cloud
+auth:
+  type: api_key
+  env: CHROMA_API_KEY
+  keyUrl: https://www.trychroma.com/
+routing:
+  examples:
+    - "create a chroma collection for my documents"
+    - "add these documents to the vector store"
+    - "semantic search my chroma collection"
+    - "how many documents are in the collection"
+  tools:
+    chroma_query_documents: ["find the passages most similar to this question"]
+    chroma_add_documents: ["embed and store these notes in chroma"]
+    chroma_list_collections: ["what collections do I have"]
+health:
+  check: initialize

@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/pinecone-io/pinecone-mcp and https://docs.pinecone.io/guides/operations/mcp-server
+# (official, by Pinecone). npm @pinecone-database/mcp 0.3.0 (npm view); needs Node 20+; API key in PINECONE_API_KEY.
+# Only indexes with integrated embedding are supported. Docs list 9 tools with descriptions only, so inputSchema is open.
+id: pinecone
+name: Pinecone
+category: [database, memory, ai]
+tags: [official, local]
+description: >
+  Search Pinecone documentation, manage indexes, and upsert and search records using integrated
+  inference with optional reranking.
+homepage: https://docs.pinecone.io/guides/operations/mcp-server
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@pinecone-database/mcp@0.3.0"]
+auth:
+  type: api_key
+  env: PINECONE_API_KEY
+  keyUrl: https://app.pinecone.io/organizations/-/keys
+routing:
+  examples:
+    - "list my pinecone indexes"
+    - "search my pinecone index for relevant records"
+    - "upsert these records into pinecone"
+    - "create a new vector index with integrated embeddings"
+  tools:
+    search-records: ["find records semantically similar to this text with a metadata filter"]
+    upsert-records: ["add these documents to the product index"]
+    describe-index-stats: ["how many vectors are in the index"]
+    search-docs: ["how does pinecone namespaces work"]
+health:
+  check: initialize

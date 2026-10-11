@@ -1,0 +1,91 @@
+{
+  "server": "chroma",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "chroma_list_collections",
+      "description": "Lists collections, with pagination.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_create_collection",
+      "description": "Creates a collection, optionally with HNSW configuration.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_peek_collection",
+      "description": "Shows a sample of documents in a collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_get_collection_info",
+      "description": "Returns detailed information about a collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_get_collection_count",
+      "description": "Returns the number of documents in a collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_modify_collection",
+      "description": "Updates a collection's name or metadata.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_delete_collection",
+      "description": "Deletes a collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_add_documents",
+      "description": "Adds documents to a collection, with optional metadata and custom IDs.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_query_documents",
+      "description": "Runs semantic (vector) search over a collection with advanced filtering.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_get_documents",
+      "description": "Retrieves documents by IDs or filters, with pagination.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_update_documents",
+      "description": "Updates a document's content, metadata or embeddings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "chroma_delete_documents",
+      "description": "Deletes specific documents from a collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}
