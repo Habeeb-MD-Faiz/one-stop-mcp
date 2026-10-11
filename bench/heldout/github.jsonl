@@ -1,0 +1,3 @@
+{"query":"Open a PR on GitHub from feature/search into main titled 'Add fuzzy search'","server":"github","tool":"create_pull_request"}
+{"query":"Are there any open Dependabot alerts on my repo?","server":"github","tool":"list_dependabot_alerts"}
+{"query":"Show me why the latest workflow run on my GitHub repo acme/api failed, I need the failed job logs","server":"github","tool":"get_job_logs"}

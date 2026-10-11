@@ -1,0 +1,3 @@
+{"query":"Pull the design context for this Figma frame so I can build it in React","server":"figma","tool":"get_design_context"}
+{"query":"Which colour and spacing variables does the selected component use?","server":"figma","tool":"get_variable_defs"}
+{"query":"Draw a FigJam flowchart of our signup funnel: landing, email, verify, dashboard","server":"figma","tool":"generate_diagram"}
