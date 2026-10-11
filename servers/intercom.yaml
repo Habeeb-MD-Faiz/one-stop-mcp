@@ -26,9 +26,19 @@ routing:
     - "add an internal note to the support conversation"
     - "search our help center articles"
   tools:
-    search_conversations: ["show snoozed conversations assigned to the billing team"]
-    get_contact: ["pull up everything intercom knows about this user"]
-    add_internal_note: ["leave a private note for my teammates on this chat"]
-    create_article: ["write a new help center article draft"]
+    search_conversations: ["show snoozed conversations assigned to the billing team", "list open conversations assigned to Maya", "find conversations started by jordan@example.com"]
+    get_contact: ["pull up everything intercom knows about this user", "show their custom attributes and last seen time", "what's the location and last activity for this lead"]
+    add_internal_note: ["leave a private note for my teammates on this chat", "leave a note on this chat for the next agent", "tell my teammates in a note that the customer is a VIP"]
+    create_article: ["write a new help center article draft", "publish a how-to article on exporting data", "draft a new help doc for the API keys page"]
+    search: ["search intercom for conversations tagged refund this month", "find contacts who signed up in the last week"]
+    fetch: ["open the full record for conversation_4821", "get all the details for this contact_ ID from the search"]
+    get_conversation: ["show the whole message history of that chat", "read all the parts of this support conversation"]
+    search_contacts: ["find the customer with the email dana@acme.com", "look up leads at the acme.com domain"]
+    list_companies: ["which companies are in the enterprise segment", "list companies tagged as churn risk"]
+    get_company: ["show the plan, tags and segments for this company", "pull up the details of the Globex account"]
+    list_articles: ["show me every article in our help center", "list all published and draft help articles"]
+    search_articles: ["do we have an article about resetting passwords", "find draft help center articles mentioning billing"]
+    get_article: ["open the help article and show its body", "which collection is this article in and what does it say"]
+    update_article: ["fix the typo in our refund policy article", "change this help article from draft to published"]
 health:
   check: initialize

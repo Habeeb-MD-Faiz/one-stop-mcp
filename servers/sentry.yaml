@@ -25,10 +25,20 @@ routing:
     - "resolve the Sentry issue and assign it to me"
     - "which exceptions spiked after the last release"
   tools:
-    search_issues: ["list the unresolved sentry issues from the past day"]
-    search_errors: ["count the TypeError events in sentry this week"]
-    update_issue: ["mark this sentry issue as resolved"]
-    analyze_issue_with_seer: ["ask Seer for the root cause of this sentry issue"]
-    find_projects: ["list the projects in my sentry organization"]
+    search_issues: ["list the unresolved sentry issues from the past day", "show unresolved issues sorted by most recent regressions", "find the issues affecting the most users this week"]
+    search_errors: ["count the TypeError events in sentry this week", "how many events did this exception produce in the last 24 hours", "show me crashes grouped by release for the iOS app"]
+    update_issue: ["mark this sentry issue as resolved", "assign this issue to me and ignore it until next week", "reopen the regression and unassign Tom"]
+    analyze_issue_with_seer: ["ask Seer for the root cause of this sentry issue", "what's causing this crash, can the AI debugger suggest a fix", "get an automated root cause and code patch for this exception"]
+    find_projects: ["list the projects in my sentry organization", "what projects exist under the acme org", "find the project slug for the checkout service"]
+    find_organizations: ["which organizations do I belong to", "list my org slugs so I know where to look"]
+    search_logs: ["find log lines mentioning connection refused", "search our logs for warnings from the worker in the past hour"]
+    search_traces: ["which transactions are slowest right now", "find spans taking over two seconds in the checkout flow"]
+    search_metrics: ["query our custom metrics for queue depth", "show the metric counts for failed logins over time"]
+    search_profiles: ["find the hottest functions in the production profiles", "show profiles for slow requests on the api"]
+    search_replays: ["find session replays where users hit the rage click", "show recordings of users who saw the checkout error"]
+    find_dropped_events: ["why are events missing, were any dropped for this project", "show events that were filtered or rate limited"]
+    get_sentry_resource: ["open this sentry link and show me what it is", "fetch the event or trace behind this URL"]
+    search_sentry_tools: ["is there a tool for managing releases or alerts", "look up which other Sentry actions are available"]
+    execute_sentry_tool: ["run the tool you just found with these arguments", "call that hidden Sentry tool for me"]
 health:
   check: initialize
