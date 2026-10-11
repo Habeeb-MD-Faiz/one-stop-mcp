@@ -1,193 +1,421 @@
+import { createHash } from "node:crypto";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import type { Transport as McpTransport } from "@modelcontextprotocol/sdk/shared/transport.js";
-import type { DownstreamTool, Manifest } from "../types.js";
-import { HybridRouter, type RoutableTool, type Router } from "../routing/router.js";
+import { StreamableHTTPClientTransport, StreamableHTTPError } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { UnauthorizedError, type OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
+import { McpError } from "@modelcontextprotocol/sdk/types.js";
+import {
+  AccessDeniedError,
+  type AccessGuard,
+  type AuthBroker,
+  type CatalogSnapshot,
+  type CatalogStore,
+  type Discovery,
+  type DiscoveryResult,
+  type Ledger,
+  type LedgerResult,
+  type OutboundAuth,
+  type Principal,
+  type SecretStore,
+  type SessionControl,
+} from "../contracts.js";
+import type { AuthType, Manifest } from "../types.js";
+import type { RoutableTool } from "../routing/router.js";
 import { compressSchema, type CompressLevel } from "../routing/compress.js";
-import type { UsageLedger } from "../security/ledger.js";
+import { credentialHeader, NotConnectedError } from "../auth/broker.js";
 
-interface Session {
-  client: Client;
-  timer: ReturnType<typeof setTimeout>;
+// Holds the catalog and brokers downstream MCP sessions (PDR §4.4).
+//
+// Lazy: nothing downstream runs at startup, and discovery never spawns a server
+// — find_tools ranks on-disk tool snapshots (D25). A server starts only on the
+// first invoke that needs it; its session is pooled per (org, user, server) —
+// or shared when the server takes no credential — and reaped on a TTL.
+// Every outbound call goes guard -> vault -> transport -> ledger, and whatever
+// comes back has the injected secret values scrubbed before a model sees it.
+
+export interface ServerInfo {
+  id: string;
+  name: string;
+  category: string[];
+  tags: string[];
+  description: string;
+  auth: AuthType;
+  /** Usable without connect_server: no auth needed, or a credential is stored for this principal. */
+  connected: boolean;
+  running: boolean;
 }
 
-export interface ToolHit {
+export interface ServerFilter {
+  text?: string;
+  category?: string;
+  tag?: string;
+  auth?: AuthType | "connected" | "not_connected";
+}
+
+export interface HealthResult {
   server: string;
-  tool: string;
-  description: string;
-  inputSchema: unknown;
-  score: number;
+  ok: boolean;
+  latencyMs: number;
+  error?: string;
+  /** health.check is "none": nothing was contacted. */
+  skipped?: boolean;
+}
+
+export interface RegistryDeps {
+  catalog: CatalogStore;
+  discovery: Discovery;
+  auth: AuthBroker;
+  guard: AccessGuard;
+  ledger: Ledger;
+  /** Metadata only (SecretStore.list) — to report which servers a principal has connected. */
+  secrets: SecretStore;
+  ttlMs?: number;
+  compress?: CompressLevel;
+}
+
+interface Session {
+  server: string;
+  /** Undefined for shared (auth: none) sessions. */
+  owner?: { org: string; user: string };
+  /** Hash of the injected env/headers: a refreshed or rotated credential means a new session. */
+  fp: string;
+  ready: Promise<Client>;
+  timer?: ReturnType<typeof setTimeout>;
 }
 
 const DEFAULT_TTL_MS = 60_000;
+const REDACTED = "[REDACTED]";
 
-/** Holds the catalog and brokers downstream MCP sessions.
- *
- *  Lazy: nothing downstream runs at startup. A server is spawned only on the
- *  first discovery/invoke that needs it, its session is pooled, and reaped on a
- *  TTL. Its tool catalog is cached separately, so later searches don't respawn
- *  it. This is what keeps startup cost flat regardless of catalog size. */
-export class Registry {
-  private manifests = new Map<string, Manifest>();
+export class Registry implements SessionControl {
+  private byId = new Map<string, Manifest>();
   private sessions = new Map<string, Session>();
-  private catalogs = new Map<string, DownstreamTool[]>();
+  private deps: RegistryDeps;
   private ttlMs: number;
-  private router: Router;
-  private ledger?: UsageLedger;
-  private user: string;
   private compress: CompressLevel;
 
-  constructor(manifests: Manifest[], opts: { ttlMs?: number; router?: Router; ledger?: UsageLedger; user?: string; compress?: CompressLevel } = {}) {
-    for (const m of manifests) this.manifests.set(m.id, m);
-    this.ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
-    this.router = opts.router ?? new HybridRouter(); // lexical + BM25 fused via RRF; add the dense leg when an embedder is wired
-    this.ledger = opts.ledger;
-    this.user = opts.user ?? "local";
-    this.compress = opts.compress ?? "light"; // strip schema boilerplate from shortlists by default
+  constructor(manifests: Manifest[], deps: RegistryDeps) {
+    for (const m of manifests) this.byId.set(m.id, m);
+    this.deps = deps;
+    this.ttlMs = deps.ttlMs ?? DEFAULT_TTL_MS;
+    this.compress = deps.compress ?? "light"; // strip schema boilerplate from shortlists by default (D8)
   }
 
-  listServers(filter?: string): Array<Pick<Manifest, "id" | "name" | "category" | "description"> & { auth: string; running: boolean }> {
-    const f = filter?.toLowerCase();
-    return [...this.manifests.values()]
-      .filter((m) => !f || m.id.includes(f) || m.name.toLowerCase().includes(f) || m.category.some((c) => c.toLowerCase().includes(f)))
-      .map((m) => ({
-        id: m.id,
-        name: m.name,
-        category: m.category,
-        description: m.description,
-        auth: m.auth?.type ?? "none",
-        running: this.sessions.has(m.id),
-      }));
+  manifest(id: string): Manifest | undefined {
+    return this.byId.get(id);
   }
 
-  async findTools(query: string, k = 5): Promise<ToolHit[]> {
-    const routable: RoutableTool[] = [];
-    for (const m of this.manifests.values()) {
-      const tools = await this.ensureCatalog(m.id);
-      for (const t of tools) {
-        routable.push({
-          server: m.id,
-          tool: t.name,
-          description: t.description ?? "",
-          examples: m.routing?.examples ?? [], // server-level for now; per-tool utterances are a P1 manifest extension
+  manifests(): Manifest[] {
+    return [...this.byId.values()];
+  }
+
+  async listServers(p: Principal, filter: ServerFilter = {}): Promise<ServerInfo[]> {
+    const held = new Set((await this.deps.secrets.list({ org: p.org, user: p.user })).map((s) => s.scope.server));
+    const text = filter.text?.toLowerCase();
+    const eq = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+    return this.manifests()
+      .map((m): ServerInfo => {
+        const auth = m.auth?.type ?? "none";
+        return {
+          id: m.id,
+          name: m.name,
           category: m.category,
-          inputSchema: t.inputSchema,
-        });
-      }
+          tags: m.tags ?? [],
+          description: m.description,
+          auth,
+          connected: auth === "none" || held.has(m.id),
+          running: this.sessions.has(this.key(p, m)),
+        };
+      })
+      .filter(
+        (s) =>
+          (!text || [s.id, s.name, s.description, ...s.category, ...s.tags].some((f) => f.toLowerCase().includes(text))) &&
+          (!filter.category || s.category.some((c) => eq(c, filter.category!))) &&
+          (!filter.tag || s.tags.some((t) => eq(t, filter.tag!))) &&
+          (!filter.auth ||
+            (filter.auth === "connected" ? s.connected : filter.auth === "not_connected" ? !s.connected : s.auth === filter.auth)),
+      );
+  }
+
+  /** Ranks tools from catalog snapshots only — never spawns a server. Servers
+   *  without a snapshot, or revoked for this principal, are left out. */
+  async findTools(p: Principal, query: string, k = 5): Promise<DiscoveryResult> {
+    const tools: RoutableTool[] = [];
+    for (const m of this.byId.values()) {
+      const snap = this.deps.catalog.load(m.id);
+      if (snap && this.allowed(p, m.id)) tools.push(...toRoutable(m, snap));
     }
-    return (await this.router.rank(query, routable, k)).map((r) => ({
-      server: r.server,
-      tool: r.tool,
-      description: r.description,
-      inputSchema: compressSchema(r.inputSchema, this.compress),
-      score: r.score,
-    }));
+    const r = await this.deps.discovery.discover(query, tools, k);
+    return { ...r, hits: r.hits.map((h) => ({ ...h, inputSchema: compressSchema(h.inputSchema, this.compress) })) };
   }
 
-  async ensureCatalog(id: string): Promise<DownstreamTool[]> {
-    const cached = this.catalogs.get(id);
-    if (cached) return cached;
-    const client = await this.session(id);
-    const { tools } = await client.listTools();
-    const catalog = tools.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema }));
-    this.catalogs.set(id, catalog);
-    return catalog;
-  }
-
-  async invoke(id: string, tool: string, args: Record<string, unknown> = {}): Promise<unknown> {
-    const client = await this.session(id);
+  async invoke(p: Principal, server: string, tool: string, args: Record<string, unknown> = {}): Promise<unknown> {
+    const { m, out, secrets } = await this.outbound(p, server, tool);
+    const s = await this.session(p, m, out, secrets);
     try {
-      const res = (await client.callTool({ name: tool, arguments: args })) as { isError?: boolean };
-      this.ledger?.record({ ts: Date.now(), user: this.user, server: id, tool, result: res.isError ? "error" : "authorized" });
-      return res;
+      const res = (await (await s.ready).callTool({ name: tool, arguments: args })) as { isError?: boolean };
+      this.record(p, server, tool, res.isError ? "error" : "authorized");
+      return redact(res, [...secrets, ...(await providerSecrets(out))]); // OAuth tokens may have been refreshed mid-call
     } catch (err) {
-      this.ledger?.record({ ts: Date.now(), user: this.user, server: id, tool, result: "error" });
+      throw await this.failed(p, m, tool, s, out, secrets, err);
+    }
+  }
+
+  /** Live tools/list -> catalog snapshot. For `catalog refresh` and the sync worker. */
+  async refreshCatalog(p: Principal, id: string): Promise<CatalogSnapshot> {
+    const tool = "tools/list";
+    const { m, out, secrets } = await this.outbound(p, id, tool);
+    const s = await this.session(p, m, out, secrets);
+    try {
+      const snap = await this.snapshot(m.id, await s.ready, secrets);
+      this.record(p, id, tool, "authorized");
+      return snap;
+    } catch (err) {
+      throw await this.failed(p, m, tool, s, out, secrets, err);
+    }
+  }
+
+  /** Per manifest health.check: initialize = connect, tools/list = connect + list, none = skip.
+   *  Uses its own short-lived connection so a pooled session can't mask a dead server. */
+  async health(p: Principal, id: string): Promise<HealthResult> {
+    const m = this.must(id);
+    const check = m.health?.check ?? "initialize";
+    if (check === "none") return { server: id, ok: true, latencyMs: 0, skipped: true };
+    const t0 = performance.now();
+    const ms = () => Math.round(performance.now() - t0);
+    let secrets: string[] = [];
+    let client: Client | undefined;
+    try {
+      const o = await this.outbound(p, id, "health");
+      secrets = o.secrets;
+      client = await this.open(o.m, o.out, secrets);
+      if (check === "tools/list") await client.listTools();
+      this.record(p, id, "health", "authorized");
+      return { server: id, ok: true, latencyMs: ms() };
+    } catch (err) {
+      return { server: id, ok: false, latencyMs: ms(), error: redactText((err as Error).message, secrets) };
+    } finally {
+      await client?.close().catch(() => {});
+    }
+  }
+
+  // --- SessionControl: the kill switch cuts through these ------------------------
+
+  closeAll(): Promise<number> {
+    return this.closeWhere(() => true);
+  }
+
+  closeServer(server: string): Promise<number> {
+    return this.closeWhere((s) => s.server === server);
+  }
+
+  closeUser(user: string, org?: string): Promise<number> {
+    return this.closeWhere((s) => s.owner?.user === user && (org === undefined || s.owner.org === org));
+  }
+
+  runningServers(): string[] {
+    return [...new Set([...this.sessions.values()].map((s) => s.server))];
+  }
+
+  // --- outbound path -------------------------------------------------------------
+
+  /** Guard, then credentials. A denial is ledgered; a missing credential tells the model to connect. */
+  private async outbound(p: Principal, server: string, tool: string): Promise<{ m: Manifest; out: OutboundAuth; secrets: string[] }> {
+    const m = this.must(server);
+    try {
+      this.deps.guard.check(p, server);
+    } catch (err) {
+      if (err instanceof AccessDeniedError) this.record(p, server, tool, "denied", err.message);
+      throw err;
+    }
+    const out = await this.deps.auth.outbound(p, m);
+    return { m, out, secrets: await secretsOf(m, out) };
+  }
+
+  private async failed(p: Principal, m: Manifest, tool: string, s: Session, out: OutboundAuth, secrets: string[], err: unknown): Promise<Error> {
+    if (!(err instanceof McpError)) await this.drop(s); // transport or auth failure: the session is suspect
+    if (err instanceof UnauthorizedError) {
+      this.record(p, m.id, tool, "error", "downstream rejected the stored credential");
+      return new NotConnectedError(m, "sign-in is no longer valid");
+    }
+    const all = [...secrets, ...(await providerSecrets(out).catch(() => []))];
+    const message = redactText(err instanceof Error ? err.message : String(err), all);
+    this.record(p, m.id, tool, "error", message.slice(0, 200));
+    return new Error(message);
+  }
+
+  private record(p: Principal, server: string, tool: string, result: LedgerResult, reason?: string): void {
+    this.deps.ledger.record({ ts: Date.now(), org: p.org, user: p.user, server, tool, result, reason });
+  }
+
+  private allowed(p: Principal, server: string): boolean {
+    try {
+      this.deps.guard.check(p, server);
+      return true;
+    } catch (err) {
+      if (err instanceof AccessDeniedError) return false;
       throw err;
     }
   }
 
-  /** P0 auth stub. Real OAuth/vault brokering is P2 — for now report what the
-   *  manifest declares so the client knows whether a flow will be needed. */
-  connect(id: string): { server: string; auth: string; status: string; message: string } {
-    const m = this.must(id);
-    const auth = m.auth?.type ?? "none";
-    return auth === "none"
-      ? { server: id, auth, status: "ready", message: `${m.name} needs no auth; call invoke directly.` }
-      : { server: id, auth, status: "pending", message: `${m.name} requires ${auth}; broker lands in P2.` };
+  // --- session pooling -----------------------------------------------------------
+
+  private key(p: Principal, m: Manifest): string {
+    return (m.auth?.type ?? "none") === "none" ? `shared/${m.id}` : `${p.org}/${p.user}/${m.id}`;
   }
 
-  /** Close one downstream session now (scoped kill switch). Returns whether a
-   *  live session was actually running. */
-  async close(id: string): Promise<boolean> {
-    const s = this.sessions.get(id);
-    if (!s) return false;
-    clearTimeout(s.timer);
-    this.sessions.delete(id);
-    await s.client.close().catch(() => {});
-    return true;
-  }
+  private async session(p: Principal, m: Manifest, out: OutboundAuth, secrets: string[]): Promise<Session> {
+    const key = this.key(p, m);
+    const fp = fingerprint(out);
+    const existing = this.sessions.get(key);
+    if (existing && existing.fp === fp) {
+      this.arm(key, existing);
+      await existing.ready;
+      return existing;
+    }
+    if (existing) await this.drop(existing); // credential changed (refresh, rotation): respawn with the new one
 
-  async closeAll(): Promise<void> {
-    for (const [, s] of this.sessions) {
+    const owner = key.startsWith("shared/") ? undefined : { org: p.org, user: p.user };
+    const s: Session = { server: m.id, owner, fp, ready: this.open(m, out, secrets) };
+    this.sessions.set(key, s); // concurrent callers for the same key await the same connect
+    let client: Client;
+    try {
+      client = await s.ready;
+    } catch (err) {
+      if (this.sessions.get(key) === s) this.sessions.delete(key);
+      throw err;
+    }
+    client.onclose = () => {
+      if (this.sessions.get(key) !== s) return;
       clearTimeout(s.timer);
-      await s.client.close().catch(() => {});
-    }
-    this.sessions.clear();
+      this.sessions.delete(key);
+    };
+    this.arm(key, s);
+    if (!this.deps.catalog.load(m.id)) await this.snapshot(m.id, client, secrets).catch(() => {}); // first open: index it for find_tools
+    return s;
   }
 
-  runningServers(): string[] {
-    return [...this.sessions.keys()];
-  }
-
-  // --- session pooling -----------------------------------------------------
-
-  private async session(id: string): Promise<Client> {
-    const existing = this.sessions.get(id);
-    if (existing) {
-      this.touch(id);
-      return existing.client;
-    }
-    const m = this.must(id);
-    const transport = this.transport(m);
-    const client = new Client({ name: "one-stop-mcp", version: "0.0.0" });
-    await client.connect(transport);
-    this.sessions.set(id, { client, timer: this.arm(id) });
-    return client;
-  }
-
-  private transport(m: Manifest): McpTransport {
-    if (m.transport.type === "stdio") {
-      return new StdioClientTransport({
-        command: m.transport.command,
-        args: m.transport.args,
-        env: m.transport.env,
-      });
-    }
-    // ponytail: streamable-http downstream lands with the seed catalog (P1/P3).
-    throw new Error(`transport ${m.transport.type} not supported in P0 (server ${m.id})`);
-  }
-
-  private touch(id: string): void {
-    const s = this.sessions.get(id);
-    if (!s) return;
+  private arm(key: string, s: Session): void {
     clearTimeout(s.timer);
-    s.timer = this.arm(id);
+    s.timer = setTimeout(() => {
+      if (this.sessions.get(key) === s) void this.drop(s);
+    }, this.ttlMs);
+    s.timer.unref?.();
   }
 
-  private arm(id: string): ReturnType<typeof setTimeout> {
-    const t = setTimeout(() => {
-      const s = this.sessions.get(id);
-      if (!s) return;
-      this.sessions.delete(id);
-      s.client.close().catch(() => {});
-    }, this.ttlMs);
-    t.unref?.();
-    return t;
+  private async drop(s: Session): Promise<void> {
+    clearTimeout(s.timer);
+    for (const [k, v] of this.sessions) if (v === s) this.sessions.delete(k);
+    const client = await s.ready.catch(() => undefined);
+    await client?.close().catch(() => {});
+  }
+
+  private async closeWhere(pred: (s: Session) => boolean): Promise<number> {
+    const doomed = [...this.sessions.values()].filter(pred);
+    await Promise.all(doomed.map((s) => this.drop(s)));
+    return doomed.length;
+  }
+
+  private async snapshot(server: string, client: Client, secrets: string[]): Promise<CatalogSnapshot> {
+    const tools: CatalogSnapshot["tools"] = [];
+    let cursor: string | undefined;
+    do {
+      const page = await client.listTools(cursor ? { cursor } : undefined);
+      for (const t of page.tools) tools.push({ name: t.name, description: t.description, inputSchema: t.inputSchema });
+      cursor = page.nextCursor;
+    } while (cursor);
+    const snap: CatalogSnapshot = { server, source: "live", fetchedAt: new Date().toISOString(), tools: redact(tools, secrets) };
+    this.deps.catalog.save(snap);
+    return snap;
+  }
+
+  // --- transports ----------------------------------------------------------------
+
+  private async open(m: Manifest, out: OutboundAuth, secrets: string[]): Promise<Client> {
+    const t = m.transport;
+    const client = new Client({ name: "one-stop-mcp", version: "0.0.0" });
+    if (t.type === "stdio") {
+      // D31: the child gets the SDK's safe default variables + manifest env + the
+      // injected credential — never the gateway's own environment (OSMCP_MASTER_KEY).
+      const transport = new StdioClientTransport({ command: t.command, args: t.args, env: { ...t.env, ...out.env }, stderr: "pipe" });
+      // ponytail: per-chunk scrub; a secret split across two stderr chunks slips through. Line-buffer if that ever matters.
+      transport.stderr?.on("data", (chunk: Buffer) => process.stderr.write(redactText(chunk.toString(), secrets)));
+      await client.connect(transport);
+      return client;
+    }
+    const url = new URL(t.url);
+    const opts = { requestInit: { headers: { ...t.headers, ...out.headers } }, authProvider: out.authProvider as OAuthClientProvider | undefined };
+    try {
+      await client.connect(new StreamableHTTPClientTransport(url, opts));
+      return client;
+    } catch (err) {
+      // Pre-2025-03-26 servers speak HTTP+SSE and reject the Streamable POST with a
+      // 4xx; the SDK's documented backwards-compatible client retries over SSE (D15).
+      await client.close().catch(() => {});
+      if (!(err instanceof StreamableHTTPError) || !legacyStatus(err.code)) throw err;
+      const legacy = new Client({ name: "one-stop-mcp", version: "0.0.0" });
+      await legacy.connect(new SSEClientTransport(url, opts));
+      return legacy;
+    }
   }
 
   private must(id: string): Manifest {
-    const m = this.manifests.get(id);
+    const m = this.byId.get(id);
     if (!m) throw new Error(`unknown server: ${id}`);
     return m;
   }
+}
+
+const legacyStatus = (code: number | undefined): boolean => code !== undefined && code >= 400 && code < 500 && code !== 401 && code !== 403;
+
+/** RoutableTools for one server from its snapshot. Examples = per-tool utterances,
+ *  then the server-level ones. Mirrors L1's `toRoutable` (src/routing/index.ts),
+ *  which is not on this branch yet — dedupe at integration. */
+export function toRoutable(m: Manifest, snap: CatalogSnapshot): RoutableTool[] {
+  return snap.tools.map((t) => ({
+    server: m.id,
+    tool: t.name,
+    description: t.description ?? "",
+    examples: [...(m.routing?.tools?.[t.name] ?? []), ...(m.routing?.examples ?? [])],
+    category: m.category,
+    inputSchema: t.inputSchema,
+  }));
+}
+
+const fingerprint = (out: OutboundAuth): string =>
+  createHash("sha256").update(JSON.stringify([out.env ?? {}, out.headers ?? {}])).digest("hex");
+
+/** Every raw secret an outbound call carries: injected env/header values (with
+ *  and without the header prefix) and, for MCP-spec OAuth, the live tokens. */
+export async function secretsOf(m: Manifest, out: OutboundAuth): Promise<string[]> {
+  const { prefix } = credentialHeader(m.auth);
+  const headerValues = Object.values(out.headers ?? {}).flatMap((v) => (prefix && v.startsWith(prefix) ? [v, v.slice(prefix.length)] : [v]));
+  return [...Object.values(out.env ?? {}), ...headerValues, ...(await providerSecrets(out))].filter(Boolean);
+}
+
+async function providerSecrets(out: OutboundAuth): Promise<string[]> {
+  const t = await (out.authProvider as OAuthClientProvider | undefined)?.tokens();
+  return t ? [t.access_token, t.refresh_token ?? ""].filter(Boolean) : [];
+}
+
+/** Replace every occurrence of a known secret in any string inside `value`.
+ *  L2 ships the shared version (src/security/redact.ts); dedupe at integration.
+ *  ponytail: exact matches only — a downstream that re-encodes the key (base64, URL-escaping) is not caught. */
+export function redact<T>(value: T, secrets: string[]): T {
+  const s = [...new Set(secrets.filter(Boolean))];
+  if (s.length === 0) return value;
+  const walk = (v: unknown): unknown =>
+    typeof v === "string"
+      ? redactText(v, s)
+      : Array.isArray(v)
+        ? v.map(walk)
+        : v !== null && typeof v === "object"
+          ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]))
+          : v;
+  return walk(value) as T;
+}
+
+/** Longest first, so a prefixed value ("Bearer abc") is replaced whole before its bare part. */
+export function redactText(text: string, secrets: string[]): string {
+  return [...secrets].sort((a, b) => b.length - a.length).reduce((t, s) => (s ? t.split(s).join(REDACTED) : t), text);
 }
