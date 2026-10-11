@@ -58,3 +58,13 @@ Format: `D<n> · time IST · tag — decision. Why. (source)`
 - **D39 · 10:35 · reversible** — No cross-encoder reranker. `ms-marco-MiniLM-L-6-v2` over the top 30 dropped seed top-3 from 40.5% to 27% at about 25 s per query on CPU, because it was trained on web passages, not tool descriptions. (Nogueira & Cho, arXiv:1901.04085, is the method; it failed here.)
 - **D40 · 10:40 · reversible** — A product named in the query (a server id as whole words) adds one RRF vote for that server's tools. It is a vote rather than a filter because of false matches like "redis in docker", "stripe.com" and generic ids (time, memory, fetch). Result: held-out +3.3 pts, seed −0.5, `bench/` −1 query.
 - **D41 · 10:45 · reversible** — Per-tool utterances for all ~720 tools that lack them (doc expansion; Nogueira et al., arXiv:1904.08375), written by four agents (U1–U4) that may not read `bench/` or `src/routing/`. Brief: lanes/U-utterances.md.
+- **D42 · 13:55 · reversible** — S3 routing numbers after the U1–U4 utterances (~1,600 new utterances; every tool now has 2–3). These are top-3 results on the shipped catalog (926 tools, 51 servers):
+
+  | Query set | Lexical + BM25 | + bge-small dense |
+  |---|---|---|
+  | held-out (153, independent author) | 90.8% | **96.1%** (top-1 82.4%) |
+  | seed (200, adversarial) | 50.5% | 61.0% |
+  | `bench/` (34) | 82.4% | 94.1% |
+
+  Dense p50 is about 90 ms; the first query builds the embedding cache in about 38 s on CPU. The PDR's ≥90% top-3 is met on the honest set even without the model. The seed set stays as a stress test: many of its queries are ambiguous between services by design. CI now gates on regression floors (`bench/` 78%, held-out 87%, lexical).
+- **D43 · 14:00 · reversible** — CI and release workflows run a full `npm ci`. TypeScript 7 ships its native compiler as an optional platform dependency, so `--omit=optional` removed `tsc` and every CI run since the first push had failed at typecheck. `manifests.yml` keeps the slim install because it only uses tsx. First green CI run: 38124597436.

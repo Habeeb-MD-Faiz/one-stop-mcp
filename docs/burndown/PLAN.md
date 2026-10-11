@@ -79,8 +79,8 @@ A lane that needs a contract change stops and reports it instead of editing.
 | L7 server | merged | |
 | L8 community | merged | |
 | S2 integrate | done | typecheck clean, all tests green, 51 manifests valid |
-| S3 end-to-end | running | stdio e2e + OAuth-through-HTTP e2e green; held-out set merged; mention vote in. NEXT: merge OneStop-MCP-utter-1..4 (validate, then rerun both benches with and without --dense), record numbers |
-| S4 hardening | pending | |
+| S3 end-to-end | done | stdio e2e + OAuth-through-HTTP e2e green; held-out top-3 96.1% dense / 90.8% lexical (D42); CI green 38124597436 |
+| S4 hardening | running | security review agent; README; token revoke + CI floors done |
 | S5 handoff | pending | |
 
 ## Rules for every agent (from brain docs/BURNDOWN.md)
