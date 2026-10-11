@@ -10,7 +10,10 @@
 
 import type { Embedder } from "./router.js";
 
-/** Chosen by `npm run bench -- --dense` (see scripts/routing-bench.ts). */
+/** Chosen by `npm run bench -- --dense` (2026-10-11, fused with lexical + BM25):
+ *  top-3 on bench/ 94.1% vs MiniLM 91.2%; on the 33-server seed draft 44.5% vs
+ *  41.4%. Costs ~15 ms more per query and ~1.5x the first-index time. BGE's
+ *  query instruction changed nothing here, so queries are embedded as-is. */
 export const DEFAULT_MODEL = "Xenova/bge-small-en-v1.5";
 
 type Pooling = "mean" | "cls";

@@ -11,7 +11,9 @@
 export type CompressLevel = "off" | "light" | "aggressive";
 
 // Keys that are pure scaffolding for tool-selection purposes.
-const BOILERPLATE = new Set(["$schema", "$id", "$ref", "title", "examples", "$comment"]);
+// Not $ref: it carries structure (the referenced type), so dropping it would change
+// what the schema accepts.
+const BOILERPLATE = new Set(["$schema", "$id", "title", "examples", "$comment"]);
 // Keys whose value is a *map* of name -> schema.
 const SCHEMA_MAPS = new Set(["properties", "patternProperties", "definitions", "$defs"]);
 // Keys whose value is a single schema.

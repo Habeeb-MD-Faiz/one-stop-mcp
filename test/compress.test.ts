@@ -50,3 +50,34 @@ test("compression measurably shrinks the schema", () => {
 test("off returns the schema untouched", () => {
   assert.deepEqual(compressSchema(verbose, "off"), verbose);
 });
+
+// D8: aggressive may only cut prose. Selection and argument construction depend on
+// every type, required list, enum and property name, so all of them must survive,
+// including properties literally named like the keywords being stripped.
+test("aggressive keeps every type, required, enum, property name and $ref", () => {
+  const schema = {
+    type: "object",
+    description: "drop me",
+    properties: {
+      description: { type: "string", description: "a property named description" },
+      title: { type: "string", title: "a property named title" },
+      mode: { anyOf: [{ type: "string", enum: ["a", "b"], description: "x" }, { type: "null" }] },
+      tags: { type: "array", items: { type: "object", properties: { examples: { type: "integer" } }, required: ["examples"] } },
+      owner: { $ref: "#/$defs/User" },
+    },
+    required: ["description", "title"],
+    $defs: { User: { type: "object", properties: { login: { type: "string" } }, required: ["login"] } },
+  };
+  const c = compressSchema(schema, "aggressive") as any;
+  const skeleton = (s: any): any =>
+    s === null || typeof s !== "object"
+      ? s
+      : Array.isArray(s)
+        ? s.map(skeleton)
+        : Object.fromEntries(Object.entries(s).filter(([k]) => k !== "description" && k !== "title").map(([k, v]) => [k, k === "properties" || k === "$defs" ? Object.fromEntries(Object.entries(v as object).map(([p, ps]) => [p, skeleton(ps)])) : skeleton(v)]));
+  assert.deepEqual(c, skeleton(schema), "only description/title keywords removed");
+  assert.deepEqual(Object.keys(c.properties), ["description", "title", "mode", "tags", "owner"]);
+  assert.equal(c.properties.owner.$ref, "#/$defs/User");
+  assert.deepEqual(c.properties.mode.anyOf[0].enum, ["a", "b"]);
+  assert.deepEqual(c.properties.tags.items.required, ["examples"]);
+});
