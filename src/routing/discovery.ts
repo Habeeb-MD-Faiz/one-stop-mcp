@@ -28,6 +28,14 @@ export class HybridDiscovery implements Discovery {
     const lists = await Promise.all(this.legs.map((leg) => leg.rank(query, tools, pool).catch((err) => this.legFailed(leg, err))));
     let hits = rrfFuse(lists);
 
+    // A query that names a product ("in Linear", "on github") gives that server's
+    // tools one more RRF vote, in fused order. A vote, not a filter: "run redis in
+    // docker" names both, and generic ids (time, memory, fetch) appear in ordinary
+    // speech, so the retrieval legs still decide. Not a leg for agree().
+    // Measured: +3.3 pts top-3 on bench/heldout, -0.5 on bench/seed (lexical legs).
+    const named = namedServers(query, tools);
+    if (named.size) hits = rrfFuse([...lists, hits.filter((h) => named.has(h.server))]);
+
     const q = nameKey(query);
     const exact = q ? tools.filter((t) => nameKey(t.tool) === q || nameKey(t.server + t.tool) === q) : [];
     if (exact.length) {
@@ -72,6 +80,18 @@ function browse(tools: Array<RoutableTool & { score?: number }>): string[] {
   const weight = new Map<string, number>();
   for (const t of tools) for (const c of t.category ?? []) weight.set(c, (weight.get(c) ?? 0) + (t.score ?? 1));
   return [...weight].sort((a, b) => b[1] - a[1]).slice(0, BROWSE).map(([c]) => c);
+}
+
+/** Server ids the query names as whole words; `google-calendar` also matches
+ *  "google calendar" and "googlecalendar". */
+export function namedServers(query: string, tools: RoutableTool[]): Set<string> {
+  const words = ` ${query.toLowerCase().replace(/[^a-z0-9]+/g, " ")} `;
+  return new Set(
+    [...new Set(tools.map((t) => t.server))].filter((id) => {
+      const parts = id.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+      return parts.length > 0 && (words.includes(` ${parts.join(" ")} `) || words.includes(` ${parts.join("")} `));
+    }),
+  );
 }
 
 /** Case- and separator-insensitive name: `GitHub/Create-Issue` -> `githubcreateissue`. */

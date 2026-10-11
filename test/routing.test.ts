@@ -8,6 +8,7 @@ import {
   createDiscovery,
   EmbeddingStore,
   HybridDiscovery,
+  namedServers,
   LocalEmbedder,
   terms,
   toRoutable,
@@ -77,6 +78,14 @@ test("hybrid: legs agreeing on the top hit -> high confidence, k hits, schema un
   assert.equal(r.hits.length, 2);
   assert.equal(r.hits[0].tool, "create_issue");
   assert.equal(r.hits.find((h) => h.server === "github" && h.tool === "create_issue")!.inputSchema, schema, "compression is the caller's job");
+});
+
+test("a named product gets one more vote: 'in GitLab' lifts gitlab's tool past github's", async () => {
+  const d = new HybridDiscovery([leg(["github/create_issue", "gitlab/create_issue"]), leg(["github/create_issue", "gitlab/create_issue"])]);
+  assert.equal((await d.discover("open an issue", catalog, 2)).hits[0].server, "github");
+  assert.equal((await d.discover("open an issue in GitLab", catalog, 2)).hits[0].server, "gitlab");
+  const withCal = [...catalog, { ...catalog[4], server: "google-calendar" }];
+  assert.deepEqual([...namedServers("put it on my Google Calendar, not githubish", withCal)], ["calendar", "google-calendar"]);
 });
 
 test("low confidence: legs disagree -> widened to 2k with categories to browse", async () => {

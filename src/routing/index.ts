@@ -10,7 +10,7 @@ import { LocalEmbedder } from "./embedder.js";
 import { EmbeddingStore } from "./index-store.js";
 import { Bm25Router, LexicalRouter, VectorRouter, type Embedder, type RoutableTool, type Router } from "./router.js";
 
-export { HybridDiscovery, agree } from "./discovery.js";
+export { HybridDiscovery, agree, namedServers } from "./discovery.js";
 export { DEFAULT_MODEL, LocalEmbedder } from "./embedder.js";
 export { EmbeddingStore } from "./index-store.js";
 export { compressSchema, estTokens, type CompressLevel } from "./compress.js";
