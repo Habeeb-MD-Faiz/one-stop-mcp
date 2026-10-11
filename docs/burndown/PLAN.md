@@ -81,7 +81,7 @@ A lane that needs a contract change stops and reports it instead of editing.
 | S2 integrate | done | typecheck clean, all tests green, 51 manifests valid |
 | S3 end-to-end | done | stdio e2e + OAuth-through-HTTP e2e green; held-out top-3 96.1% dense / 90.8% lexical (D42); CI green 38124597436 |
 | S4 hardening | done | independent security review: 2 high / 3 medium / 3 low, fixed or documented (D47–D49); README rewritten (D46); token revoke (D45); CI floors (D44) |
-| S5 handoff | running | brain project file, arch page, log |
+| S5 handoff | done | brain: projects/one-stop-mcp.md (status, deps, waiting-on-you, decisions), arch/one-stop-mcp.html, log.md summary |
 
 ## Rules for every agent (from brain docs/BURNDOWN.md)
 
