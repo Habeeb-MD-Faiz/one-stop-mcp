@@ -23,6 +23,8 @@ import {
 import type { AuthType, Manifest } from "../types.js";
 import type { RoutableTool } from "../routing/router.js";
 import { compressSchema, type CompressLevel } from "../routing/compress.js";
+import { toRoutable } from "../routing/index.js";
+import { redact } from "../security/redact.js";
 import { credentialHeader, NotConnectedError } from "../auth/broker.js";
 
 // Holds the catalog and brokers downstream MCP sessions (PDR §4.4).
@@ -85,7 +87,6 @@ interface Session {
 }
 
 const DEFAULT_TTL_MS = 60_000;
-const REDACTED = "[REDACTED]";
 
 export class Registry implements SessionControl {
   private byId = new Map<string, Manifest>();
@@ -193,7 +194,7 @@ export class Registry implements SessionControl {
       this.record(p, id, "health", "authorized");
       return { server: id, ok: true, latencyMs: ms() };
     } catch (err) {
-      return { server: id, ok: false, latencyMs: ms(), error: redactText((err as Error).message, secrets) };
+      return { server: id, ok: false, latencyMs: ms(), error: redact((err as Error).message, secrets) };
     } finally {
       await client?.close().catch(() => {});
     }
@@ -239,7 +240,7 @@ export class Registry implements SessionControl {
       return new NotConnectedError(m, "sign-in is no longer valid");
     }
     const all = [...secrets, ...(await providerSecrets(out).catch(() => []))];
-    const message = redactText(err instanceof Error ? err.message : String(err), all);
+    const message = redact(err instanceof Error ? err.message : String(err), all);
     this.record(p, m.id, tool, "error", message.slice(0, 200));
     return new Error(message);
   }
@@ -339,7 +340,7 @@ export class Registry implements SessionControl {
       // injected credential — never the gateway's own environment (OSMCP_MASTER_KEY).
       const transport = new StdioClientTransport({ command: t.command, args: t.args, env: { ...t.env, ...out.env }, stderr: "pipe" });
       // ponytail: per-chunk scrub; a secret split across two stderr chunks slips through. Line-buffer if that ever matters.
-      transport.stderr?.on("data", (chunk: Buffer) => process.stderr.write(redactText(chunk.toString(), secrets)));
+      transport.stderr?.on("data", (chunk: Buffer) => process.stderr.write(redact(chunk.toString(), secrets)));
       await client.connect(transport);
       return client;
     }
@@ -368,20 +369,6 @@ export class Registry implements SessionControl {
 
 const legacyStatus = (code: number | undefined): boolean => code !== undefined && code >= 400 && code < 500 && code !== 401 && code !== 403;
 
-/** RoutableTools for one server from its snapshot. Examples = per-tool utterances,
- *  then the server-level ones. Mirrors L1's `toRoutable` (src/routing/index.ts),
- *  which is not on this branch yet — dedupe at integration. */
-export function toRoutable(m: Manifest, snap: CatalogSnapshot): RoutableTool[] {
-  return snap.tools.map((t) => ({
-    server: m.id,
-    tool: t.name,
-    description: t.description ?? "",
-    examples: [...(m.routing?.tools?.[t.name] ?? []), ...(m.routing?.examples ?? [])],
-    category: m.category,
-    inputSchema: t.inputSchema,
-  }));
-}
-
 const fingerprint = (out: OutboundAuth): string =>
   createHash("sha256").update(JSON.stringify([out.env ?? {}, out.headers ?? {}])).digest("hex");
 
@@ -398,24 +385,3 @@ async function providerSecrets(out: OutboundAuth): Promise<string[]> {
   return t ? [t.access_token, t.refresh_token ?? ""].filter(Boolean) : [];
 }
 
-/** Replace every occurrence of a known secret in any string inside `value`.
- *  L2 ships the shared version (src/security/redact.ts); dedupe at integration.
- *  ponytail: exact matches only — a downstream that re-encodes the key (base64, URL-escaping) is not caught. */
-export function redact<T>(value: T, secrets: string[]): T {
-  const s = [...new Set(secrets.filter(Boolean))];
-  if (s.length === 0) return value;
-  const walk = (v: unknown): unknown =>
-    typeof v === "string"
-      ? redactText(v, s)
-      : Array.isArray(v)
-        ? v.map(walk)
-        : v !== null && typeof v === "object"
-          ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]))
-          : v;
-  return walk(value) as T;
-}
-
-/** Longest first, so a prefixed value ("Bearer abc") is replaced whole before its bare part. */
-export function redactText(text: string, secrets: string[]): string {
-  return [...secrets].sort((a, b) => b.length - a.length).reduce((t, s) => (s ? t.split(s).join(REDACTED) : t), text);
-}
