@@ -1,0 +1,3 @@
+{"query":"Look through the Cloudflare API spec for the endpoint that purges cache by URL","server":"cloudflare","tool":"search"}
+{"query":"How do Durable Objects handle alarms? Check the developer docs for Workers","server":"cloudflare","tool":"docs"}
+{"query":"Create a new KV namespace called sessions-cache in my Workers account","server":"cloudflare","tool":"execute"}

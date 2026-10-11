@@ -1,0 +1,3 @@
+{"query":"List my Azure subscriptions","server":"azure","tool":"subscription"}
+{"query":"What secrets are sitting in my kv-prod-weu key vault?","server":"azure","tool":"keyvault"}
+{"query":"Roughly what would a Standard_D4s_v5 VM cost per month in West Europe?","server":"azure","tool":"pricing"}

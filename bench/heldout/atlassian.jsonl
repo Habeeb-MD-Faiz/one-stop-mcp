@@ -1,0 +1,3 @@
+{"query":"Find all the open bugs assigned to me in Jira that were touched this week","server":"atlassian","tool":"searchJiraIssuesUsingJql"}
+{"query":"Write the release notes up as a new wiki page in the ENG space","server":"atlassian","tool":"createConfluenceContent"}
+{"query":"Close out the current sprint on the Platform board and roll the unfinished tickets into the next one","server":"atlassian","tool":"manageJiraSprint"}

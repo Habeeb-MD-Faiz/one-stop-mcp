@@ -1,0 +1,3 @@
+{"query":"Search Apollo for heads of engineering at Series B fintech startups in London","server":"apollo","tool":"apollo_mixed_people_api_search"}
+{"query":"Put these five contacts into the cold outreach sequence and send from my work mailbox","server":"apollo","tool":"apollo_emailer_campaigns_add_contact_ids"}
+{"query":"Pull the transcript of yesterday's recorded discovery call from Apollo","server":"apollo","tool":"apollo_conversations_get_transcript"}

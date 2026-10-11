@@ -1,0 +1,3 @@
+{"query":"How many EC2 instances are running in eu-west-1 right now?","server":"aws","tool":"aws___call_aws"}
+{"query":"Give me a link so the client can download reports/q3.pdf from my S3 bucket for the next hour","server":"aws","tool":"aws___get_presigned_url"}
+{"query":"Check the AWS docs for how reserved concurrency works on Lambda","server":"aws","tool":"aws___search_documentation"}
