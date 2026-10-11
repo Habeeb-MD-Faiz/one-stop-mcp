@@ -170,7 +170,7 @@ What is built ([docs/security.md](docs/security.md) has the threat model and eve
 | Registry sync, catalog probe | `test/catalog-sync.test.ts`, `test/catalog-probe.test.ts` |
 | Docker and Compose packaging, CI, release workflow | `Dockerfile`, `docker-compose.yml`, `.github/workflows/` |
 
-113 tests pass and 1 is skipped (`npm test`, 2026-10-11). CI runs typecheck, tests, the token budget, the routing floors and manifest validation on every push.
+115 tests pass and 1 is skipped (`npm test`, 2026-10-11). CI runs typecheck, tests, the token budget, the routing floors and manifest validation on every push.
 
 **Known limits:**
 

@@ -80,8 +80,8 @@ A lane that needs a contract change stops and reports it instead of editing.
 | L8 community | merged | |
 | S2 integrate | done | typecheck clean, all tests green, 51 manifests valid |
 | S3 end-to-end | done | stdio e2e + OAuth-through-HTTP e2e green; held-out top-3 96.1% dense / 90.8% lexical (D42); CI green 38124597436 |
-| S4 hardening | running | security review agent; README; token revoke + CI floors done |
-| S5 handoff | pending | |
+| S4 hardening | done | independent security review: 2 high / 3 medium / 3 low, fixed or documented (D47–D49); README rewritten (D46); token revoke (D45); CI floors (D44) |
+| S5 handoff | running | brain project file, arch page, log |
 
 ## Rules for every agent (from brain docs/BURNDOWN.md)
 
