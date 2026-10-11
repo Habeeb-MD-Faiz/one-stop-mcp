@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: Apollo's hosted MCP server (official). Resource URL https://mcp.apollo.io/mcp from
+#   https://mcp.apollo.io/.well-known/oauth-protected-resource ; OAuth 2.1 S256 with dynamic client registration at
+#   https://mcp.apollo.io/.well-known/oauth-authorization-server (registration_endpoint .../api/v1/oauth/applications/register_oauth_client).
+# NOT VERIFIED: Apollo's public docs pages returned 403/404 to WebFetch, so the vendor docs were not read.
+#   Tool names and descriptions come from the tool list the live Apollo connector exposes (about 100 tools; the 38 most
+#   used are in the snapshot). Many tools cost credits and carry confirmation rules in their descriptions.
+id: apollo
+name: Apollo.io
+category: [sales, crm, marketing]
+tags: [official, remote]
+description: >
+  Prospect and enrich people and companies in Apollo's database, manage contacts, accounts, deals,
+  tasks and lists, and run email sequences and conversation lookups.
+homepage: https://docs.apollo.io
+transport:
+  type: streamable-http
+  url: https://mcp.apollo.io/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "find vp of sales at fintech companies in apollo"
+    - "enrich this contact's work email"
+    - "add these leads to my outreach sequence"
+    - "how many apollo credits do I have left"
+  tools:
+    apollo_mixed_people_api_search: ["search for marketing directors in London"]
+    apollo_people_match: ["get the email for this person at acme.com"]
+    apollo_emailer_campaigns_add_contact_ids: ["enroll these contacts in my cold email sequence"]
+    apollo_deals_create: ["log a new deal for the acme account"]
+health:
+  check: initialize

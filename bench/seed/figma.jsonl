@@ -1,0 +1,4 @@
+{"query":"build the landing page from this figma link","server":"figma","tool":"get_design_context"}
+{"query":"list the colors and spacing variables used in this frame","server":"figma","tool":"get_variable_defs"}
+{"query":"make a new blank design file in my drafts","server":"figma","tool":"create_new_file"}
+{"query":"link this component to its source file","server":"figma","tool":"add_code_connect_map"}

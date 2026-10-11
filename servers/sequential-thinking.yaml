@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking (reference).
+# Package @modelcontextprotocol/server-sequential-thinking, version checked with npm view (2026.8.31).
+# Tool identifier is "sequentialthinking" per src/sequentialthinking/index.ts (the README spells it
+# sequential_thinking; the source registration is authoritative).
+id: sequential-thinking
+name: Sequential Thinking
+category: [ai, utility]
+tags: [reference, local]
+description: >
+  A scratchpad tool for step-by-step reasoning: record numbered thoughts, revise earlier ones and
+  branch alternatives while working through a complex problem.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-sequential-thinking@2026.8.31"]
+auth:
+  type: none
+routing:
+  examples:
+    - "think through this problem step by step"
+    - "break down a complex task into reasoning steps"
+    - "revise my earlier reasoning and try another approach"
+  tools:
+    sequentialthinking: ["reason carefully about the architecture before answering"]
+health:
+  check: initialize

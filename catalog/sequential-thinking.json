@@ -1,0 +1,58 @@
+{
+  "server": "sequential-thinking",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "sequentialthinking",
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts. Breaks a problem into steps that can be revised or branched, and verifies a hypothesis before giving a final answer.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "thought": {
+            "type": "string",
+            "description": "Your current thinking step."
+          },
+          "nextThoughtNeeded": {
+            "type": "boolean",
+            "description": "Whether another thought step is needed."
+          },
+          "thoughtNumber": {
+            "type": "integer",
+            "description": "Current thought number."
+          },
+          "totalThoughts": {
+            "type": "integer",
+            "description": "Estimated total thoughts needed."
+          },
+          "isRevision": {
+            "type": "boolean",
+            "description": "Whether this revises previous thinking."
+          },
+          "revisesThought": {
+            "type": "integer",
+            "description": "Which thought is being reconsidered."
+          },
+          "branchFromThought": {
+            "type": "integer",
+            "description": "Branching point thought number."
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Branch identifier."
+          },
+          "needsMoreThoughts": {
+            "type": "boolean",
+            "description": "If more thoughts are needed."
+          }
+        },
+        "required": [
+          "thought",
+          "nextThoughtNeeded",
+          "thoughtNumber",
+          "totalThoughts"
+        ]
+      }
+    }
+  ]
+}

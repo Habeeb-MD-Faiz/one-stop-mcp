@@ -1,0 +1,198 @@
+{
+  "server": "google-drive",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "search_files",
+      "description": "Search for Drive files using a structured query (syntax: query_term operator values). Combine clauses with and, or, not, and parentheses.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query."
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "Page token for pagination."
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of files to return per page."
+          },
+          "excludeContentSnippets": {
+            "type": "boolean",
+            "description": "If true, exclude the content snippet from the response."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "get_file_metadata",
+      "description": "Find general metadata about a user's Drive file. If the file is not found, try search_files.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "The ID of the file to retrieve."
+          },
+          "excludeContentSnippets": {
+            "type": "boolean",
+            "description": "If true, exclude the content snippet from the response."
+          }
+        },
+        "required": [
+          "fileId"
+        ]
+      }
+    },
+    {
+      "name": "read_file_content",
+      "description": "Fetches a natural-language text version of a Drive file and, optionally, its comments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "The ID of the file to retrieve."
+          },
+          "includeComments": {
+            "type": "boolean",
+            "description": "Whether to include comments inlined in the text."
+          }
+        },
+        "required": [
+          "fileId"
+        ]
+      }
+    },
+    {
+      "name": "download_file_content",
+      "description": "Download the content of a Drive file as a base64 encoded string. Google-native files need exportMimeType.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "The ID of the file to retrieve."
+          },
+          "exportMimeType": {
+            "type": "string",
+            "description": "For Google native files, the MIME type to export to."
+          }
+        },
+        "required": [
+          "fileId"
+        ]
+      }
+    },
+    {
+      "name": "create_file",
+      "description": "Create or upload a file to Google Drive. Folders are created with MIME type application/vnd.google-apps.folder.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the file."
+          },
+          "contentMimeType": {
+            "type": "string",
+            "description": "MIME type of the uploaded content; required when content is provided."
+          },
+          "textContent": {
+            "type": "string",
+            "description": "UTF-8 text content to upload."
+          },
+          "base64Content": {
+            "type": "string",
+            "description": "Base64 encoded content to upload."
+          },
+          "parentId": {
+            "type": "string",
+            "description": "The ID of the file's parent folder."
+          },
+          "disableConversionToGoogleType": {
+            "type": "boolean",
+            "description": "Keep the uploaded MIME type instead of converting to a Google type."
+          }
+        }
+      }
+    },
+    {
+      "name": "copy_file",
+      "description": "Copies an existing Drive file, optionally giving the copy a new title and parent folder.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "The ID of the file to copy."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the new file; defaults to 'Copy of [original title]'."
+          },
+          "parentId": {
+            "type": "string",
+            "description": "Parent folder of the new file; defaults to the original's parent."
+          }
+        },
+        "required": [
+          "fileId"
+        ]
+      }
+    },
+    {
+      "name": "list_recent_files",
+      "description": "Find recent files for a user in a specified sort order. Default sort order is recency.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderBy": {
+            "type": "string",
+            "description": "Sort order for returned files.",
+            "enum": [
+              "recency",
+              "lastModified",
+              "lastModifiedByMe"
+            ]
+          },
+          "pageToken": {
+            "type": "string",
+            "description": "Token for the next page."
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum files to return; default 10."
+          },
+          "excludeContentSnippets": {
+            "type": "boolean",
+            "description": "Omit the generated content snippet."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_file_permissions",
+      "description": "List the permissions of a Drive file.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "The ID of the file to get permissions for."
+          }
+        },
+        "required": [
+          "fileId"
+        ]
+      }
+    }
+  ]
+}

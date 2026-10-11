@@ -1,0 +1,277 @@
+{
+  "server": "hubspot",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "get_user_details",
+      "description": "Returns the authenticated user, account details and read/write access per object. Run first to check availability.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_organization_details",
+      "description": "Lists org-wide teams, job titles, seat counts and account info such as timezone, currency and account type.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "discover_hubspot_schema",
+      "description": "Searches for CRM object types, or looks up known types directly, with read/write status.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_crm_objects",
+      "description": "Searches and filters CRM records (contacts, companies, deals, tickets and more) with text queries, sorting and pagination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filterGroups": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Up to 5 filter groups of up to 6 filters; AND within a group, OR across groups."
+          },
+          "query": {
+            "type": "string",
+            "description": "Free-text query."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Results per page, max 200."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_crm_objects",
+      "description": "Fetches CRM objects by ID in one request (max 100 IDs).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Object IDs, max 100."
+          }
+        }
+      }
+    },
+    {
+      "name": "manage_crm_objects",
+      "description": "Creates or updates CRM records and activities (notes, calls, tasks, emails, meetings). Shows a change summary and requires confirmation before writes.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_segment",
+      "description": "Creates static and dynamic segments, and adds or removes records of static segments.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "query_crm_data",
+      "description": "Runs SQL-style queries with HubSpot extensions over CRM data: filtering, aggregation and sorting. No joins or subqueries.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_properties",
+      "description": "Finds CRM property definitions by keyword (max 5 keywords), returning names, labels and descriptions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_properties",
+      "description": "Returns full property definitions, including data types and enumeration values.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_custom_properties",
+      "description": "Creates custom properties for CRM objects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_custom_pipelines",
+      "description": "Creates and manages pipelines for supported objects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_owners",
+      "description": "Finds record owners by name or email, or looks them up by ID (max 100 results).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_campaign_attribution_reports",
+      "description": "Returns revenue and deal attribution for marketing campaigns, limited to closed-won deals.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "read_campaign_data",
+      "description": "Reads campaign analytics, asset metrics or contact data in one operation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_campaign_objects",
+      "description": "Creates or updates campaigns and manages campaign asset associations.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_conversations",
+      "description": "Searches conversations and messages across inboxes by CRM object, time range or keyword; can aggregate by channel, inbox or status.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_conversation_channel_metadata",
+      "description": "Lists inboxes, channels and channel instances in the account.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_intent_signals",
+      "description": "Searches buyer intent signals, lists signal types and aggregates counts by company.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_marketing_email_analytics",
+      "description": "Returns marketing email analytics for a date range: account aggregates, deliverability health and per-contact details.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_marketing_email",
+      "description": "Manages marketing email settings and content: lists templates, creates, updates and clones drafts, previews content, manages A/B variants.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_content_analytics_report",
+      "description": "Runs analytics for landing pages, website pages and blog posts: totals, time series, summaries and viewer lookups.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_landing_page",
+      "description": "Creates, edits, styles, publishes, clones and inspects landing pages.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_website_page",
+      "description": "Creates, edits, styles, publishes, clones and inspects website pages, and edits navigation menus.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_blog_post",
+      "description": "Creates, updates, publishes and inspects blog posts; lists blogs, posts and tags. New posts are drafts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "render_asset",
+      "description": "Shows a read-only preview card for a landing page, website page or blog post.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "assetType": {
+            "type": "string",
+            "description": "Asset type.",
+            "enum": [
+              "LANDING_PAGE",
+              "WEBSITE_PAGE",
+              "BLOG_POST"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "get_aeo_metrics",
+      "description": "Returns brand-level AEO analytics: share of voice, prompt trends and competitor comparisons.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_aeo_prompts",
+      "description": "Views tracked AEO prompts and their performance, and creates new tracked prompts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_aeo_recommendations",
+      "description": "Reviews AEO brand recommendations and acts on them, such as starting blog or social post generation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage_onboarding",
+      "description": "Assesses CRM onboarding status and guides users through goals and tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "tool_guidance",
+      "description": "Returns usage instructions for one or more HubSpot MCP tools.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tool_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tool names."
+          }
+        }
+      }
+    },
+    {
+      "name": "submit_feedback",
+      "description": "Sends feedback about the HubSpot MCP server to HubSpot.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

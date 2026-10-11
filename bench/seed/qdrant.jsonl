@@ -1,0 +1,4 @@
+{"query":"put this meeting summary into the vector collection","server":"qdrant","tool":"qdrant-store"}
+{"query":"look in the embeddings store for anything about onboarding","server":"qdrant","tool":"qdrant-find"}
+{"query":"retrieve the stored notes closest in meaning to this question","server":"qdrant","tool":"qdrant-find"}
+{"query":"index this code snippet with its metadata for later lookup","server":"qdrant","tool":"qdrant-store"}

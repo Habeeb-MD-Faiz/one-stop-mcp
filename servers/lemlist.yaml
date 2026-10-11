@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developer.lemlist.com/mcp/setup (official, hosted by lemlist). URL https://app.lemlist.com/mcp over HTTP.
+# Auth: OAuth (recommended; access token 1 h, refresh 30 days) or an API key in the X-API-Key header (Settings > Team >
+#   Integrations). MCP auth discovery is assumed for OAuth. Appending ?bucket=core,prospecting... narrows advertised tools.
+# NOT FULLY VERIFIED: the docs do not publish a tool list. Only these names appear in the docs (lemlist-agent.md, setup.md):
+#   get_campaigns, get_campaign_stats, lemleads_search, findEmail, verifyEmail, linkedinEnrichment, findPhone, call_api.
+#   Descriptions are inferred from how the docs use them and parameters are left open. Replace with a live snapshot.
+id: lemlist
+name: lemlist
+category: [sales, marketing]
+tags: [official, remote]
+description: >
+  Manage lemlist outreach campaigns and leads, search the B2B lead database, find and verify emails
+  and phones, and read campaign statistics.
+homepage: https://developer.lemlist.com/mcp/setup
+transport:
+  type: streamable-http
+  url: https://app.lemlist.com/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "show my lemlist campaigns"
+    - "find the email address for this prospect"
+    - "how is my cold email campaign performing"
+    - "search lemlist for founders in fintech"
+  tools:
+    get_campaign_stats: ["reply and open rates for the spring outreach campaign"]
+    findEmail: ["find a verified email for this lead"]
+    lemleads_search: ["look for heads of growth at saas companies in Berlin"]
+health:
+  check: initialize

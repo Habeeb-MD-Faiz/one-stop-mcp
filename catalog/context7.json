@@ -1,0 +1,53 @@
+{
+  "server": "context7",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "resolve-library-id",
+      "description": "Resolves a general library name into a Context7-compatible library ID. Call this before query-docs unless the user gave an ID like /vercel/next.js.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The user's question or task, used to rank results by relevance."
+          },
+          "libraryName": {
+            "type": "string",
+            "description": "The name of the library to search for."
+          }
+        },
+        "required": [
+          "query",
+          "libraryName"
+        ]
+      }
+    },
+    {
+      "name": "query-docs",
+      "description": "Retrieves up-to-date documentation and code examples for a library using a Context7-compatible library ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "description": "Exact library ID, such as /mongodb/docs or /vercel/next.js."
+          },
+          "query": {
+            "type": "string",
+            "description": "The question or task to find relevant documentation for."
+          },
+          "language": {
+            "type": "string",
+            "description": "Programming language; ranks code examples in that language first."
+          }
+        },
+        "required": [
+          "libraryId",
+          "query"
+        ]
+      }
+    }
+  ]
+}

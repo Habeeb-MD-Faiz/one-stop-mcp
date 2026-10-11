@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/ and
+#   https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/ (official, hosted by Figma).
+# Remote URL https://mcp.figma.com/mcp , OAuth sign-in (no API token mentioned). 36 tools from the tools page; the
+#   live server also exposes a few more (for example export_video). Parameters are listed only where documented.
+#   NOT VERIFIED: dynamic client registration; MCP auth discovery is assumed.
+id: figma
+name: Figma
+category: [design, dev]
+tags: [official, remote]
+description: >
+  Read Figma designs as code context, screenshots and variables, push UI and assets into Figma and
+  FigJam, generate diagrams, and manage Code Connect mappings and design-system search.
+homepage: https://developers.figma.com/docs/figma-mcp-server/
+transport:
+  type: streamable-http
+  url: https://mcp.figma.com/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "turn this figma frame into react code"
+    - "take a screenshot of the selected figma layer"
+    - "create a flowchart in figjam"
+    - "what design tokens does this screen use"
+  tools:
+    get_design_context: ["implement this figma design in my codebase"]
+    get_screenshot: ["show me what that node looks like"]
+    generate_diagram: ["draw a sequence diagram of the login flow in figjam"]
+    search_design_system: ["find the button component in our library"]
+health:
+  check: initialize

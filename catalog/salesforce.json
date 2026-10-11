@@ -1,0 +1,112 @@
+{
+  "server": "salesforce",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "salesforce_search_objects",
+      "description": "Finds standard and custom Salesforce objects by partial name match.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_describe_object",
+      "description": "Returns an object's schema: fields, relationships and picklist values.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_query_records",
+      "description": "Queries records with parent/child relationships and complex WHERE filters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_aggregate_query",
+      "description": "Runs GROUP BY queries with aggregate functions, HAVING and date grouping.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_dml_records",
+      "description": "Inserts, updates, deletes and upserts records, using external IDs for upserts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_search_all",
+      "description": "Performs SOSL searches across multiple objects, with field snippets.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_manage_object",
+      "description": "Creates and modifies custom objects, their properties and sharing settings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_manage_field",
+      "description": "Adds or modifies custom fields and relationships on an object.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_manage_field_permissions",
+      "description": "Grants, revokes, views and bulk-updates field-level access for profiles.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_read_apex",
+      "description": "Reads Apex class source and metadata, including listing classes by name pattern.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_write_apex",
+      "description": "Creates and updates Apex classes, with API version settings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_read_apex_trigger",
+      "description": "Reads Apex trigger source and metadata, including listing triggers by name pattern.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_write_apex_trigger",
+      "description": "Creates and updates Apex triggers for objects, with API versions and event operations.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_execute_anonymous",
+      "description": "Runs anonymous Apex and returns debug logs and results.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "salesforce_manage_debug_logs",
+      "description": "Enables, disables, retrieves and configures debug logs for users.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

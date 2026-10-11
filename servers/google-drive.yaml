@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.google.com/workspace/guides/configure-mcp-servers and
+#   https://developers.google.com/workspace/drive/api/reference/mcp (official, hosted by Google)
+# Per-tool pages: https://developers.google.com/workspace/drive/api/reference/mcp/tools_list/<tool>
+# Google's docs say to create your own OAuth client (Web application) in a Google Cloud project with the
+# Drive MCP service + Drive API enabled; MCP auth discovery/DCR is NOT documented, so the explicit endpoints
+# below are Google's standard OAuth 2.0 endpoints. clientId is supplied per deployment.
+id: google-drive
+name: Google Drive
+category: [productivity, docs]
+tags: [official, remote]
+description: >
+  Search Google Drive, read file content as text, download or export files, create and copy files,
+  list recent files and inspect sharing permissions.
+homepage: https://developers.google.com/workspace/drive/api/reference/mcp
+transport:
+  type: streamable-http
+  url: https://drivemcp.googleapis.com/mcp/v1
+auth:
+  type: oauth2
+  scopes:
+    - https://www.googleapis.com/auth/drive.readonly
+    - https://www.googleapis.com/auth/drive.file
+  authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+  tokenUrl: https://oauth2.googleapis.com/token
+routing:
+  examples:
+    - "find the budget spreadsheet in my google drive"
+    - "read the contents of that google doc"
+    - "upload a text file to my drive"
+    - "who has access to this drive file"
+  tools:
+    search_files: ["search my drive for the q3 planning deck"]
+    read_file_content: ["read the text of this google doc"]
+    list_recent_files: ["what files did I work on recently"]
+    get_file_permissions: ["who can view this file"]
+health:
+  check: initialize

@@ -1,0 +1,70 @@
+{
+  "server": "pinecone",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "search-docs",
+      "description": "Searches the official Pinecone documentation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-indexes",
+      "description": "Lists all Pinecone indexes.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "describe-index",
+      "description": "Describes an index's configuration.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "describe-index-stats",
+      "description": "Shows statistics about an index's data, including record counts and available namespaces.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create-index-for-model",
+      "description": "Creates an index that uses an integrated inference model to embed text as vectors.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "upsert-records",
+      "description": "Inserts or updates records in an index with integrated inference.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search-records",
+      "description": "Searches an index by text query using integrated inference, with optional metadata filtering and reranking.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "cascading-search",
+      "description": "Searches multiple indexes, then deduplicates and reranks the results.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "rerank-documents",
+      "description": "Reranks records or text documents with a reranking model.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"ping the #ops channel that the database is back up","server":"slack","tool":"slack_send_message"}
+{"query":"what did people say about pricing in the open channels last week","server":"slack","tool":"slack_search_public"}
+{"query":"who is Alex Kim and what team are they on","server":"slack","tool":"slack_search_users"}
+{"query":"react with a thumbs up on that message","server":"slack","tool":"slack_add_reaction"}

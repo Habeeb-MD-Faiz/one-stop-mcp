@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/time (reference).
+# PyPI package mcp-server-time 2026.8.18 (checked on pypi.org, requires Python >=3.10); run with uvx.
+id: time
+name: Time
+category: [utility]
+tags: [reference, local]
+description: >
+  Get the current time in any IANA timezone and convert times between timezones.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/time
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-time@2026.8.18"]
+auth:
+  type: none
+routing:
+  examples:
+    - "what time is it in Tokyo right now"
+    - "convert 3pm London time to New York"
+    - "what's the current time in my timezone"
+  tools:
+    get_current_time: ["tell me the time in Sydney"]
+    convert_time: ["when it is 9am in Berlin what time is it in Mumbai"]
+health:
+  check: initialize

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.google.com/workspace/guides/configure-mcp-servers and
+#   https://developers.google.com/workspace/gmail/api/reference/mcp (official, hosted by Google)
+# Per-tool pages: .../gmail/api/reference/mcp/tools_list/<tool>. The overview table lists 10 tools; the
+# reference sidebar and a tool page also document create_label (Developer Preview), included here.
+# label/unlabel tools need gmail.modify per their docs; the overview lists readonly + compose only.
+# Google's docs say to create your own OAuth client; MCP auth discovery/DCR is NOT documented, so explicit
+# Google OAuth 2.0 endpoints are used. clientId is supplied per deployment.
+id: gmail
+name: Gmail
+category: [communication, productivity]
+tags: [official, remote]
+description: >
+  Search Gmail threads, read messages and threads, create drafts, and manage labels on messages
+  and threads.
+homepage: https://developers.google.com/workspace/gmail/api/reference/mcp
+transport:
+  type: streamable-http
+  url: https://gmailmcp.googleapis.com/mcp/v1
+auth:
+  type: oauth2
+  scopes:
+    - https://www.googleapis.com/auth/gmail.readonly
+    - https://www.googleapis.com/auth/gmail.compose
+    - https://www.googleapis.com/auth/gmail.modify
+  authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+  tokenUrl: https://oauth2.googleapis.com/token
+routing:
+  examples:
+    - "find the email from my landlord"
+    - "draft a reply to that message"
+    - "show unread emails from this week"
+    - "label this email as important"
+  tools:
+    search_threads: ["search my inbox for invoices from last month"]
+    get_thread: ["open the whole conversation with the vendor"]
+    create_draft: ["write a draft email to the team about the delay"]
+    label_thread: ["star this conversation"]
+health:
+  check: initialize

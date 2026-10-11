@@ -1,0 +1,528 @@
+{
+  "server": "figma",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "get_design_context",
+      "description": "Returns design context for a layer or selection, by default as React and Tailwind code to adapt to the project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_metadata",
+      "description": "Returns a sparse XML outline of a selection; omit nodeId to list top-level pages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Node ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_screenshot",
+      "description": "Takes a screenshot of a selection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "enableBase64Response": {
+            "type": "boolean",
+            "description": "Return the image as base64."
+          }
+        }
+      }
+    },
+    {
+      "name": "download_assets",
+      "description": "Downloads exports and original source images for up to 20 nodes as temporary URLs (PNG, JPG, SVG, PDF).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_variable_defs",
+      "description": "Returns the variables and styles used in a selection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_motion_context",
+      "description": "Returns keyframe animation data and code snippets for a node.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recursive": {
+            "type": "boolean",
+            "description": "Include child nodes."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_figjam",
+      "description": "Converts FigJam diagrams to XML with screenshots.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "use_figma",
+      "description": "Creates, edits, deletes or inspects objects in Design files, FigJam boards and Slides decks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "generate_figma_design",
+      "description": "Sends live UI from a web app as design layers to a new or existing Figma file, or the clipboard.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_new_file",
+      "description": "Creates a blank Design, FigJam or Slides file in drafts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "upload_assets",
+      "description": "Uploads PNG, JPG, GIF or WebP images (max 10MB each) into a Figma file.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "generate_diagram",
+      "description": "Generates a FigJam diagram from Mermaid or natural language.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "generate_image",
+      "description": "Creates a raster image from a text prompt and returns a temporary URL (uses Figma AI credits).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_libraries",
+      "description": "Lists subscribed and available design libraries.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_design_system",
+      "description": "Searches connected libraries for components, variables and styles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "queries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Each entry is one search intent."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_code_connect_map",
+      "description": "Retrieves mappings from Figma node IDs to code components.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "clientFrameworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Frameworks."
+          },
+          "clientLanguages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Languages."
+          }
+        }
+      }
+    },
+    {
+      "name": "add_code_connect_map",
+      "description": "Maps a Figma node ID to a code component.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_code_connect_suggestions",
+      "description": "Suggests Code Connect mappings between Figma components and code.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_context_for_code_connect",
+      "description": "Returns component metadata for Code Connect templates.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "send_code_connect_mappings",
+      "description": "Confirms suggested Code Connect mappings.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_generative_plugins",
+      "description": "Lists generative plugins in your account library.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_generative_plugin",
+      "description": "Reads a generative plugin's source manifest.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Plugin ID."
+          },
+          "version": {
+            "type": "string",
+            "description": "Optional commit SHA."
+          },
+          "includeSource": {
+            "type": "boolean",
+            "description": "Include source, default false."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_generative_plugin",
+      "description": "Creates a generative plugin scaffold.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plugin name."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "planKey": {
+            "type": "string",
+            "description": "Plan key."
+          }
+        }
+      }
+    },
+    {
+      "name": "update_generative_plugin",
+      "description": "Replaces a generative plugin's code.ts or ui.html and deploys a new version.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Plugin ID."
+          },
+          "commitMessage": {
+            "type": "string",
+            "description": "Commit message."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Files with path and content."
+          },
+          "metadata": {
+            "type": "object",
+            "description": "name and description."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_shaders",
+      "description": "Lists shader effects and fills in your library.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_shader",
+      "description": "Reads a shader's source manifest.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Shader ID."
+          },
+          "version": {
+            "type": "string",
+            "description": "Optional commit SHA."
+          },
+          "includeSource": {
+            "type": "boolean",
+            "description": "Include source."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_shader",
+      "description": "Creates a shader scaffold.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Shader name."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "planKey": {
+            "type": "string",
+            "description": "Plan key."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Shader kind.",
+            "enum": [
+              "effect",
+              "fill"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "update_shader",
+      "description": "Replaces a shader's main.ts and deploys a new version.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Shader ID."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Shader kind.",
+            "enum": [
+              "effect",
+              "fill"
+            ]
+          },
+          "commitMessage": {
+            "type": "string",
+            "description": "Commit message."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Files with path and content."
+          },
+          "metadata": {
+            "type": "object",
+            "description": "name and description."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_file_shaders",
+      "description": "Lists shaders used in a Figma file (requires file view access).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileKey": {
+            "type": "string",
+            "description": "Figma file key."
+          }
+        },
+        "required": [
+          "fileKey"
+        ]
+      }
+    },
+    {
+      "name": "whoami",
+      "description": "Returns the authenticated user's email, plans and seat types.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "weave_list_tools",
+      "description": "Lists Weave tools the user can run (private tools excluded).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Optional search text."
+          }
+        }
+      }
+    },
+    {
+      "name": "weave_get_tool_inputs",
+      "description": "Returns a Weave tool's input contract.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipeId": {
+            "type": "string",
+            "description": "Tool recipe ID."
+          },
+          "version": {
+            "type": "string",
+            "description": "Optional version."
+          }
+        },
+        "required": [
+          "recipeId"
+        ]
+      }
+    },
+    {
+      "name": "weave_upload_asset",
+      "description": "Creates a hosted URL for an attached file to use as a Weave tool input.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipeId": {
+            "type": "string",
+            "description": "Tool recipe ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "weave_run_tool",
+      "description": "Starts one or more Weave tool runs; may require cost confirmation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipeId": {
+            "type": "string",
+            "description": "Tool recipe ID."
+          },
+          "version": {
+            "type": "string",
+            "description": "Version."
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "nodeId and value pairs."
+          },
+          "numberOfRuns": {
+            "type": "integer",
+            "description": "1-10."
+          },
+          "acknowledgedCost": {
+            "type": "boolean",
+            "description": "Acknowledge the cost."
+          }
+        },
+        "required": [
+          "recipeId"
+        ]
+      }
+    },
+    {
+      "name": "weave_get_tool_run_output",
+      "description": "Returns the status and outputs of Weave tool runs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipeId": {
+            "type": "string",
+            "description": "Tool recipe ID."
+          },
+          "runIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional run IDs."
+          }
+        },
+        "required": [
+          "recipeId"
+        ]
+      }
+    },
+    {
+      "name": "weave_cancel_tool_run",
+      "description": "Cancels Weave tool runs; cannot be undone.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipeId": {
+            "type": "string",
+            "description": "Tool recipe ID."
+          },
+          "runIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional run IDs; omit to cancel all."
+          }
+        },
+        "required": [
+          "recipeId"
+        ]
+      }
+    }
+  ]
+}

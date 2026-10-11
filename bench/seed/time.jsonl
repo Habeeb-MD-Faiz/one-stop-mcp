@@ -1,0 +1,4 @@
+{"query":"is it still business hours in Singapore","server":"time","tool":"get_current_time"}
+{"query":"what is the date and time over in Los Angeles","server":"time","tool":"get_current_time"}
+{"query":"schedule a call: 14:30 in Paris is what in Chicago","server":"time","tool":"convert_time"}
+{"query":"translate 08:00 UTC into India time","server":"time","tool":"convert_time"}

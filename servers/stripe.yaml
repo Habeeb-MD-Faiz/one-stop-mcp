@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://docs.stripe.com/mcp (official, hosted by Stripe at https://mcp.stripe.com).
+# Auth: OAuth for interactive clients; "Authorization: Bearer <agent API key>" for autonomous clients. From 2026-10-31 Stripe
+#   rejects full-access secret keys and restricted keys without the Agent tag, so only OAuth or an Agent key is valid.
+#   Stripe docs say to use OAuth when the client supports it; MCP auth discovery is assumed (no endpoints listed).
+# Tools: 14 listed on the page; the 4 Treasury money-movement tools in private preview (convert_currency, send_money,
+#   setup_recipient, transfer_money) are left out. stripe_api_read / stripe_api_write cover the Stripe API.
+id: stripe
+name: Stripe
+category: [payments]
+tags: [official, remote]
+description: >
+  Look up and manage Stripe customers, payments, invoices, subscriptions, products and balances
+  through the Stripe API, and search Stripe documentation.
+homepage: https://docs.stripe.com/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.stripe.com
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "list recent stripe payments"
+    - "create an invoice for a customer in stripe"
+    - "refund a charge in stripe"
+    - "how do I set up stripe checkout"
+  tools:
+    stripe_api_read: ["show my stripe customers and their subscriptions"]
+    stripe_api_write: ["create a new product and price in stripe"]
+    get_stripe_account_info: ["which stripe account am I connected to"]
+    search_stripe_documentation: ["stripe docs on webhooks"]
+health:
+  check: initialize

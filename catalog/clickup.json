@@ -1,0 +1,1019 @@
+{
+  "server": "clickup",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "clickup_search",
+      "description": "Search across all workspace content (tasks, docs, dashboards, attachments, whiteboards, chats, forms) by keyword. For filtering tasks by field values use clickup_filter_tasks.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keywords": {
+            "type": "string",
+            "description": "Search query string."
+          },
+          "filters": {
+            "type": "object",
+            "description": "Filters: assignees, creators, task_statuses, asset_types, location and date ranges."
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Sort criteria (created_at or updated_at)."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Results per page."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor from the previous response."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_filter_tasks",
+      "description": "Retrieve tasks with combined filters (tags, lists, folders, spaces, statuses, assignees, due date range, completion date range, custom field values). Best for filtering tasks by structured field values.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "assignees": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Assignee user IDs."
+          },
+          "statuses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Task status names."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag names."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List IDs."
+          },
+          "folder_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Folder IDs."
+          },
+          "space_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Space IDs."
+          },
+          "due_date_from": {
+            "type": "string",
+            "description": "YYYY-MM-DD."
+          },
+          "due_date_to": {
+            "type": "string",
+            "description": "YYYY-MM-DD."
+          },
+          "include_closed": {
+            "type": "boolean",
+            "description": "Include closed tasks."
+          },
+          "order_by": {
+            "type": "string",
+            "description": "Sort field.",
+            "enum": [
+              "id",
+              "created",
+              "updated",
+              "due_date"
+            ]
+          },
+          "page": {
+            "type": "integer",
+            "description": "0-indexed page number."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_get_task",
+      "description": "Retrieve a ClickUp task by ID (supports custom IDs like DEV-1234). Returns a compact summary; use include to fetch full sections.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sections to return in full: attachments, checklists, custom_fields, dependencies, description, linked_tasks, subtasks, watchers."
+          },
+          "expand_statuses": {
+            "type": "boolean",
+            "description": "List valid statuses for update_task."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_create_task",
+      "description": "Create a task in a ClickUp list. Requires name and list_id. Supports assignees, priority, dates, tags, custom fields and task type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Task name."
+          },
+          "list_id": {
+            "type": "string",
+            "description": "List ID."
+          },
+          "assignees": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Assignee user IDs."
+          },
+          "due_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD or YYYY-MM-DD HH:MM."
+          },
+          "start_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD or YYYY-MM-DD HH:MM."
+          },
+          "priority": {
+            "type": "string",
+            "description": "Task priority.",
+            "enum": [
+              "urgent",
+              "high",
+              "normal",
+              "low"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Override the list default status."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Existing tag names."
+          },
+          "parent": {
+            "type": "string",
+            "description": "Parent task ID to create a subtask."
+          },
+          "markdown_description": {
+            "type": "string",
+            "description": "Task description in markdown."
+          },
+          "time_estimate": {
+            "type": "string",
+            "description": "Estimate in minutes."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "name",
+          "list_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_update_task",
+      "description": "Update task properties. Requires task_id and at least one field to change: name, status, priority, dates, assignees, custom fields, task type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "name": {
+            "type": "string",
+            "description": "New name."
+          },
+          "status": {
+            "type": "string",
+            "description": "New status."
+          },
+          "priority": {
+            "type": "string",
+            "description": "Priority, or none to clear.",
+            "enum": [
+              "urgent",
+              "high",
+              "normal",
+              "low",
+              "none"
+            ]
+          },
+          "due_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD; none to clear."
+          },
+          "assignees": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Assignee user IDs."
+          },
+          "markdown_description": {
+            "type": "string",
+            "description": "Task description in markdown."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_delete_task",
+      "description": "Delete a task by task_id. Always confirm the task_id with the user before deleting.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID to delete."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_move_task",
+      "description": "Move a task to a new home list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task to move."
+          },
+          "list_id": {
+            "type": "string",
+            "description": "Destination list ID."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id",
+          "list_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_add_tag_to_task",
+      "description": "Add an existing tag to a task. The tag must already exist in the space.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "tag_name": {
+            "type": "string",
+            "description": "Tag name."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id",
+          "tag_name"
+        ]
+      }
+    },
+    {
+      "name": "clickup_add_task_dependency",
+      "description": "Set a directional dependency where one task blocks the other (waiting_on or blocking).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task to set the dependency on."
+          },
+          "depends_on": {
+            "type": "string",
+            "description": "Task it depends on or blocks."
+          },
+          "type": {
+            "type": "string",
+            "description": "Dependency type.",
+            "enum": [
+              "waiting_on",
+              "blocking"
+            ]
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id",
+          "depends_on",
+          "type"
+        ]
+      }
+    },
+    {
+      "name": "clickup_attach_task_file",
+      "description": "Attach a file to a task from base64 data or an http(s) URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "URL to download the file from."
+          },
+          "file_data": {
+            "type": "string",
+            "description": "Base64 file content."
+          },
+          "file_name": {
+            "type": "string",
+            "description": "File name with extension."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_create_comment",
+      "description": "Create a comment on a task or other entity. Replaces the deprecated clickup_create_task_comment (takes entity_id instead of task_id).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "entity_id": {
+            "type": "string",
+            "description": "ID of the task or entity to comment on."
+          },
+          "comment_text": {
+            "type": "string",
+            "description": "Comment content, Markdown supported."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_get_task_comments",
+      "description": "Get task comments with reply_count per comment. Use clickup_get_threaded_comments for replies.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "start": {
+            "type": "integer",
+            "description": "Timestamp in ms to start from."
+          },
+          "start_id": {
+            "type": "string",
+            "description": "Comment ID to start from."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_get_workspace_hierarchy",
+      "description": "Get the workspace hierarchy (spaces, folders, lists) with pagination and depth control.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "max_depth": {
+            "type": "string",
+            "description": "0 spaces only, 1 plus folders, 2 plus lists.",
+            "enum": [
+              "0",
+              "1",
+              "2"
+            ]
+          },
+          "space_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Return only these spaces."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Spaces per page, max 50."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_get_list",
+      "description": "Get list details by list_id or list_name, including configured statuses. Use to resolve list names to IDs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "list_id": {
+            "type": "string",
+            "description": "List ID."
+          },
+          "list_name": {
+            "type": "string",
+            "description": "List name to search for."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_create_list",
+      "description": "Create a list in a ClickUp space. For lists in folders use clickup_create_list_in_folder.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "List name."
+          },
+          "space_id": {
+            "type": "string",
+            "description": "Space ID."
+          },
+          "space_name": {
+            "type": "string",
+            "description": "Space name, alternative to space_id."
+          },
+          "content": {
+            "type": "string",
+            "description": "List description."
+          },
+          "due_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD."
+          },
+          "priority": {
+            "type": "string",
+            "description": "List priority.",
+            "enum": [
+              "urgent",
+              "high",
+              "normal",
+              "low"
+            ]
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "clickup_create_folder",
+      "description": "Create a folder in a ClickUp space.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Folder name."
+          },
+          "space_id": {
+            "type": "string",
+            "description": "Space ID (preferred)."
+          },
+          "space_name": {
+            "type": "string",
+            "description": "Space name, alternative to space_id."
+          },
+          "override_statuses": {
+            "type": "boolean",
+            "description": "Use folder-specific statuses."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "clickup_get_custom_fields",
+      "description": "Get custom field definitions at list, folder, space or workspace level, with field IDs, types and options.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "list_id": {
+            "type": "string",
+            "description": "List ID."
+          },
+          "folder_id": {
+            "type": "string",
+            "description": "Folder ID."
+          },
+          "space_id": {
+            "type": "string",
+            "description": "Space ID."
+          },
+          "include_workspace": {
+            "type": "boolean",
+            "description": "Return workspace-level custom fields."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_start_time_tracking",
+      "description": "Start time tracking on a task. Only one timer can run at a time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "description": {
+            "type": "string",
+            "description": "Time entry description."
+          },
+          "billable": {
+            "type": "boolean",
+            "description": "Whether the time is billable."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag names for the entry."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_stop_time_tracking",
+      "description": "Stop the currently running time tracker and return the completed time entry.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description for the entry."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag names for the entry."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_add_time_entry",
+      "description": "Add a manual time entry to a task with a start plus either a duration or an end time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID."
+          },
+          "start": {
+            "type": "string",
+            "description": "YYYY-MM-DD HH:MM."
+          },
+          "duration": {
+            "type": "string",
+            "description": "e.g. 1h 30m or 90m."
+          },
+          "end_time": {
+            "type": "string",
+            "description": "YYYY-MM-DD HH:MM."
+          },
+          "description": {
+            "type": "string",
+            "description": "Entry description."
+          },
+          "billable": {
+            "type": "boolean",
+            "description": "Whether the time is billable."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "task_id",
+          "start"
+        ]
+      }
+    },
+    {
+      "name": "clickup_get_time_entries",
+      "description": "Get time entries filtered by task, date range, assignee and billable status. Without assignee only the authenticated user's entries are returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Scope to one task."
+          },
+          "start_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD."
+          },
+          "end_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD."
+          },
+          "assignee": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User IDs, or any for all users."
+          },
+          "is_billable": {
+            "type": "boolean",
+            "description": "Filter by billable status."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_get_current_time_entry",
+      "description": "Get the currently running time entry, if any.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_get_workspace_members",
+      "description": "List all members in the workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_find_member_by_name",
+      "description": "Get a member of the ClickUp workspace by name or email.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name_or_email": {
+            "type": "string",
+            "description": "The name or email of the member to find."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "name_or_email"
+        ]
+      }
+    },
+    {
+      "name": "clickup_resolve_assignees",
+      "description": "Convert names, emails, usernames or \"me\" to numeric ClickUp user IDs for assignee fields.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "clickup_create_document",
+      "description": "Create a document in a ClickUp space, folder, or list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Document title."
+          },
+          "parent": {
+            "type": "object",
+            "description": "Parent container id and type."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Document visibility.",
+            "enum": [
+              "PUBLIC",
+              "PRIVATE",
+              "PERSONAL",
+              "HIDDEN"
+            ]
+          },
+          "create_page": {
+            "type": "boolean",
+            "description": "Create an initial blank page."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "name",
+          "parent",
+          "visibility",
+          "create_page"
+        ]
+      }
+    },
+    {
+      "name": "clickup_get_document_pages",
+      "description": "Get the full content of specific document pages by page ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Document ID."
+          },
+          "page_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Page IDs to retrieve."
+          },
+          "content_format": {
+            "type": "string",
+            "description": "Response format.",
+            "enum": [
+              "text/plain",
+              "text/md"
+            ]
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "document_id",
+          "page_ids"
+        ]
+      }
+    },
+    {
+      "name": "clickup_update_document_page",
+      "description": "Update a page in a ClickUp document; replace, append or prepend content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Document ID."
+          },
+          "page_id": {
+            "type": "string",
+            "description": "Page ID."
+          },
+          "content": {
+            "type": "string",
+            "description": "New page content."
+          },
+          "content_edit_mode": {
+            "type": "string",
+            "description": "How to apply content.",
+            "enum": [
+              "replace",
+              "append",
+              "prepend"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "New page name."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "document_id",
+          "page_id"
+        ]
+      }
+    },
+    {
+      "name": "clickup_get_chat_channels",
+      "description": "List chat channels in the workspace with pagination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Maximum channels, 1-100."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        }
+      }
+    },
+    {
+      "name": "clickup_send_chat_message",
+      "description": "Send a message or threaded reply to a chat channel. Supports markdown and post types.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel_id": {
+            "type": "string",
+            "description": "Chat channel ID."
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content, markdown supported."
+          },
+          "parent_message_id": {
+            "type": "string",
+            "description": "Parent message ID for a threaded reply."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "channel_id",
+          "content"
+        ]
+      }
+    },
+    {
+      "name": "clickup_create_reminder",
+      "description": "Create a personal reminder in your ClickUp workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Reminder title."
+          },
+          "due_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD or YYYY-MM-DD HH:MM."
+          },
+          "description": {
+            "type": "string",
+            "description": "Additional details."
+          },
+          "workspace_id": {
+            "type": "string",
+            "description": "Workspace ID (digits only). Only needed with multiple workspaces."
+          }
+        },
+        "required": [
+          "title",
+          "due_date"
+        ]
+      }
+    }
+  ]
+}

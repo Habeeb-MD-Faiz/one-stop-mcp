@@ -1,0 +1,4 @@
+{"query":"file a task in jira for upgrading the database","server":"atlassian","tool":"createJiraIssue"}
+{"query":"list every unresolved bug in the payments project","server":"atlassian","tool":"searchJiraIssuesUsingJql"}
+{"query":"write up the meeting notes as a new wiki page","server":"atlassian","tool":"createConfluenceContent"}
+{"query":"tell me which sites and cloud ids I can use","server":"atlassian","tool":"getAccessibleAtlassianResources"}

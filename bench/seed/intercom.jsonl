@@ -1,0 +1,4 @@
+{"query":"which customer chats are still waiting for a reply","server":"intercom","tool":"search_conversations"}
+{"query":"read the whole thread for that support ticket","server":"intercom","tool":"get_conversation"}
+{"query":"publish a how-to page in the knowledge base","server":"intercom","tool":"create_article"}
+{"query":"find the company record for globex","server":"intercom","tool":"list_companies"}

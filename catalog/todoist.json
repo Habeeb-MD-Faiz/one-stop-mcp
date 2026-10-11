@@ -1,0 +1,341 @@
+{
+  "server": "todoist",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "add-tasks",
+      "description": "Create one or more Todoist tasks with content, description, priority, due date, duration, labels, project, section, parent and assignee.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-tasks",
+      "description": "Find tasks by search text, project, section, parent, responsible user or label name.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-tasks-by-date",
+      "description": "Find tasks due on a date or within a date range, including overdue tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-completed-tasks",
+      "description": "List completed tasks within a date range.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-tasks",
+      "description": "Update existing tasks: content, description, priority, due date, labels, project, section or parent.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "complete-tasks",
+      "description": "Mark one or more tasks as completed.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "uncomplete-tasks",
+      "description": "Reopen one or more completed tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "reschedule-tasks",
+      "description": "Move tasks to a different due date while preserving recurrence.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-projects",
+      "description": "Create one or more projects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-projects",
+      "description": "List or search projects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-projects",
+      "description": "Update project names, colors, favorite status or view style.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "project-management",
+      "description": "Archive or unarchive a project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "project-move",
+      "description": "Move a project between personal and workspace.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-sections",
+      "description": "Create sections within a project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-sections",
+      "description": "List sections in a project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-sections",
+      "description": "Rename or update sections.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-labels",
+      "description": "Create personal labels.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-labels",
+      "description": "List or search labels.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-labels",
+      "description": "Update labels.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-comments",
+      "description": "Add comments to tasks or projects, optionally notifying named users.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notifyUsers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Users to notify about the comment."
+          }
+        }
+      }
+    },
+    {
+      "name": "find-comments",
+      "description": "List comments on a task or project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-comments",
+      "description": "Edit existing comments.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-reminders",
+      "description": "Create time-based or location-based reminders on tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-reminders",
+      "description": "List reminders on tasks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-reminders",
+      "description": "Update reminders.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "add-filters",
+      "description": "Create saved filters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-filters",
+      "description": "List or search saved filters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "update-filters",
+      "description": "Update saved filters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "manage-assignments",
+      "description": "Assign, reassign or unassign tasks to collaborators in bulk.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find-project-collaborators",
+      "description": "Find collaborators of shared projects, or resolve a person's name or email to a user ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "searchTerm": {
+            "type": "string",
+            "description": "Name or email to look up."
+          },
+          "projectId": {
+            "type": "string",
+            "description": "Restrict to one project."
+          }
+        }
+      }
+    },
+    {
+      "name": "find-activity",
+      "description": "List activity log events such as task completions, filtered by object type, event type, initiator and date range.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "e.g. task."
+          },
+          "eventType": {
+            "type": "string",
+            "description": "e.g. completed."
+          },
+          "initiatorId": {
+            "type": "string",
+            "description": "User who performed the action."
+          },
+          "dateFrom": {
+            "type": "string",
+            "description": "Start date."
+          },
+          "dateTo": {
+            "type": "string",
+            "description": "End date."
+          }
+        }
+      }
+    },
+    {
+      "name": "get-overview",
+      "description": "Get an overview of the user's workload, projects and progress.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-productivity-stats",
+      "description": "Get productivity statistics: karma, completed counts and streaks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-project-health",
+      "description": "Get the health status of a project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "analyze-project-health",
+      "description": "Refresh and analyze a project's health.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-project-activity-stats",
+      "description": "Get activity statistics for a project.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get-workspace-insights",
+      "description": "Get insights across a workspace's projects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list-workspaces",
+      "description": "List the Todoist workspaces the user belongs to.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "user-info",
+      "description": "Get the current user's ID, name, email and timezone.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "fetch-object",
+      "description": "Fetch a single task, project, comment or other object by ID, optionally with its children.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "includeChildren": {
+            "type": "boolean",
+            "description": "Include subtasks and other child objects."
+          }
+        }
+      }
+    },
+    {
+      "name": "delete-object",
+      "description": "Delete any Todoist object by type and ID.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

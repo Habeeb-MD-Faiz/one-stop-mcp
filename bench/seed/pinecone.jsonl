@@ -1,0 +1,4 @@
+{"query":"what vector indexes exist in my account","server":"pinecone","tool":"list-indexes"}
+{"query":"query the knowledge-base index by meaning and rerank the hits","server":"pinecone","tool":"search-records"}
+{"query":"run one search across several indexes and merge the results","server":"pinecone","tool":"cascading-search"}
+{"query":"how do I configure sparse vectors, per the pinecone docs","server":"pinecone","tool":"search-docs"}

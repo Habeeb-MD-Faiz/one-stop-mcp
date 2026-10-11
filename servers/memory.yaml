@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/memory (reference).
+# Package @modelcontextprotocol/server-memory, version checked with npm view (2026.8.31).
+# Stores the knowledge graph in a JSONL file; MEMORY_FILE_PATH (optional env) sets its location.
+id: memory
+name: Memory
+category: [memory, ai]
+tags: [reference, local]
+description: >
+  A persistent knowledge-graph memory: store entities, relations and observations, then search or
+  read them back across conversations.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-memory@2026.8.31"]
+auth:
+  type: none
+routing:
+  examples:
+    - "remember that I prefer dark mode"
+    - "what do you remember about my project"
+    - "store this fact about the client for later"
+    - "recall what we decided last time"
+  tools:
+    create_entities: ["save a new person and their details to memory"]
+    add_observations: ["add this fact to what you know about Priya"]
+    search_nodes: ["look up everything I told you about the billing system"]
+    read_graph: ["show me your whole memory"]
+health:
+  check: initialize

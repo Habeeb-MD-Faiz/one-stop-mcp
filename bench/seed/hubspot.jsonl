@@ -1,0 +1,4 @@
+{"query":"which companies in my CRM are in the healthcare industry","server":"hubspot","tool":"search_crm_objects"}
+{"query":"add a new lead named Jordan Lee from Globex","server":"hubspot","tool":"manage_crm_objects"}
+{"query":"break down pipeline value by deal stage","server":"hubspot","tool":"query_crm_data"}
+{"query":"who is the owner assigned to this account","server":"hubspot","tool":"search_owners"}

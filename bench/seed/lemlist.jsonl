@@ -1,0 +1,4 @@
+{"query":"list all the outreach campaigns I have running","server":"lemlist","tool":"get_campaigns"}
+{"query":"what are the open and reply numbers on my latest sequence","server":"lemlist","tool":"get_campaign_stats"}
+{"query":"source leads that match my ideal customer profile","server":"lemlist","tool":"lemleads_search"}
+{"query":"check that this address will not bounce before I send","server":"lemlist","tool":"verifyEmail"}

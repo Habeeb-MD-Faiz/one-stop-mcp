@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://docs.slack.dev/ai/slack-mcp-server/ (official, hosted by Slack); endpoint also in
+#   https://github.com/slackapi/slack-mcp-plugin (.mcp.json).
+# Tool names: slack_search_*, slack_read_*, slack_send_message*, slack_schedule_message, slack_create_canvas,
+#   slack_add_reaction, slack_get_reactions from skills/slack-messaging + skills/slack-search SKILL.md in that repo;
+#   slack_get_file_upload_url / slack_complete_file_upload from the docs page.
+# NOT VERIFIED: exact names for the update-canvas, read-canvas and create-conversation tools (docs list them by
+#   display name only), so they are omitted from the snapshot.
+# Slack does NOT support dynamic client registration: it needs a registered Slack app (directory-published or
+#   internal), confidential client (client_id + client_secret), user-token endpoints below. clientId per deployment.
+id: slack
+name: Slack
+category: [communication]
+tags: [official, remote]
+description: >
+  Search Slack messages, files, channels and users, read channel history and threads, send, draft
+  and schedule messages, add reactions, and create canvases.
+homepage: https://docs.slack.dev/ai/slack-mcp-server/
+transport:
+  type: streamable-http
+  url: https://mcp.slack.com/mcp
+auth:
+  type: oauth2
+  scopes:
+    - search:read.public
+    - search:read.private
+    - search:read.mpim
+    - search:read.im
+    - search:read.files
+    - search:read.users
+    - channels:history
+    - groups:history
+    - mpim:history
+    - im:history
+    - chat:write
+    - reactions:read
+    - reactions:write
+    - canvases:read
+    - canvases:write
+    - users:read
+    - users:read.email
+    - files:read
+    - files:write
+  authorizationUrl: https://slack.com/oauth/v2_user/authorize
+  tokenUrl: https://slack.com/api/oauth.v2.user.access
+routing:
+  examples:
+    - "post a message in the engineering channel"
+    - "search slack for what we decided about the launch"
+    - "catch me up on the thread in #support"
+    - "schedule a reminder message for tomorrow morning"
+  tools:
+    slack_send_message: ["tell the team in #general that the deploy is done"]
+    slack_search_public: ["find messages about the outage in public channels"]
+    slack_read_channel: ["show recent messages in the sales channel"]
+    slack_schedule_message: ["send this announcement at 9am Monday"]
+health:
+  check: initialize

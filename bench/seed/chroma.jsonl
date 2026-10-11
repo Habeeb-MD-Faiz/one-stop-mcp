@@ -1,0 +1,4 @@
+{"query":"set up a new embeddings collection called support-tickets","server":"chroma","tool":"chroma_create_collection"}
+{"query":"insert these paragraphs along with their source urls","server":"chroma","tool":"chroma_add_documents"}
+{"query":"which stored chunks are nearest in meaning to my query","server":"chroma","tool":"chroma_query_documents"}
+{"query":"remove the outdated records by their ids","server":"chroma","tool":"chroma_delete_documents"}

@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/Doist/todoist-ai (official, by Doist; hosted at https://ai.todoist.net/mcp,
+#   Streamable HTTP, OAuth). Also runnable as npm @doist/todoist-mcp with TODOIST_API_KEY (not used here;
+#   version not pinned/verified).
+# Tool names: src/tools directory of that repo (verified listing). The snapshot keeps 41; omitted:
+#   reorder-objects, export-project-template, import-project-template, view-attachment, search, fetch.
+#   Descriptions are written from the hosted server's usage notes (the repo README does not list them) and
+#   parameters are mostly left open.
+id: todoist
+name: Todoist
+category: [productivity]
+tags: [official, remote]
+description: >
+  Create, find, update, complete and reschedule Todoist tasks, and manage projects, sections, labels,
+  comments, reminders, filters and assignments.
+homepage: https://developer.todoist.com/api/v1/
+transport:
+  type: streamable-http
+  url: https://ai.todoist.net/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "add a task to my todoist inbox"
+    - "what's due today in todoist"
+    - "mark the grocery task as done"
+    - "create a new todoist project for the trip"
+  tools:
+    add-tasks: ["remind me to call the dentist tomorrow"]
+    find-tasks-by-date: ["what do I have to do this week"]
+    complete-tasks: ["check off the laundry task"]
+    reschedule-tasks: ["push all my overdue tasks to Friday"]
+health:
+  check: initialize

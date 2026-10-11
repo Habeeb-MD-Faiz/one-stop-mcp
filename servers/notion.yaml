@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.notion.com/guides/mcp/get-started-with-mcp (official, hosted by Notion)
+# Tool list: https://developers.notion.com/guides/mcp/mcp-supported-tools (36 tools, snapshot taken from docs).
+# OAuth discovery + dynamic client registration verified at https://developers.notion.com/guides/mcp/build-mcp-client
+id: notion
+name: Notion
+category: [productivity, docs]
+tags: [official, remote]
+description: >
+  Search, read, create and edit Notion pages, databases, views and comments in the
+  connected workspace, query data sources, and manage files and Custom Agent sessions.
+homepage: https://developers.notion.com/guides/mcp/get-started-with-mcp
+transport:
+  type: streamable-http
+  url: https://mcp.notion.com/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "find my meeting notes in notion"
+    - "create a new page in my notion workspace"
+    - "add a row to my notion database"
+    - "what does our notion wiki say about onboarding"
+  tools:
+    notion-search: ["search my workspace for the onboarding doc"]
+    notion-fetch: ["open this notion page and read it"]
+    notion-create-pages: ["write a new project brief page in notion"]
+    notion-update-page: ["edit the status property on that notion page"]
+    notion-query-data-sources: ["list all tasks in my tracker database due this week"]
+health:
+  check: initialize

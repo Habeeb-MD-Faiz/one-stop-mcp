@@ -1,0 +1,163 @@
+{
+  "server": "memory",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "create_entities",
+      "description": "Creates multiple entities in the knowledge graph. Entities with names that already exist are ignored.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "entities": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Entities, each with name, entityType and observations (string[])."
+          }
+        },
+        "required": [
+          "entities"
+        ]
+      }
+    },
+    {
+      "name": "create_relations",
+      "description": "Creates multiple relations between entities. Duplicates are skipped; fails if either entity is missing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "relations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Relations, each with from, to and relationType (active voice)."
+          }
+        },
+        "required": [
+          "relations"
+        ]
+      }
+    },
+    {
+      "name": "add_observations",
+      "description": "Adds observations to existing entities. Fails if an entity does not exist.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Each with entityName and contents (string[])."
+          }
+        },
+        "required": [
+          "observations"
+        ]
+      }
+    },
+    {
+      "name": "delete_entities",
+      "description": "Deletes entities and their associated relations. Missing names cause no error.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "entityNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of the entities to delete."
+          }
+        },
+        "required": [
+          "entityNames"
+        ]
+      }
+    },
+    {
+      "name": "delete_observations",
+      "description": "Removes specific observations from entities.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deletions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Each with entityName and observations (string[])."
+          }
+        },
+        "required": [
+          "deletions"
+        ]
+      }
+    },
+    {
+      "name": "delete_relations",
+      "description": "Removes specific relations from the knowledge graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "relations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Relations, each with from, to and relationType."
+          }
+        },
+        "required": [
+          "relations"
+        ]
+      }
+    },
+    {
+      "name": "read_graph",
+      "description": "Returns the entire knowledge graph with all entities and relations.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_nodes",
+      "description": "Searches entity names, entity types and observation content, returning matching entities and their relations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "open_nodes",
+      "description": "Retrieves entities by name, along with the relations between them. Non-existent names are skipped.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Entity names to retrieve."
+          }
+        },
+        "required": [
+          "names"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"pull up all failed payment intents from the past week","server":"stripe","tool":"stripe_api_read"}
+{"query":"issue a refund for the last order","server":"stripe","tool":"stripe_api_write"}
+{"query":"what is my current available stripe balance","server":"stripe","tool":"get_balance_summary"}
+{"query":"which stripe endpoint lets me list disputes","server":"stripe","tool":"stripe_api_search"}

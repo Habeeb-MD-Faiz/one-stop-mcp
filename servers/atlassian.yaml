@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/
+#   (official, hosted by Atlassian, "Atlassian Rovo MCP server"). Server URL https://mcp.atlassian.com/v2/mcp;
+#   the page says appending ?tools=all exposes every tool as a flat paginated list and recommends it for MCP
+#   gateways (the default is a discover/execute pattern plus primary tools), so it is used here.
+# Tools: https://support.atlassian.com/atlassian-rovo-mcp-server/docs/supported-tools/ (full list is several
+#   hundred across Jira, Confluence, Bitbucket, Loom, Goals, Assets...). The snapshot keeps 40 Jira and Confluence
+#   tools. Descriptions are condensed from that page; most parameters are not documented (a few are best-effort).
+# Auth: OAuth 2.1 (primary); an API token is also possible (header format not given on the page).
+# NOT VERIFIED: dynamic client registration / client metadata support; MCP auth discovery is assumed.
+id: atlassian
+name: Atlassian (Jira and Confluence)
+category: [productivity, docs, dev]
+tags: [official, remote]
+description: >
+  Search, read, create and edit Jira work items, sprints and boards and Confluence pages, spaces and
+  comments in the connected Atlassian sites.
+homepage: https://support.atlassian.com/atlassian-rovo-mcp-server/
+transport:
+  type: streamable-http
+  url: https://mcp.atlassian.com/v2/mcp?tools=all
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "create a jira ticket for this bug"
+    - "search confluence for the architecture doc"
+    - "move my jira issue to in progress"
+    - "what's in the current sprint"
+  tools:
+    searchJiraIssuesUsingJql: ["find open bugs assigned to me in jira"]
+    createJiraIssue: ["open a new story in the PLAT project"]
+    transitionJiraIssue: ["set PROJ-42 to done"]
+    searchConfluence: ["look up the onboarding runbook in confluence"]
+health:
+  check: initialize

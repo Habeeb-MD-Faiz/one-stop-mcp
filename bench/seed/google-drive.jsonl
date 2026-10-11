@@ -1,0 +1,4 @@
+{"query":"locate the contract PDF I saved last spring","server":"google-drive","tool":"search_files"}
+{"query":"give me the plain text of the proposal document","server":"google-drive","tool":"read_file_content"}
+{"query":"make a duplicate of the invoice template","server":"google-drive","tool":"copy_file"}
+{"query":"which of my files changed most recently","server":"google-drive","tool":"list_recent_files"}

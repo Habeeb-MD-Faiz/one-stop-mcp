@@ -1,0 +1,4 @@
+{"query":"what meetings do I have on Wednesday afternoon","server":"google-calendar","tool":"list_events"}
+{"query":"put a dentist appointment on my calendar for next Tuesday at 10","server":"google-calendar","tool":"create_event"}
+{"query":"move the standup to 11am","server":"google-calendar","tool":"update_event"}
+{"query":"find an open slot where Maria, Tom and I can all meet this week","server":"google-calendar","tool":"suggest_time"}
