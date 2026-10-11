@@ -75,11 +75,10 @@ Unknown top-level keys are an error, which catches typos. Every error names the 
 | `id` | yes | Lowercase kebab-case (`google-calendar`) and **equal to the file name** (`servers/google-calendar.yaml`). Unique across the catalog. Permanent: it is how users, the vault and the ledger refer to the server. |
 | `name` | yes | Display name, non-empty. |
 | `description` | yes | One or two sentences: what it reads and writes. Indexed for routing, so be concrete. |
-| `category` | yes | A list. Each entry must come from the allowed set: `dev`, `code`, `data`, `database`, `productivity`, `docs`, `communication`, `search`, `web`, `browser`, `cloud`, `infra`, `ai`, `memory`, `crm`, `sales`, `marketing`, `payments`, `design`, `testing`, `utility`. Categories feed `list_servers` filtering and the "browse" fallback. |
+| `category` | yes | A list. Each entry must come from the allowed set: `dev`, `code`, `data`, `database`, `productivity`, `docs`, `knowledge-base`, `communication`, `search`, `web`, `browser`, `cloud`, `infra`, `ai`, `memory`, `crm`, `sales`, `marketing`, `payments`, `design`, `testing`, `utility`. Categories feed `list_servers` filtering and the "browse" fallback. |
 | `tags` | no | Free labels for `list_servers` filtering, e.g. `official`, `remote`, `community`. |
 | `homepage` | no | Documentation or repository URL. |
 
-<!-- verify: the category list is from the L4 brief and is exported as CATEGORIES in src/manifest.ts; reconcile if a seed manifest needed an extra one. -->
 
 ### `transport`
 
@@ -105,7 +104,7 @@ transport:                      # streamable-http
 - **Pin versions.** An `npx` or `uvx` package must carry an exact version (`pkg@2.4.1`). The gateway runs this command on the user's machine, with their credentials, so a floating version is a supply-chain hole.
 - **Never put a credential in `transport`.** Keys belong to `auth`; the gateway injects them from the vault.
 - Prefer the vendor's hosted Streamable HTTP endpoint when one exists. The gateway falls back to legacy SSE if the server rejects Streamable HTTP.
-- A stdio child gets a minimal environment: safe defaults, `transport.env`, and the injected credential. It does not inherit the gateway's environment.
+- A stdio child gets a minimal environment: the MCP SDK's default safe variables (on Linux and macOS `HOME`, `LOGNAME`, `PATH`, `SHELL`, `TERM`, `USER`), `transport.env`, and the injected credential. It does not inherit the gateway's environment. `HOME` lets tools such as `aws` and `kubectl` find `~/.aws` and `~/.kube`; if a server needs `AWS_PROFILE` or `KUBECONFIG`, set it in `transport.env`.
 
 ### `auth`
 
@@ -127,8 +126,10 @@ auth:
 
 Rules the validator enforces:
 
+- Each auth type accepts only its own keys. `none`: just `type`. `api_key`: `env`, `header`, `prefix`, `keyUrl`, `rotation`. `oauth2`: `scopes`, `env`, `header`, `prefix`, `authorizationUrl`, `tokenUrl`, `clientId`. Anything else is an error that names the field.
+- `env` is only valid on a stdio transport; `header` and `prefix` only on streamable-http.
 - `api_key` on a stdio server needs `env`. On an HTTP server `header` defaults as above.
-- `oauth2` on a stdio server needs `authorizationUrl`, `tokenUrl` **and** `env`.
+- `oauth2` on a stdio server needs `authorizationUrl`, `tokenUrl` **and** `env`. `authorizationUrl` and `tokenUrl` must be given together.
 - `oauth2` on an HTTP server with **no** endpoints uses MCP authorization discovery (RFC 9728, RFC 8414, dynamic client registration RFC 7591). Most hosted remote servers need nothing more than `type: oauth2`.
 
 Examples:

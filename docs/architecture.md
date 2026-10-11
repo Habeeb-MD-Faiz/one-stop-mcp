@@ -40,11 +40,12 @@ Two rules shape everything:
 | Meta-tool facade | `src/server/gateway.ts`, `src/server/meta-tools.ts` | Builds the MCP `Server` that advertises exactly four tools and dispatches them with the caller's principal. |
 | HTTP server | `src/server/http.ts` | `/mcp` (team mode), OAuth callback, key-entry pages, admin API and page, `/metrics`, `/healthz`. Plain `node:http`. |
 | Metrics | `src/server/metrics.ts` | A small hand-written Prometheus text registry. |
+| Admin API | `src/server/admin.ts` | One route table (kill switch, rotation, incident, ledger, users, health) used by both `/admin/api/*` and the local CLI, so both paths share input rules and every call is ledgered. |
 | Composition root | `src/server/app.ts` | `createApp(config)` builds every piece below and wires them. The only place that knows all of them. |
 | Tenancy | `src/tenancy/users.ts` | Users, orgs, bearer tokens (stored as SHA-256 hashes only). |
 | Config and CLI | `src/config.ts`, `src/cli.ts`, `src/index.ts` | Config loading and validation; every operator command. |
 | Routing | `src/routing/` | `HybridDiscovery` (exact, then lexical + BM25 + dense with reciprocal rank fusion), local embedder, on-disk embedding cache, schema compression. |
-| Catalog | `src/catalog/`, `src/manifest.ts`, `schema/` | Manifest parsing and validation, snapshot store, registry sync worker. |
+| Catalog | `src/catalog/`, `src/manifest.ts`, `schema/` | Manifest parsing and validation (`src/manifest.ts`), snapshot store, registry sync worker. |
 | Downstream registry | `src/downstream/` | Lazy sessions, pooling, TTL reaping, stdio and HTTP transports, health checks, outbound credential injection, result redaction. |
 | Auth broker | `src/auth/` | `connect_server` flows: OAuth (MCP authorization spec or generic OAuth 2.1 + PKCE), one-time key-entry tickets, token refresh. |
 | Security | `src/security/` | Key hierarchy, encrypted secret store, HashiCorp Vault backend, signed ledger, anomaly flags, kill switch, rotation, TOTP, redaction. |
@@ -175,7 +176,6 @@ Mode is configuration, not a fork ([configuration](configuration.md)).
 | 9 P4 | Multi-tenant orgs and users, metrics | `src/tenancy/`, `src/server/metrics.ts` |
 | 9 P5 | Docs, manifest CI, RFC process, governance | `.github/`, `docs/`, `GOVERNANCE.md` |
 
-<!-- verify: file names under src/ are taken from the lane briefs; reconcile with the integrated tree. -->
 
 ## What the gateway does not do
 

@@ -37,7 +37,7 @@ The helper `toRoutable(manifest, snapshot)` in `src/routing/index.ts` builds thi
 
 The result is `{ tools, confidence, widened, browse? }`.
 
-<!-- verify: the exact definition of "low confidence" (leg agreement and/or score margin) and the RRF constant for the three-leg fusion are set in src/routing/discovery.ts; the two-leg lexical router used k = 30. -->
+**How "low confidence" is decided.** Confidence is high when the query matched exactly one tool name, or when every leg that returned anything puts the fused top hit in its own top three. If the legs split, the query is ambiguous or synonym-heavy, so the gateway returns the wider list instead of a confident guess. Agreement was chosen over a score margin because RRF scores have no absolute scale, so a margin would need re-tuning for every catalog size. A bare name shared by several servers (`search`) is not an exact match. Each leg contributes a pool of `max(4k, 20)` candidates to the fusion, `k` is capped at 50, and `browse` lists up to three categories weighted by fused score. The fusion constant is `k = 30` (smaller than the textbook 60, because a small catalog flattens at 60). If one leg throws (say the embedder runs out of memory), `find_tools` continues on the remaining legs and logs one line.
 
 RRF fuses ranks, not raw scores, so BM25 scores and cosine similarities never need to be put on one scale.
 
@@ -45,14 +45,16 @@ RRF fuses ranks, not raw scores, so BM25 scores and cosine similarities never ne
 
 Dense routing uses a **local** model through `@huggingface/transformers` (ONNX runtime). No embedding API is called, ever ([D5](burndown/DECISIONS.md)).
 
-- Models under test: `Xenova/all-MiniLM-L6-v2` and `Xenova/bge-small-en-v1.5`. The benchmark picks the default on top-3 accuracy and latency. Override with `routing.model`.
-- The model is downloaded once from the Hugging Face hub on first use (free, public) and then cached.
-- Embeddings are mean-pooled and L2-normalised, so cosine similarity is a dot product.
+- **Default model: `Xenova/bge-small-en-v1.5`.** With the dense leg fused in, top-3 on `bench/` was 94.1%, against 91.2% for `Xenova/all-MiniLM-L6-v2` (recorded in `src/routing/embedder.ts`, 2026-10-11), at about 15 ms more per query. Override with `routing.model` or `OSMCP_MODEL`.
+- The model is downloaded once from the Hugging Face hub on first use (free, public) into `$OSMCP_HOME/embeddings/models` and runs on CPU afterwards.
+- Embeddings are L2-normalised, so cosine similarity is a dot product. Pooling follows how each model was trained: the `[CLS]` token for BGE, mean pooling for MiniLM.
 - **On-disk cache.** Vectors are keyed by `sha256(model + "\0" + document text)`, one file per model, written atomically. A restart does not re-embed, and an edited tool re-embeds only itself.
 - **Exact search.** The index is searched exhaustively. For a catalog of a few thousand tools that takes milliseconds, builds instantly and has perfect recall. An approximate index (hnswlib) is the upgrade for catalogs past roughly 50,000 tools, not before.
 - **Remote providers** could plug in behind the same `Embedder` interface. None is built.
 
-The package is an **optional dependency**, and the model download can fail. In either case the gateway logs one line to stderr and continues with the keyword and BM25 legs; `find_tools` still works, just with lower recall on synonyms. Turn dense routing off explicitly with `routing.embeddings: off`. CI installs with `npm ci --omit=optional`, so CI exercises the lexical path and tests the dense leg with a deterministic fake embedder.
+The package is an **optional dependency**, and the model download can fail. In either case the gateway logs one line to stderr and continues with the keyword and BM25 legs (the message reads `local embeddings unavailable (...); routing uses lexical + BM25 only`); `find_tools` still works, just with lower recall on synonyms. Turn dense routing off explicitly with `routing.embeddings: off`. CI installs with `npm ci --omit=optional`, so CI exercises the lexical path and tests the dense leg with a deterministic fake embedder.
+
+On Windows the ONNX runtime needs the Microsoft Visual C++ 2015-2022 x64 redistributable; without it you get exactly that fallback message ("The specified module could not be found") and routing runs on the lexical legs.
 
 ## Schema compression
 
@@ -61,7 +63,7 @@ Shortlisted schemas pass through a compressor before they enter context. This is
 | Level | Removes | Keeps |
 |---|---|---|
 | `off` | nothing | everything |
-| `light` (default) | `$schema`, `title`, `examples`, `additionalProperties: false`, and similar boilerplate (`$id`, `$comment`) | types, descriptions, properties, `required`, `enum` |
+| `light` (default) | `$schema`, `$id`, `$comment`, `title`, `examples`, `additionalProperties: false` | types, descriptions, properties, `required`, `enum`, and `$ref` (it carries structure) |
 | `aggressive` | everything `light` removes, and trims descriptions | **always** `type`, `required`, `enum` and every property name |
 
 `aggressive` can never drop the fields tool selection and argument construction depend on ([D8](burndown/DECISIONS.md)); tests enforce that. `npm run bench -- --compress` reports schema tokens at each level over the catalog's real schemas. How far to go is a measured trade-off, not a fixed answer: check the numbers before switching the default.
@@ -82,12 +84,21 @@ npm run bench                                   # lexical + BM25 on bench/
 npm run bench -- --dense                        # add the dense leg
 npm run bench -- --dense --model Xenova/bge-small-en-v1.5
 npm run bench -- --compress                     # schema tokens at off / light / aggressive
-npm run bench -- --catalog-dir catalog --servers servers --queries bench/seed   # the seed catalog
+npm run bench -- --dense --catalog-dir catalog --servers servers --queries bench/seed   # the seed catalog (--queries takes a file or a directory)
 ```
 
-<!-- verify: flag names are from the L1 brief; --queries takes a file in the brief ("--queries <file>"), so the last line may need a concatenated file or a glob. Check scripts/routing-bench.ts. -->
+`--cache-dir <dir>` sets where `--dense` keeps the model and the embedding cache. The script is informational: it prints numbers and exits 0 (it exits 1 only on bad input), so CI does not gate on it. Compare the numbers yourself, before and after.
 
-**Where it stands.** The last recorded run of the lexical-only router on `bench/` was 85.3% top-3 (29 of 34) and 55.9% top-1 on 2026-09-03. The target is 90% top-3. The misses were synonyms ("book" meaning create an event, "jot down" meaning append) that keyword matching cannot catch, which is the dense leg's job. Current figures with the dense leg and on the seed catalog belong in the README status table. <!-- verify: fill in the integrated bench numbers (lexical vs dense, per model, seed catalog) from the S3 run. -->
+**Where it stands.** Measured on 2026-10-11 with this build:
+
+| Run | Queries | top-1 | top-3 |
+|---|---|---|---|
+| `bench/`, keyword + BM25 | 34 | 55.9% | 85.3% |
+| `bench/`, + dense (`bge-small-en-v1.5`) | 34 | n/r | 94.1% |
+| `bench/`, + dense (`all-MiniLM-L6-v2`) | 34 | n/r | 91.2% |
+| Seed catalog (50 servers), keyword + BM25 | 200 | 14.0% | 25.5% |
+
+(n/r: not recorded in the source comment. The dense rows come from the routing lane's run, quoted in `src/routing/embedder.ts`; the keyword rows were re-run for this page.) The target is 90% top-3. The original benchmark meets it only with the dense leg. **The seed catalog does not meet it**: the misses are mostly queries where another server's tool shares more keywords than the right one (`npm run bench` prints each miss), and the keyword legs alone find the right tool in the top three about a quarter of the time. An earlier 33-server draft of the seed catalog scored 44.5% with the dense leg (41.4% for MiniLM); no full 50-server dense figure is recorded yet. Better per-tool `routing.tools` utterances are the main lever left.
 
 **Read the seed numbers with care.** The seed queries are written by the same people who wrote each server's examples, with a rule not to reuse the examples' wording. That inflates scores somewhat. A held-out query set written by someone who has not seen the manifests is the honest number ([D33](burndown/DECISIONS.md)), and contributions of such queries are welcome.
 
