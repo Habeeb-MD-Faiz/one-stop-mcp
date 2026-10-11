@@ -196,7 +196,8 @@ test("schedule rotates what is due and issues a guided prompt once per key versi
   const svc = new RotationService({ ...(service as any).o, days: 0 }); // everything is due immediately
   const seen: string[] = [];
   const stop = svc.startSchedule(15, (o) => seen.push(`${o.scope.user}/${o.scope.server}:${o.status}`));
-  await sleep(120);
+  // Wait for two automatic rotations rather than a fixed time: a slow CI runner fits fewer ticks into 120 ms.
+  for (const end = Date.now() + 5000; Date.now() < end && seen.filter((s) => s === "alice/github:rotated").length < 2; ) await sleep(15);
   stop();
   assert.equal(seen.filter((s) => s === "alice/linear:guided").length, 1, "guided prompt not repeated every tick");
   assert.ok(seen.filter((s) => s === "alice/github:rotated").length >= 2, "automatic rotation keeps running");
