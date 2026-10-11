@@ -1,0 +1,3 @@
+{"query":"List the tables in my local notes.db file","server":"sqlite","tool":"list_tables"}
+{"query":"Create a SQLite table called todos with id, title and a done flag","server":"sqlite","tool":"create_table"}
+{"query":"In my budget.db file, bump every amount in the groceries table up by 5 percent","server":"sqlite","tool":"write_query"}

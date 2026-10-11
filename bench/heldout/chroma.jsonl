@@ -1,0 +1,3 @@
+{"query":"Create a new Chroma collection called support_tickets","server":"chroma","tool":"chroma_create_collection"}
+{"query":"Look in the policies collection for documents similar to 'cancel my subscription', only the ones whose source metadata is help-center","server":"chroma","tool":"chroma_query_documents"}
+{"query":"How many documents are in my embeddings collection right now?","server":"chroma","tool":"chroma_get_collection_count"}

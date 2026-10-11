@@ -1,0 +1,3 @@
+{"query":"Create a Linear issue titled 'Login button misaligned on mobile' for the Web team, high priority","server":"linear","tool":"save_issue"}
+{"query":"Which customer requests are tied to the SSO project?","server":"linear","tool":"list_customer_needs"}
+{"query":"Show me the cycles for the Mobile team in Linear, past and upcoming","server":"linear","tool":"list_cycles"}

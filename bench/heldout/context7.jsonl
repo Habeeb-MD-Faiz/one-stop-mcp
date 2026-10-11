@@ -1,0 +1,3 @@
+{"query":"What's the Context7 library ID for the Prisma ORM?","server":"context7","tool":"resolve-library-id"}
+{"query":"Show me current code examples for Drizzle ORM migrations, for whatever the latest version is","server":"context7","tool":"query-docs"}
+{"query":"Which docs identifier matches 'tanstack query' so I can pull its documentation?","server":"context7","tool":"resolve-library-id"}

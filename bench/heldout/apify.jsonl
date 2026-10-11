@@ -1,0 +1,3 @@
+{"query":"Is there already an Apify actor that scrapes Instagram profiles?","server":"apify","tool":"search-actors"}
+{"query":"Fire off the TikTok hashtag scraper actor for #homedecor and hand me whatever it collects","server":"apify","tool":"call-actor"}
+{"query":"Make my Google Maps scraper actor run itself every Monday at 6am UTC","server":"apify","tool":"create-schedule"}

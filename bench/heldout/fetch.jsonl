@@ -1,0 +1,3 @@
+{"query":"Use the fetch tool to read https://docs.python.org/3/library/asyncio.html","server":"fetch","tool":"fetch"}
+{"query":"That page got cut off around character 5000, so keep reading https://example.com/long-article from there","server":"fetch","tool":"fetch"}
+{"query":"Give me the raw HTML of https://news.ycombinator.com, not the markdown version","server":"fetch","tool":"fetch"}

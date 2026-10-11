@@ -1,0 +1,3 @@
+{"query":"List my Pinecone indexes","server":"pinecone","tool":"list-indexes"}
+{"query":"Upsert these 200 product descriptions into the products index and let it embed them itself","server":"pinecone","tool":"upsert-records"}
+{"query":"Rerank these ten passages against the query 'how do I reset my password'","server":"pinecone","tool":"rerank-documents"}

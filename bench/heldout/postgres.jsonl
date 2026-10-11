@@ -1,0 +1,3 @@
+{"query":"Run this on my Postgres database: SELECT id, email FROM users WHERE created_at > now() - interval '1 day'","server":"postgres","tool":"execute_sql"}
+{"query":"Which queries in my Postgres are the slowest, going by pg_stat_statements?","server":"postgres","tool":"get_top_queries"}
+{"query":"Show me the plan for SELECT * FROM orders WHERE customer_id = 42 as if I had an index on orders(customer_id)","server":"postgres","tool":"explain_query"}

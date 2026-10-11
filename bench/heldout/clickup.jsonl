@@ -1,0 +1,3 @@
+{"query":"Start a timer in ClickUp on task DEV-1234","server":"clickup","tool":"clickup_start_time_tracking"}
+{"query":"Show me the whole hierarchy of spaces, folders and lists in our workspace","server":"clickup","tool":"clickup_get_workspace_hierarchy"}
+{"query":"From ClickUp, pull every task in the Marketing space that's in progress, due this week and assigned to Maria","server":"clickup","tool":"clickup_filter_tasks"}

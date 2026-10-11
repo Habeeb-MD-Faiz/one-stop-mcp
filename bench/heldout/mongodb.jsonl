@@ -1,0 +1,3 @@
+{"query":"Find all the pending orders in the orders collection of the shop database in MongoDB","server":"mongodb","tool":"find"}
+{"query":"Run an aggregation that totals sales per month over the events collection in analytics","server":"mongodb","tool":"aggregate"}
+{"query":"Add a unique index on email to the users collection in Mongo","server":"mongodb","tool":"create-index"}

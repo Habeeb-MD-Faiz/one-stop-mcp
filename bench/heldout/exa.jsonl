@@ -1,0 +1,3 @@
+{"query":"Use Exa to find recent startups building humanoid robots","server":"exa","tool":"web_search_exa"}
+{"query":"Search only arxiv.org and nature.com for papers on solid-state batteries from the last six months, with highlighted passages","server":"exa","tool":"web_search_advanced_exa"}
+{"query":"Have Exa's research agent build me a list of 50 climate-tech companies with their funding stage and HQ city","server":"exa","tool":"agent_run"}

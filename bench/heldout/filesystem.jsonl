@@ -1,0 +1,3 @@
+{"query":"Open /home/me/notes/todo.txt and show me what's in it","server":"filesystem","tool":"read_text_file"}
+{"query":"Rename the folder drafts to archive-2024 on my machine","server":"filesystem","tool":"move_file"}
+{"query":"Use the filesystem server to find every *.test.ts file under my projects folder","server":"filesystem","tool":"search_files"}

@@ -1,0 +1,3 @@
+{"query":"Search Gmail for threads from my accountant about the 2025 tax return","server":"gmail","tool":"search_threads"}
+{"query":"Draft an email reply to Sam saying Thursday at 3 works for me, but don't send it","server":"gmail","tool":"create_draft"}
+{"query":"Put my 'Receipts' label on that whole Amazon thread in Gmail","server":"gmail","tool":"label_thread"}

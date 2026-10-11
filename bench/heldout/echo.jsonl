@@ -1,0 +1,3 @@
+{"query":"Send the word ping to the echo tool and show me what comes back","server":"echo","tool":"echo"}
+{"query":"I just want to check the round trip works: repeat this message back to me, 'round-trip OK'","server":"echo","tool":"echo"}
+{"query":"Say 'hello gateway' right back at me, exactly as I typed it","server":"echo","tool":"echo"}

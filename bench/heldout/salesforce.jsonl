@@ -1,0 +1,3 @@
+{"query":"Query Salesforce for all open opportunities over 50k that close this quarter","server":"salesforce","tool":"salesforce_query_records"}
+{"query":"Do a SOQL count of accounts grouped by billing country","server":"salesforce","tool":"salesforce_aggregate_query"}
+{"query":"Execute this snippet of anonymous Apex in my Salesforce sandbox and show me the debug log: System.debug('hi');","server":"salesforce","tool":"salesforce_execute_anonymous"}

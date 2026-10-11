@@ -1,0 +1,3 @@
+{"query":"Spin up a new Supabase project called client-portal in the Frankfurt region","server":"supabase","tool":"create_project"}
+{"query":"Show me the security advisories for my project, like tables that are missing row level security","server":"supabase","tool":"get_advisors"}
+{"query":"Generate TypeScript types from my Supabase database schema","server":"supabase","tool":"generate_typescript_types"}

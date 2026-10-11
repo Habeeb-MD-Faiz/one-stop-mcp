@@ -1,0 +1,3 @@
+{"query":"Find the HubSpot contact for jane@globex.com","server":"hubspot","tool":"search_crm_objects"}
+{"query":"Publish the draft blog post about our new pricing","server":"hubspot","tool":"manage_blog_post"}
+{"query":"How did last month's marketing email sends do on open rates and deliverability in HubSpot?","server":"hubspot","tool":"get_marketing_email_analytics"}

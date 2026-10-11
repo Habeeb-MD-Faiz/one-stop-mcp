@@ -1,0 +1,3 @@
+{"query":"Find the open Intercom conversations assigned to the billing team","server":"intercom","tool":"search_conversations"}
+{"query":"Leave a private note for my teammates on conversation 4521 saying this customer is on the legacy plan","server":"intercom","tool":"add_internal_note"}
+{"query":"Write a help center article on resetting your password and save it as a draft in Intercom","server":"intercom","tool":"create_article"}

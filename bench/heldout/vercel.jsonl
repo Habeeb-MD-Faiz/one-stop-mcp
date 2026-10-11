@@ -1,0 +1,3 @@
+{"query":"Show me the last 10 deployments for my Vercel project web-app","server":"vercel","tool":"list_deployments"}
+{"query":"Pull the runtime logs of the latest production deployment, only the 500 responses","server":"vercel","tool":"get_runtime_logs"}
+{"query":"Add shop.acme.com as a custom domain on the storefront project in Vercel","server":"vercel","tool":"add_project_domain"}

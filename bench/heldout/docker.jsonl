@@ -1,0 +1,3 @@
+{"query":"Pull the nginx:1.27-alpine image with Docker","server":"docker","tool":"pull_image"}
+{"query":"Show me the last 100 lines of output from the web-api container","server":"docker","tool":"fetch_container_logs"}
+{"query":"Spin up a Redis container in the background on host port 6380 using Docker","server":"docker","tool":"run_container"}

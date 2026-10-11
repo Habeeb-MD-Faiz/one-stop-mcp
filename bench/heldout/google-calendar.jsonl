@@ -1,0 +1,3 @@
+{"query":"What's on my Google Calendar tomorrow?","server":"google-calendar","tool":"list_events"}
+{"query":"Find a 45-minute slot next week when Priya, Tom and I are all free","server":"google-calendar","tool":"suggest_time"}
+{"query":"Accept Friday's design review invite on Google Calendar and add a note that I'll be ten minutes late","server":"google-calendar","tool":"respond_to_event"}

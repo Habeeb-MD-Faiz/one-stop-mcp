@@ -1,0 +1,3 @@
+{"query":"Were there any errors in the browser console after the page loaded?","server":"playwright","tool":"browser_console_messages"}
+{"query":"Fill in the signup form: name Ana, email ana@example.com, and tick the terms box","server":"playwright","tool":"browser_fill_form"}
+{"query":"In Playwright, switch over to the second tab","server":"playwright","tool":"browser_tabs"}

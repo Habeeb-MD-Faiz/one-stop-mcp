@@ -1,0 +1,3 @@
+{"query":"What time is it in Tokyo right now?","server":"time","tool":"get_current_time"}
+{"query":"Use the time tool to convert 3pm New York time to London time","server":"time","tool":"convert_time"}
+{"query":"When it's 9:30 am in Sydney, what time is that for my team in San Francisco?","server":"time","tool":"convert_time"}

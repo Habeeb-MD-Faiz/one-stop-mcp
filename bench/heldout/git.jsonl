@@ -1,0 +1,3 @@
+{"query":"What have I changed in my checkout at ~/code/api that isn't staged yet?","server":"git","tool":"git_diff_unstaged"}
+{"query":"Commit what's staged with git, message: 'fix: handle null user'","server":"git","tool":"git_commit"}
+{"query":"Show the last 10 commits in my local clone at ~/code/api","server":"git","tool":"git_log"}

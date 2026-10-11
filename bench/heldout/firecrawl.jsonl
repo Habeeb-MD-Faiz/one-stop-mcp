@@ -1,0 +1,3 @@
+{"query":"Scrape https://example.com/pricing with Firecrawl and give me clean markdown","server":"firecrawl","tool":"firecrawl_scrape"}
+{"query":"List every URL on docs.acme.dev so I can see how the site is laid out","server":"firecrawl","tool":"firecrawl_map"}
+{"query":"Tell me whenever my competitor's pricing page changes, checking it once a day","server":"firecrawl","tool":"firecrawl_monitor_create"}
