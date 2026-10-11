@@ -23,6 +23,6 @@ routing:
     - "break down a complex task into reasoning steps"
     - "revise my earlier reasoning and try another approach"
   tools:
-    sequentialthinking: ["reason carefully about the architecture before answering"]
+    sequentialthinking: ["reason carefully about the architecture before answering", "work through this bug in numbered thoughts and revise if I am wrong", "branch my reasoning to compare two designs before deciding"]
 health:
   check: initialize

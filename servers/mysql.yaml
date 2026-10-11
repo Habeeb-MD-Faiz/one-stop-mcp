@@ -33,6 +33,6 @@ routing:
     - "look something up in the MySQL db"
     - "inspect the tables of my mysql schema"
   tools:
-    mysql_query: ["select all users created this month from mysql"]
+    mysql_query: ["select all users created this month from mysql", "show me all the tables in the connected database", "run this SELECT and return the matching rows"]
 health:
   check: initialize
