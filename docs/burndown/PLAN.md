@@ -41,13 +41,13 @@ The orchestrator merges lane branches into `OneStop-MCP` at gates.
 
 | Lane | Model | Owns (writes only here) |
 |---|---|---|
-| L1 routing | merged | bge-small default; seed-catalog bench far below target — see S3 |
-| L2 security | merged | single-use TOTP + admin session added at S2 (D36) |
-| L3 downstream+auth | merged | local helper copies removed (D37) |
+| L1 routing | opus | `src/routing/**`, `bench/**` except `bench/seed/**`, `scripts/routing-bench.ts`, `test/router*.test.ts`, `test/routing*.test.ts`, `test/compress*.test.ts` |
+| L2 security | opus | `src/security/**`, `test/security*.test.ts` |
+| L3 downstream+auth | opus | `src/downstream/**`, `src/auth/**`, `test/downstream*.test.ts`, `test/oauth*.test.ts`, `test/fixtures/**` |
 | L4 catalog-core | sonnet | `src/catalog/**`, `src/manifest.ts`, `schema/**`, `scripts/validate-manifests.ts`, `scripts/probe-manifests.ts`, `test/catalog*.test.ts`, `test/manifest*.test.ts` |
-| L5 seed A | merged | 26 servers |
-| L6 seed B | merged | 24 servers |
-| L7 server | merged | |
+| L5 seed A | sonnet | `servers/<its ids>.yaml`, `catalog/<its ids>.json`, `bench/seed/<its ids>.jsonl` |
+| L6 seed B | sonnet | same, for its ids |
+| L7 server | opus | `src/server/**`, `src/tenancy/**`, `src/cli.ts`, `src/config.ts`, `src/index.ts`, `scripts/token-budget.ts`, `test/server*.test.ts`, `test/gateway*.test.ts`, `test/cli*.test.ts`, `test/config*.test.ts`, `test/tenancy*.test.ts` |
 | L8 community | sonnet | `.github/**`, `docs/**` except `docs/PDR.*` and `docs/burndown/**`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`, `Dockerfile`, `.dockerignore`, `docker-compose.yml` |
 | orchestrator | — | everything else: `package.json`, lockfile, `tsconfig*.json`, `src/contracts.ts`, `src/types.ts`, `README.md`, `docs/burndown/**`, `catalog/echo.json`, merges, brain |
 
