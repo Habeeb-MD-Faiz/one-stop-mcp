@@ -5,7 +5,7 @@
 //               the bearer's principal), /admin + /admin/api/* (admin bearer AND a
 //               TOTP code, D16), /metrics (Prometheus, D24).
 // Secrets are typed into the gateway's own page, never into the chat (D18).
-import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { createServer, type IncomingMessage, type Server as HttpServer, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -26,6 +26,7 @@ const MCP_BODY_MAX = 4 << 20; // tool arguments can be larger
 const SESSION_IDLE_MS = 30 * 60_000;
 const TOTP_MAX_FAILS = 5; // per admin, per window (RFC 4226 §7.3 throttling)
 const TOTP_LOCK_MS = 5 * 60_000;
+const ADMIN_SESSION_MS = 15 * 60_000; // how long one TOTP code unlocks the admin API
 const TICKET = /^[A-Za-z0-9_-]{16,128}$/;
 
 const PAGE_STYLE = "body{font:16px/1.5 system-ui,sans-serif;max-width:34rem;margin:3rem auto;padding:0 1rem}label{display:block;margin:.8rem 0}input{display:block;width:100%;padding:.4rem;box-sizing:border-box}button{margin-top:1rem;padding:.4rem 1rem}";
@@ -41,6 +42,7 @@ export async function startHttp(app: App): Promise<HttpHandle> {
   const team = app.cfg.mode === "team";
   const sessions = new Map<string, Session>();
   const totpFails = new Map<string, { n: number; until: number }>();
+  const adminSessions = new Map<string, { key: string; exp: number }>(); // session id -> org/user
   let allowedHosts = new Set<string>();
   if (team) app.metrics.gauge("osmcp_sessions_active", "Live Streamable HTTP client sessions.", () => sessions.size);
 
@@ -125,14 +127,22 @@ export async function startHttp(app: App): Promise<HttpHandle> {
     let fails = totpFails.get(key);
     if (fails && fails.until <= now) fails = undefined;
     if (fails && fails.n >= TOTP_MAX_FAILS) return deny(429, "too many wrong TOTP codes; try again later");
-    const code = header(req, "x-osmcp-totp");
-    // ponytail: a code is reusable inside its ±30 s window so the admin page can make
-    // several calls per unlock; add an admin session token if that window is too loose.
-    if (!code || !/^\d{6}$/.test(code) || !(await app.verifyTotp(p, code))) {
-      totpFails.set(key, { n: (fails?.n ?? 0) + 1, until: fails?.until ?? now + TOTP_LOCK_MS });
-      return deny(401, "a valid X-OSMCP-TOTP code is required");
+    // A TOTP code is accepted once (RFC 6238 §5.2) and unlocks a short admin session so
+    // the admin page can make several calls; the bearer is still required on every call.
+    const sid = header(req, "x-osmcp-admin-session");
+    const s = sid ? adminSessions.get(sid) : undefined;
+    if (!s || s.key !== key || s.exp <= now) {
+      const code = header(req, "x-osmcp-totp");
+      if (!code || !/^\d{6}$/.test(code) || !(await app.verifyTotp(p, code))) {
+        totpFails.set(key, { n: (fails?.n ?? 0) + 1, until: fails?.until ?? now + TOTP_LOCK_MS });
+        return deny(401, "a valid X-OSMCP-TOTP code is required");
+      }
+      totpFails.delete(key);
+      for (const [id, x] of adminSessions) if (x.exp <= now) adminSessions.delete(id);
+      const id = randomBytes(32).toString("base64url");
+      adminSessions.set(id, { key, exp: now + ADMIN_SESSION_MS });
+      res.setHeader("x-osmcp-admin-session", id);
     }
-    totpFails.delete(key);
     const body = req.method === "POST" ? ((await readJson(req, BODY_MAX, true)) as Record<string, unknown>) : {};
     if (typeof body !== "object" || body === null || Array.isArray(body)) throw new HttpError(400, "body must be a JSON object");
     sendJson(res, 200, await adminCall(app, p, req.method ?? "GET", url.pathname.slice("/admin/api/".length), url.searchParams, body));

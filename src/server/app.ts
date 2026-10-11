@@ -17,7 +17,7 @@ import { importCandidates, refreshSnapshots } from "../catalog/sync.js";
 import { createDiscovery } from "../routing/index.js";
 import { GatewayAuthBroker } from "../auth/broker.js";
 import { Registry } from "../downstream/registry.js";
-import { KillSwitch, RotationService, UsageLedger, generateTotpSecret, openSecretStore, scrub, totpUri, verifyLedger, verifyTotp } from "../security/index.js";
+import { KillSwitch, RotationService, UsageLedger, generateTotpSecret, matchTotp, openSecretStore, scrub, totpUri, verifyLedger } from "../security/index.js";
 
 export interface HealthResult {
   server: string;
@@ -93,6 +93,7 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
   // and admins must still be able to authenticate to end a lockdown. So they are
   // read before the kill switch can freeze anything and cached in memory.
   const totpCache = new Map<string, string>();
+  const totpLastStep = new Map<string, number>(); // RFC 6238 §5.2: a code is accepted once
   for (const u of users.list().filter((x) => x.admin)) {
     const rec = await store.get<{ secret: string }>(totpScope({ user: u.id, org: u.org, admin: true })).catch(() => undefined);
     if (rec) totpCache.set(`${u.org}/${u.id}`, rec.secret);
@@ -109,7 +110,7 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
   const auth = new GatewayAuthBroker({ store, ledger, manifest, publicUrl: cfg.http.publicUrl });
   const registry = new Registry(manifests, { catalog, discovery, auth, guard: kill, ledger, secrets: store, ttlMs: cfg.ttlMs, compress: cfg.compress });
   kill.attachSessions(registry);
-  const rotation = new RotationService({ store, ledger, broker: auth, manifest, days: cfg.rotation.days });
+  const rotation = new RotationService({ store, ledger, broker: auth, manifest, kill, days: cfg.rotation.days });
   const stopRotation = opts.schedule === false ? () => {} : rotation.startSchedule(cfg.rotation.checkEveryMs);
 
   const metrics = new Metrics();
@@ -131,7 +132,11 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
       const rec = await store.get<{ secret: string }>(totpScope(p)).catch(() => undefined);
       if (rec) totpCache.set(`${p.org}/${p.user}`, rec.secret);
       const secret = rec?.secret ?? totpCache.get(`${p.org}/${p.user}`);
-      return !!secret && verifyTotp(secret, code);
+      const step = secret ? matchTotp(secret, code) : undefined;
+      const key = `${p.org}/${p.user}`;
+      if (step === undefined || step <= (totpLastStep.get(key) ?? -1)) return false;
+      totpLastStep.set(key, step);
+      return true;
     },
     // Catalog snapshots are tool lists, not user data: refresh runs as the local operator.
     refreshCatalog: (ids) => refreshSnapshots(ids.length ? ids : manifests.map((m) => m.id), (id) => registry.refreshCatalog(LOCAL_PRINCIPAL, id).then(() => {})),

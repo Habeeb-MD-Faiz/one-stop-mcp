@@ -102,6 +102,12 @@ test("admin API: needs an admin bearer AND a TOTP code; throttles guessing; ledg
     assert.equal(ok.status, 200);
     assert.deepEqual(await ok.json(), { closed: 2 });
     assert.deepEqual(calls.at(-1), ["revokeAll", "ops/root"]);
+    const sid = ok.headers.get("x-osmcp-admin-session");
+    assert.ok(sid, "a good code opens a short admin session");
+    const viaSession = (token?: string) =>
+      fetch(`${http.url}/admin/api/kill/all`, { method: "POST", headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), "x-osmcp-admin-session": sid! } });
+    assert.equal((await viaSession(root)).status, 200, "the session stands in for a fresh code");
+    assert.equal((await viaSession()).status, 401, "but never for the bearer");
     assert.equal((await call(root, "123456", "nope/route")).status, 404);
 
     for (let i = 0; i < 5; i++) await call(root, "999999");

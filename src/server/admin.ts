@@ -144,10 +144,10 @@ button{padding:.3rem .7rem;border:1px solid #8888;border-radius:4px;cursor:point
 table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px solid #8883;padding:.2rem .4rem;text-align:left}
 tr.flag{background:#c331}pre{white-space:pre-wrap;font-size:12px;max-height:20rem;overflow:auto}#msg{color:#c33}`;
 
-const SCRIPT = `let tok="",code="";const $=id=>document.getElementById(id);
-async function api(m,p,b){const h={authorization:"Bearer "+tok,"x-osmcp-totp":code};if(b)h["content-type"]="application/json";
-const r=await fetch("/admin/api/"+p,{method:m,headers:h,body:b?JSON.stringify(b):undefined});const d=await r.json().catch(()=>({}));
-if(r.status===401){$("ui").hidden=true;$("login").hidden=false;}if(!r.ok)throw new Error(d.error||r.statusText);return d;}
+const SCRIPT = `let tok="",code="",sess="";const $=id=>document.getElementById(id);
+async function api(m,p,b){const h={authorization:"Bearer "+tok};if(sess)h["x-osmcp-admin-session"]=sess;else h["x-osmcp-totp"]=code;if(b)h["content-type"]="application/json";
+const r=await fetch("/admin/api/"+p,{method:m,headers:h,body:b?JSON.stringify(b):undefined});sess=r.headers.get("x-osmcp-admin-session")||sess;const d=await r.json().catch(()=>({}));
+if(r.status===401){sess="";$("ui").hidden=true;$("login").hidden=false;}if(!r.ok)throw new Error(d.error||r.statusText);return d;}
 const show=x=>{$("out").textContent=JSON.stringify(x,null,2);$("msg").textContent="";};const fail=e=>{$("msg").textContent=e.message;};
 function table(el,rows,cols){el.replaceChildren();const hr=el.insertRow();for(const c of cols){const th=document.createElement("th");th.textContent=c;hr.append(th);}
 for(const r of rows){const tr=el.insertRow();if(r.flagged)tr.className="flag";for(const c of cols){const v=c==="ts"?new Date(r.ts).toISOString():r[c]===undefined?"":typeof r[c]==="object"?JSON.stringify(r[c]):String(r[c]);tr.insertCell().textContent=v;}}}
