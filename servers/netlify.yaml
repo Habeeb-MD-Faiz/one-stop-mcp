@@ -34,10 +34,13 @@ routing:
     - "set an environment variable on a Netlify project"
     - "check the status of my latest Netlify deploy"
   tools:
-    netlify-deploy-services-updater: ["publish this folder as a new netlify deploy"]
-    netlify-deploy-services-reader: ["did my last netlify build succeed"]
-    netlify-project-services-reader: ["show the netlify sites on my team"]
-    netlify-project-services-updater: ["create a new netlify project"]
-    netlify-extension-services-reader: ["which netlify extensions are installed"]
+    netlify-deploy-services-updater: ["publish this folder as a new netlify deploy", "deploy my site from this project directory", "ship the latest build to production"]
+    netlify-deploy-services-reader: ["did my last netlify build succeed", "get the status of this deploy ID", "list the recent deploys of my site"]
+    netlify-project-services-reader: ["show the netlify sites on my team", "list my projects and show one's details", "read the form submissions on my contact form"]
+    netlify-project-services-updater: ["create a new netlify project", "add a secret environment variable to my project", "turn on password protection for visitors to my site"]
+    netlify-extension-services-reader: ["which netlify extensions are installed", "show the details of the Sentry extension", "what extensions can my team install"]
+    netlify-user-services-reader: ["which Netlify account am I logged in as", "show my user profile and email"]
+    netlify-team-services-reader: ["list my teams and their environment variables", "show the details of my team"]
+    netlify-extension-services-updater: ["install an extension on my team", "uninstall the extension and set up a Netlify database"]
 health:
   check: initialize

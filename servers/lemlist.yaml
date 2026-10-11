@@ -26,8 +26,13 @@ routing:
     - "how is my cold email campaign performing"
     - "search lemlist for founders in fintech"
   tools:
-    get_campaign_stats: ["reply and open rates for the spring outreach campaign"]
-    findEmail: ["find a verified email for this lead"]
-    lemleads_search: ["look for heads of growth at saas companies in Berlin"]
+    get_campaign_stats: ["reply and open rates for the spring outreach campaign", "how many replies and clicks did my cold email sequence get", "show open rate and bounce rate for this campaign"]
+    findEmail: ["find a verified email for this lead", "get the work email for Jane Doe at Acme", "find this prospect's email address using their name and company"]
+    lemleads_search: ["look for heads of growth at saas companies in Berlin", "find CTOs at 50 to 200 person fintech companies in London", "build a prospect list matching my ideal customer profile"]
+    get_campaigns: ["list all my active outreach campaigns", "what sequences do I already have running"]
+    verifyEmail: ["check if this email address is valid before I add it", "verify the email won't bounce before sending"]
+    linkedinEnrichment: ["enrich this lead from their LinkedIn profile URL", "pull job title and company details for this LinkedIn contact"]
+    findPhone: ["find a phone number for this lead", "get a direct dial for the prospect"]
+    call_api: ["call a lemlist API endpoint that has no dedicated tool", "hit a custom API route to add a lead to a campaign"]
 health:
   check: initialize
