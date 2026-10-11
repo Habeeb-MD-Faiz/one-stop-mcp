@@ -40,7 +40,7 @@ type Flags = { [K in keyof typeof OPTIONS]?: (typeof OPTIONS)[K]["type"] extends
 // command → [min, max] positional args after the command words.
 const COMMANDS: Record<string, [number, number]> = {
   serve: [0, 0], init: [0, 0], validate: [0, 0], sync: [0, 0], incident: [0, 0],
-  "user add": [1, 1], "user list": [0, 0], "user token": [1, 1], "user remove": [1, 1],
+  "user add": [1, 1], "user list": [0, 0], "user token": [1, 1], "user revoke": [2, 2], "user remove": [1, 1],
   "servers list": [0, 0], connect: [1, 1],
   "kill all": [0, 0], "kill server": [1, 1], "kill user": [1, 1],
   "enable server": [1, 1], "enable user": [1, 1], "lockdown end": [0, 0],
@@ -52,7 +52,7 @@ const COMMANDS: Record<string, [number, number]> = {
 export const USAGE = `usage: one-stop-mcp <command> [options]
   serve [--http]                         run the gateway (local stdio, or team HTTP)
   init [--user id --org org]             state dir, master key file, first admin (token + TOTP shown once)
-  user add <id> --org <org> [--admin] | user list | user token <id> | user remove <id>
+  user add <id> --org <org> [--admin] | user list | user token <id> | user revoke <id> <tokenId> | user remove <id>
   servers list | connect <server> [--user u --org o] | health [ids...]
   kill all | kill server <id> | kill user <org/user> | enable server <id> | enable user <org/user> | lockdown end
   rotate <server> [--user u --org o] | rotate --category <c> | rotate --all | rotate due
@@ -114,6 +114,7 @@ export function adminRequest(cmd: Command): AdminRequest | undefined {
       return { method: "POST", path: "users", body: { id: a, org: f.org, admin: !!f.admin } };
     case "user list": return { method: "GET", path: "users" };
     case "user token": return { method: "POST", path: `users/${enc(a)}/token` };
+    case "user revoke": return { method: "DELETE", path: `users/${enc(a)}/token/${enc(cmd.args[1])}` };
     case "user remove": return { method: "DELETE", path: `users/${enc(a)}` };
     case "kill all": return { method: "POST", path: "kill/all" };
     case "kill server": return { method: "POST", path: `kill/server/${enc(a)}` };

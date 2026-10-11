@@ -19,6 +19,7 @@ test("every admin command maps to its admin API route", () => {
     ["user add ana --org acme --admin", { method: "POST", path: "users", body: { id: "ana", org: "acme", admin: true } }],
     ["user list", { method: "GET", path: "users" }],
     ["user token ana", { method: "POST", path: "users/ana/token" }],
+    ["user revoke ana t1", { method: "DELETE", path: "users/ana/token/t1" }],
     ["user remove ana", { method: "DELETE", path: "users/ana" }],
     ["kill all", { method: "POST", path: "kill/all" }],
     ["kill server github", { method: "POST", path: "kill/server/github" }],

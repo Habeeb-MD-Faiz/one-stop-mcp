@@ -58,6 +58,11 @@ const ROUTES: Array<[string, Handler]> = [
     if (!a.users.get(p.id)) throw new HttpError(404, `unknown user ${p.id}`);
     return a.users.issueToken(p.id);
   }],
+  // One leaked token, not the whole user: ids come from `GET users` (hashes never leave users.json).
+  ["DELETE users/:id/token/:tokenId", (a, _by, p) => {
+    if (!a.users.get(p.id) || !a.users.revokeToken(p.id, p.tokenId)) throw new HttpError(404, `unknown token ${p.tokenId} for user ${p.id}`);
+    return { revoked: p.tokenId };
+  }],
   ["GET health", (a, by, _p, q) => {
     const ids = q.get("ids") ? q.get("ids")!.split(",").filter(Boolean) : a.registry.manifests().map((m) => m.id);
     for (const i of ids) if (!a.registry.manifest(i)) throw new HttpError(404, `unknown server ${i}`);
