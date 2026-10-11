@@ -1,0 +1,3 @@
+{"query":"Launch Chrome through Puppeteer and go to https://example.com/login","server":"puppeteer","tool":"puppeteer_navigate"}
+{"query":"With Puppeteer, take a screenshot of just the #pricing-table element","server":"puppeteer","tool":"puppeteer_screenshot"}
+{"query":"In Puppeteer, choose 'Express' from the #shipping-method dropdown","server":"puppeteer","tool":"puppeteer_select"}

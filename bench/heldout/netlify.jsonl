@@ -1,0 +1,3 @@
+{"query":"Deploy this project to Netlify","server":"netlify","tool":"netlify-deploy-services-updater"}
+{"query":"Show me the submissions that came in through the contact form on my marketing site","server":"netlify","tool":"netlify-project-services-reader"}
+{"query":"Which extensions can my team install on our sites?","server":"netlify","tool":"netlify-extension-services-reader"}

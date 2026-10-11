@@ -1,0 +1,3 @@
+{"query":"Set the key session:42 to 'active' in Redis with a one hour expiry","server":"redis","tool":"set"}
+{"query":"Push a new job onto the left end of the emails queue list","server":"redis","tool":"lpush"}
+{"query":"Add player zed to the leaderboard sorted set with a score of 4200 in Redis","server":"redis","tool":"zadd"}

@@ -1,0 +1,3 @@
+{"query":"Search my Notion workspace for the Q4 planning page","server":"notion","tool":"notion-search"}
+{"query":"Query the Bug Tracker data source and give me every row where priority is P0","server":"notion","tool":"notion-query-data-sources"}
+{"query":"Which teamspaces do we have in Notion?","server":"notion","tool":"notion-get-teams"}

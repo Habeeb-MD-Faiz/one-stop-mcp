@@ -1,0 +1,3 @@
+{"query":"Run SHOW PROCESSLIST and tell me what's hogging the database","server":"mysql","tool":"mysql_query"}
+{"query":"On MySQL, how many orders came in over the last 7 days?","server":"mysql","tool":"mysql_query"}
+{"query":"Show me exactly how the invoices table was defined, with SHOW CREATE TABLE","server":"mysql","tool":"mysql_query"}

@@ -1,0 +1,3 @@
+{"query":"Save this note into Qdrant: 'Customer prefers email over phone', tagged with client=initech","server":"qdrant","tool":"qdrant-store"}
+{"query":"Search my Qdrant collection 'code-snippets' for something about retry logic with backoff","server":"qdrant","tool":"qdrant-find"}
+{"query":"Keep this in my semantic memory so I can retrieve it later by meaning: 'launch moved to March'","server":"qdrant","tool":"qdrant-store"}
