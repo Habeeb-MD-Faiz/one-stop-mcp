@@ -1,0 +1,3 @@
+{"query":"Post 'deploy complete' in the #releases channel on Slack","server":"slack","tool":"slack_send_message"}
+{"query":"Remind the team at 9am tomorrow in #standup that the retro moved to Thursday","server":"slack","tool":"slack_schedule_message"}
+{"query":"What's been said in the #design channel in Slack since yesterday afternoon?","server":"slack","tool":"slack_read_channel"}

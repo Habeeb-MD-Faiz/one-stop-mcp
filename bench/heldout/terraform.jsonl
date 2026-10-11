@@ -1,0 +1,3 @@
+{"query":"What's the latest version of the hashicorp/aws Terraform provider?","server":"terraform","tool":"get_latest_provider_version"}
+{"query":"Find a registry module for a VPC with private subnets and NAT gateways","server":"terraform","tool":"search_modules"}
+{"query":"Show me the arguments for the aws_s3_bucket resource","server":"terraform","tool":"get_provider_details"}

@@ -1,0 +1,3 @@
+{"query":"Add 'buy oat milk' to my Todoist for tomorrow, priority 2","server":"todoist","tool":"add-tasks"}
+{"query":"Push all my overdue tasks to next Monday but keep the recurring ones recurring","server":"todoist","tool":"reschedule-tasks"}
+{"query":"How many tasks have I finished this week, and what's my karma in Todoist?","server":"todoist","tool":"get-productivity-stats"}

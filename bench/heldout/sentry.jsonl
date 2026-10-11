@@ -1,0 +1,3 @@
+{"query":"What are the top unresolved issues in Sentry for the checkout project?","server":"sentry","tool":"search_issues"}
+{"query":"Why is this production error happening? Give me a root-cause analysis and a suggested code fix for WEB-4F","server":"sentry","tool":"analyze_issue_with_seer"}
+{"query":"How many TypeError exceptions did we get in the last 24 hours, grouped by browser, in Sentry?","server":"sentry","tool":"search_errors"}

@@ -1,0 +1,3 @@
+{"query":"Look up the Stripe customer jane@acme.com and list her subscriptions","server":"stripe","tool":"stripe_api_read"}
+{"query":"Issue a full refund for payment pi_3Nk9x2","server":"stripe","tool":"stripe_api_write"}
+{"query":"Which webhook event does Stripe send when a subscription renewal payment fails? Check the docs","server":"stripe","tool":"search_stripe_documentation"}
