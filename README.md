@@ -148,7 +148,7 @@ What is built ([docs/security.md](docs/security.md) has the threat model and eve
 - **Usage ledger.** Every credential use and admin action, hash-chained and Ed25519-signed, verifiable with the public key alone (`ledger verify`). Explainable anomaly flags: bursts, bulk-shaped tools, denial rates, per-server baselines.
 - **Kill switch.** Revoke everything (freeze the vault and lock down), one server, or one user. Takes effect in a running gateway at once. Re-enabling is deliberate and one at a time.
 - **Rotation.** OAuth refresh is automated; API keys rotate through a provider adapter where one exists (Cloudflare first) and are guided otherwise. One credential, a group, or all, on demand or past a 90-day policy. An incident command walks the "after a scare" flow.
-- **Team mode.** Orgs and users, bearer tokens stored only as hashes and revocable one at a time, admin MFA with single-use TOTP codes and a 15-minute admin session, Prometheus metrics, and an admin page.
+- **Team mode.** Orgs and users, per-user downstream sessions, no-credential stdio servers only when the operator opts in, bearer tokens stored only as hashes and revocable one at a time, admin MFA with single-use TOTP codes and a 15-minute admin session, Prometheus metrics, and an admin page.
 
 ---
 

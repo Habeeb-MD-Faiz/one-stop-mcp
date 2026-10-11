@@ -134,16 +134,17 @@ This starts `hashicorp/vault` in **dev mode**: in-memory, auto-unsealed, root to
 2. **`init`** creates the state directory, the first admin user, and prints, once:
    - the admin's bearer token (`osmcp_...`), and
    - an `otpauth://` URI. Add it to an authenticator app (scan it as a QR code, or paste the secret). The admin API needs a code from it; a code works once, and a good one unlocks the API for 15 minutes.
-3. **Start the gateway** (`serve --http`, or `docker compose up -d`).
-4. **Add users.** Each user belongs to an org. Keys are separated per org and per user, so one user cannot read another's credentials.
+3. **Choose shared servers.** Team mode does not load stdio servers that need no credential (`time`, `memory`, `filesystem`, `aws`, ...), because each one would act as the gateway host for every user. List the ones that are safe to share in `hostServers` (or `OSMCP_HOST_SERVERS=time,fetch`). The gateway prints which ones it left out at start-up ([security](security.md#threat-model)).
+4. **Start the gateway** (`serve --http`, or `docker compose up -d`).
+5. **Add users.** Each user belongs to an org. Keys are separated per org and per user, so one user cannot read another's credentials.
    ```bash
    one-stop-mcp user add alice --org acme
    one-stop-mcp user token alice     # prints the token once; send it over a private channel
    one-stop-mcp user list
    ```
-   Tokens are stored only as SHA-256 hashes, so a lost token cannot be recovered, only replaced with `user token`. `user remove` deletes a user together with every token they hold. There is no command to revoke a single token while keeping the user.
-5. **Connect clients** with that token (below).
-6. **Each user connects their own servers** by asking the model to use them; `connect_server` runs the OAuth or key-entry flow for that user. Credentials are stored under that user's key.
+   Tokens are stored only as SHA-256 hashes, so a lost token cannot be recovered, only replaced with `user token`. `user remove` deletes a user together with every token and stored credential they hold. `user revoke <id> <tokenId>` revokes one token and keeps the user.
+6. **Connect clients** with that token (below).
+7. **Each user connects their own servers** by asking the model to use them; `connect_server` runs the OAuth or key-entry flow for that user. Credentials are stored under that user's key.
 
 ### Connecting a client to a team gateway
 
