@@ -37,7 +37,11 @@ jobs:
         run: npm test
       - name: Startup surface under 2k tokens
         run: npm run budget
-      - name: Routing benchmark
-        run: npm run bench
+      # Lexical legs only here (no optional deps). Floors sit a few points under the
+      # measured numbers (bench/ 82.4%, held-out 90.8%) so only a real regression fails.
+      - name: Routing benchmark (regression floors)
+        run: |
+          npm run bench -- --min-top3 0.78
+          npm run bench -- --catalog-dir catalog --servers servers --queries bench/heldout --min-top3 0.87
       - name: Validate server manifests and catalog snapshots
         run: npm run validate

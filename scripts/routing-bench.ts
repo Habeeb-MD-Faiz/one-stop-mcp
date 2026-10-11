@@ -33,6 +33,7 @@ const { values: args } = parseArgs({
     queries: { type: "string" },
     compress: { type: "boolean", default: false },
     "cache-dir": { type: "string" },
+    "min-top3": { type: "string" }, // regression floor for CI: exit 1 below it
   },
 });
 
@@ -102,6 +103,11 @@ console.log(`confidence low:  ${bucket.low.n} queries, top-3 ${pct(bucket.low.to
 console.log(`latency: first query ${firstMs.toFixed(0)} ms (index build), then p50 ${ms[n >> 1].toFixed(1)} ms, p95 ${ms[Math.floor(n * 0.95)].toFixed(1)} ms`);
 if (misses.length) console.log(`misses:\n${misses.join("\n")}`);
 console.log(top3 / n >= TARGET_TOP3 ? "\nrouting target met." : `\nbelow target by ${((TARGET_TOP3 - top3 / n) * 100).toFixed(1)} pts.`);
+const floor = args["min-top3"] === undefined ? undefined : Number(args["min-top3"]);
+if (floor !== undefined && !(top3 / n >= floor)) {
+  console.error(`top-3 ${pct(top3, n)} is below the --min-top3 floor ${floor * 100}%`);
+  process.exit(1);
+}
 
 // --- inputs -------------------------------------------------------------------
 
