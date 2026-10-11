@@ -26,10 +26,12 @@ routing:
     - "fill in the form fields on a web page"
     - "run javascript in the browser tab"
   tools:
-    puppeteer_navigate: ["go to this url in a headless browser"]
-    puppeteer_screenshot: ["capture a screenshot of the page"]
-    puppeteer_click: ["press the submit button"]
-    puppeteer_fill: ["type my email into the input box"]
-    puppeteer_evaluate: ["execute this script in the page context"]
+    puppeteer_navigate: ["go to this url in a headless browser", "launch Chrome and load this page, allowing custom launch options", "open the site with puppeteer in a headless Chrome"]
+    puppeteer_screenshot: ["capture a screenshot of the page", "screenshot the #hero element at 1200 by 800", "save a named screenshot of the whole page"]
+    puppeteer_click: ["press the submit button", "click the element matching the .checkout-btn selector", "click the first link with this CSS selector"]
+    puppeteer_fill: ["type my email into the input box", "fill the input[name=email] selector with my address", "enter a value into the search field by selector"]
+    puppeteer_evaluate: ["execute this script in the page context", "run document.title in the browser console", "evaluate a JavaScript snippet and return its value"]
+    puppeteer_hover: ["hover over the #nav-products selector", "move the pointer over the element matching this CSS selector"]
+    puppeteer_select: ["pick Medium in the select#size dropdown", "choose an option in the SELECT element with this selector"]
 health:
   check: initialize
