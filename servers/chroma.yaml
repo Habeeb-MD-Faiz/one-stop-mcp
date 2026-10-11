@@ -30,8 +30,17 @@ routing:
     - "semantic search my chroma collection"
     - "how many documents are in the collection"
   tools:
-    chroma_query_documents: ["find the passages most similar to this question"]
-    chroma_add_documents: ["embed and store these notes in chroma"]
-    chroma_list_collections: ["what collections do I have"]
+    chroma_query_documents: ["find the passages most similar to this question", "semantic search for chunks about refund policy, top 5 results", "query the collection with a text and filter on metadata where year is 2024"]
+    chroma_add_documents: ["embed and store these notes in chroma", "add these paragraphs with source metadata and ids", "insert new documents into the collection"]
+    chroma_list_collections: ["what collections do I have", "list all collections in my vector database", "show the first page of my chroma collections"]
+    chroma_create_collection: ["make a new collection for support tickets", "create a collection with cosine distance HNSW settings"]
+    chroma_peek_collection: ["show me a few sample documents from the notes collection", "take a quick look at what's stored in this collection"]
+    chroma_get_collection_info: ["show the metadata and configuration of the docs collection", "what embedding function does this collection use"]
+    chroma_get_collection_count: ["how many documents are in the collection", "count the records stored in my vector store"]
+    chroma_modify_collection: ["rename the collection to archive-2025", "update the metadata on my collection"]
+    chroma_delete_collection: ["drop the test collection entirely", "delete the whole collection and its embeddings"]
+    chroma_get_documents: ["fetch the documents with these ids", "get all documents whose metadata source is handbook"]
+    chroma_update_documents: ["change the text and metadata of an existing document by id", "re-embed this document with corrected content"]
+    chroma_delete_documents: ["remove these document ids from the collection", "delete every chunk that came from the old PDF"]
 health:
   check: initialize

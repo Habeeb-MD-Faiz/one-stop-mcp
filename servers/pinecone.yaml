@@ -25,9 +25,14 @@ routing:
     - "upsert these records into pinecone"
     - "create a new vector index with integrated embeddings"
   tools:
-    search-records: ["find records semantically similar to this text with a metadata filter"]
-    upsert-records: ["add these documents to the product index"]
-    describe-index-stats: ["how many vectors are in the index"]
-    search-docs: ["how does pinecone namespaces work"]
+    search-records: ["find records semantically similar to this text with a metadata filter", "query the index for passages like this question, top 10", "search a namespace by text and rerank the matches"]
+    upsert-records: ["add these documents to the product index", "upsert these text records into the docs namespace", "insert or update some records with ids and metadata fields"]
+    describe-index-stats: ["how many vectors are in the index", "what namespaces does the index have and how many records in each", "show the vector count and index fullness"]
+    search-docs: ["how does pinecone namespaces work", "how do I choose between serverless and pod indexes", "look up the docs on metadata filtering syntax"]
+    list-indexes: ["show all the vector indexes in my project", "what indexes do I have"]
+    describe-index: ["show the dimension, metric and cloud region for my index", "what embedding model is configured on this index"]
+    create-index-for-model: ["create an index that embeds text with multilingual-e5-large", "set up a new serverless index with integrated embeddings"]
+    cascading-search: ["search my products and faq indexes together and merge the results", "query several indexes at once, dedupe, then rerank"]
+    rerank-documents: ["reorder these candidate passages by relevance to my query", "rerank this list of documents with bge-reranker"]
 health:
   check: initialize

@@ -26,10 +26,24 @@ routing:
     - "show the logs of a docker container"
     - "pull the latest image and rebuild"
   tools:
-    list_containers: ["what containers are running on this machine"]
-    run_container: ["run nginx in a container on port 8080"]
-    fetch_container_logs: ["tail the logs of my api container"]
-    build_image: ["build an image from this Dockerfile"]
-    list_volumes: ["which docker volumes exist"]
+    list_containers: ["what containers are running on this machine", "show me every container including stopped ones", "list the docker containers that are up"]
+    run_container: ["run nginx in a container on port 8080", "start a redis container in the background", "spin up a one-off container from this image with env vars"]
+    fetch_container_logs: ["tail the logs of my api container", "why is my container crashing, show its recent output", "show the last 200 log lines from the worker container"]
+    build_image: ["build an image from this Dockerfile", "build and tag the image in the current directory as myapp:latest"]
+    list_volumes: ["which docker volumes exist", "show the named volumes holding my database data"]
+    create_container: ["set up a container from the postgres image but don't start it", "create a container with these ports and volumes without running it"]
+    recreate_container: ["replace my api container with a fresh one", "rebuild the web container so it picks up the new settings"]
+    start_container: ["start the stopped db container again", "bring back the container I shut down yesterday"]
+    stop_container: ["shut down the running nginx container", "stop the container named api gracefully"]
+    remove_container: ["delete the old exited container", "get rid of the container called test-db"]
+    list_images: ["what images do I have pulled locally", "how much space are my local docker images using"]
+    pull_image: ["download the latest alpine image", "fetch node 20 from the registry"]
+    push_image: ["upload my built image to docker hub", "publish this tag to our private registry"]
+    remove_image: ["delete the unused dangling images", "remove the old myapp image to free disk space"]
+    list_networks: ["which networks exist on this docker host", "show the bridge networks my containers are on"]
+    create_network: ["make a new bridge network for my services", "create a network so the app and db containers can talk"]
+    remove_network: ["delete the unused compose network", "remove the network called backend-net"]
+    create_volume: ["create a named volume for postgres data", "make a persistent volume I can mount into a container"]
+    remove_volume: ["delete the leftover database volume", "remove the volume called pgdata"]
 health:
   check: initialize

@@ -35,9 +35,20 @@ routing:
     - "describe the fields on the account object"
     - "create a new lead in salesforce"
   tools:
-    salesforce_query_records: ["list open opportunities over fifty thousand"]
-    salesforce_dml_records: ["insert a new contact record"]
-    salesforce_describe_object: ["what fields does the case object have"]
-    salesforce_aggregate_query: ["sum of closed won amount grouped by owner"]
+    salesforce_query_records: ["list open opportunities over fifty thousand", "pull all contacts at Acme with their open cases", "run a SOQL query for leads created this month"]
+    salesforce_dml_records: ["insert a new contact record", "update the stage on this opportunity to Closed Won", "upsert these accounts by external ID"]
+    salesforce_describe_object: ["what fields does the case object have", "show the picklist values for opportunity stage", "which relationships does the account object have"]
+    salesforce_aggregate_query: ["sum of closed won amount grouped by owner", "count opportunities by stage for this quarter", "average deal size per sales rep with a minimum of five deals"]
+    salesforce_search_objects: ["is there a custom object with invoice in its name", "find objects whose name contains Subscription"]
+    salesforce_search_all: ["search every object for the name Johnson", "run a SOSL search across accounts and contacts for this email"]
+    salesforce_manage_object: ["create a custom object called Project__c", "change the sharing model on my custom object"]
+    salesforce_manage_field: ["add a currency field to the Opportunity object", "create a lookup relationship from Contract__c to Account"]
+    salesforce_manage_field_permissions: ["give the Sales profile read access to the discount field", "who can edit this field, show the field-level security"]
+    salesforce_read_apex: ["show me the source of the AccountService Apex class", "list the Apex classes with Handler in the name"]
+    salesforce_write_apex: ["create an Apex class that validates lead emails", "update the OrderHelper class to the latest API version"]
+    salesforce_read_apex_trigger: ["show the code of the OpportunityTrigger", "list all the triggers on the Case object"]
+    salesforce_write_apex_trigger: ["write a before-insert trigger on Account", "add an after update event to the contact trigger"]
+    salesforce_execute_anonymous: ["run this snippet of anonymous Apex in the org", "execute some Apex and show me the debug output"]
+    salesforce_manage_debug_logs: ["turn on debug logging for my user", "fetch the latest debug logs for the integration user"]
 health:
   check: initialize

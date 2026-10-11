@@ -32,9 +32,14 @@ routing:
     - "find a time that works for everyone next week"
     - "cancel my 3pm call"
   tools:
-    list_events: ["show my meetings for this week"]
-    create_event: ["book a 30 minute sync with Priya on Friday"]
-    suggest_time: ["when are Sam and I both free on Thursday"]
-    respond_to_event: ["accept the invite for the offsite"]
+    list_events: ["show my meetings for this week", "what's on my schedule next Tuesday afternoon", "list events on the Work calendar from Monday to Friday"]
+    create_event: ["book a 30 minute sync with Priya on Friday", "put a recurring weekly team sync on my calendar with a Meet link", "add an all-day event for the conference on the 12th"]
+    suggest_time: ["when are Sam and I both free on Thursday", "find a 45 minute slot for me and Lee next week", "when can the four of us meet in the mornings"]
+    respond_to_event: ["accept the invite for the offsite", "decline the Friday review and say I'm traveling", "mark myself tentative for the team lunch"]
+    list_calendars: ["which calendars do I have, including shared ones", "find the calendar ID for my team calendar"]
+    get_event: ["show the attendees and Meet link for the standup", "open that event and read its description"]
+    search_events: ["find the meeting where we discussed the budget", "search my calendar for dentist appointments"]
+    update_event: ["move my 2pm to 3:30", "add Jo to the planning meeting and change the location"]
+    delete_event: ["cancel my Thursday dentist appointment", "remove the duplicate meeting from my calendar"]
 health:
   check: initialize

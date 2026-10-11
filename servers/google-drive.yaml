@@ -30,9 +30,13 @@ routing:
     - "upload a text file to my drive"
     - "who has access to this drive file"
   tools:
-    search_files: ["search my drive for the q3 planning deck"]
-    read_file_content: ["read the text of this google doc"]
-    list_recent_files: ["what files did I work on recently"]
-    get_file_permissions: ["who can view this file"]
+    search_files: ["search my drive for the q3 planning deck", "find spreadsheets shared with me modified this month", "look for PDFs with invoice in the title inside the Finance folder"]
+    read_file_content: ["read the text of this google doc", "read this doc and include the comments", "summarize the text of that slide deck in my drive"]
+    list_recent_files: ["what files did I work on recently", "show the files I opened or edited this week", "list my most recently modified drive items"]
+    get_file_permissions: ["who can view this file", "who has edit access to the roadmap doc", "is this file shared publicly or only with my team"]
+    get_file_metadata: ["who owns this file and when was it last edited", "show the type, size and link of this drive file"]
+    download_file_content: ["export this Google Sheet as xlsx", "download the PDF from my drive as base64"]
+    create_file: ["upload this markdown as a new doc in the Projects folder", "make a new folder called Receipts 2026"]
+    copy_file: ["duplicate the template doc and call it Client Proposal", "make a copy of this sheet in the shared folder"]
 health:
   check: initialize

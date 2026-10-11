@@ -26,10 +26,13 @@ routing:
     - "look up nearby restaurants and their opening hours"
     - "search for images of a landmark"
   tools:
-    brave_web_search: ["google this for me and give me the top links"]
-    brave_news_search: ["what is in the news today about this company"]
-    brave_local_search: ["coffee shops near the city centre"]
-    brave_image_search: ["find pictures of this animal"]
-    brave_summarizer: ["summarize the search results into a short answer"]
+    brave_web_search: ["google this for me and give me the top links", "search the web for the latest on Rust async runtimes", "look up reviews for this laptop from the past month"]
+    brave_news_search: ["what is in the news today about this company", "any breaking news about the chip export rules from the last 24 hours", "find recent articles covering this product launch"]
+    brave_local_search: ["coffee shops near the city centre", "find a dentist with good ratings and opening hours near me", "which pizza places nearby are open late"]
+    brave_image_search: ["find pictures of this animal", "show me images of the Golden Gate Bridge at sunset", "find a photo with dimensions big enough for a banner"]
+    brave_summarizer: ["summarize the search results into a short answer", "give me an AI summary of what the web says about this topic", "condense those search results into an answer with citations"]
+    brave_video_search: ["find a video tutorial on sourdough starters", "search for recent conference talk videos about WebAssembly"]
+    brave_place_search: ["what landmarks and museums are within 2 km of these coordinates", "find points of interest around Lisbon's old town"]
+    brave_llm_context: ["fetch clean extracted page text on this topic for grounding my answer", "get web content as context for RAG, capped at 4000 tokens"]
 health:
   check: initialize

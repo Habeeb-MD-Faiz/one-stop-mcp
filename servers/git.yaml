@@ -23,10 +23,17 @@ routing:
     - "show the recent commit history of this repo"
     - "create a new git branch and switch to it"
   tools:
-    git_status: ["is my working directory clean"]
-    git_diff_unstaged: ["show me the changes I have not staged yet"]
-    git_commit: ["commit what I staged with this message"]
-    git_log: ["list the last ten commits"]
-    git_create_branch: ["start a new branch off main"]
+    git_status: ["is my working directory clean", "which files are modified or untracked in this repo", "show git status for the project"]
+    git_diff_unstaged: ["show me the changes I have not staged yet", "what edits are still unstaged in my working tree", "diff my uncommitted changes before I add them"]
+    git_commit: ["commit what I staged with this message", "commit with the message fix login redirect", "save the staged work as a new commit"]
+    git_log: ["list the last ten commits", "show commits from the last week", "who committed to this repo recently and what did they change"]
+    git_create_branch: ["start a new branch off main", "make a feature branch from develop", "create a branch called fix/typo"]
+    git_diff_staged: ["show me what I'm about to commit", "diff everything in the staging area"]
+    git_diff: ["compare my current branch against main", "what changed between this commit and HEAD"]
+    git_add: ["stage src/app.ts and the tests", "add all the modified files to the index"]
+    git_reset: ["unstage everything I just added", "undo git add, I staged too much"]
+    git_checkout: ["switch to the release branch", "check out the dev branch"]
+    git_show: ["show what commit abc1234 changed", "display the diff and message of the last commit"]
+    git_branch: ["list my local and remote branches", "which branches contain this commit"]
 health:
   check: initialize

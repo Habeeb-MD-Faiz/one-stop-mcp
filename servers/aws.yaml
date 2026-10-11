@@ -34,9 +34,14 @@ routing:
     - "search the AWS documentation for a service"
     - "which AWS regions offer this service"
   tools:
-    aws___call_aws: ["describe my EC2 instances in this region"]
-    aws___run_script: ["write a python script that loops over all my lambdas"]
-    aws___search_documentation: ["how does S3 versioning work"]
-    aws___list_regions: ["what AWS regions can I use"]
+    aws___call_aws: ["describe my EC2 instances in this region", "list all my S3 buckets with the CLI", "stop the instance i-0abc123 in us-east-1"]
+    aws___run_script: ["write a python script that loops over all my lambdas", "loop over every lambda function and report its runtime version", "write a script that tags all untagged EBS volumes"]
+    aws___search_documentation: ["how does S3 versioning work", "search the docs for IAM policy condition keys", "find the page about VPC peering limits"]
+    aws___list_regions: ["what AWS regions can I use", "list every region code and its name", "show region codes like us-east-1 and eu-west-2"]
+    aws___read_documentation: ["read this docs.aws.amazon.com page in full", "open the documentation page on Lambda concurrency"]
+    aws___retrieve_skill: ["get the step-by-step guide for putting CloudFront in front of S3", "is there a curated walkthrough for deploying a serverless API"]
+    aws___get_regional_availability: ["is Bedrock available in eu-west-2", "which regions support Graviton instances"]
+    aws___get_presigned_url: ["make a temporary download link for this S3 object", "generate a presigned URL that expires in an hour"]
+    aws___get_tasks: ["check on the status of my async task", "is the background job I started finished yet"]
 health:
   check: initialize

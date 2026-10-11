@@ -32,9 +32,16 @@ routing:
     - "show unread emails from this week"
     - "label this email as important"
   tools:
-    search_threads: ["search my inbox for invoices from last month"]
-    get_thread: ["open the whole conversation with the vendor"]
-    create_draft: ["write a draft email to the team about the delay"]
-    label_thread: ["star this conversation"]
+    search_threads: ["search my inbox for invoices from last month", "find unread emails from my boss this week", "search for threads with attachments from the bank using from: and has:attachment"]
+    get_thread: ["open the whole conversation with the vendor", "show every message in the thread with the recruiter", "read the full email chain about the contract"]
+    create_draft: ["write a draft email to the team about the delay", "reply to Sarah's email with a draft saying yes", "save a draft to client@example.com about the invoice, don't send it"]
+    label_thread: ["star this conversation", "file the whole thread under Clients", "mark the entire thread as important"]
+    get_message: ["open this single email by its message ID", "show the body and headers of that specific message"]
+    list_drafts: ["what drafts do I have sitting in my mailbox", "find the draft I started about the proposal"]
+    list_labels: ["show all my labels and their ids", "what labels have I created"]
+    create_label: ["make a new label called Receipts", "create a red label for urgent follow-ups"]
+    label_message: ["tag this email as Important", "add the Receipts label to that message"]
+    unlabel_message: ["take the Urgent label off this email", "remove that label from the message"]
+    unlabel_thread: ["remove the Follow-up label from the whole conversation", "unstar this thread and drop its labels"]
 health:
   check: initialize

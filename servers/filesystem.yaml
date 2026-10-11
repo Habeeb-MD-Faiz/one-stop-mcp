@@ -24,10 +24,18 @@ routing:
     - "edit a few lines in a local source file"
     - "find all markdown files under the project directory"
   tools:
-    read_text_file: ["show me the contents of this local file"]
-    write_file: ["save this text into a new file"]
-    edit_file: ["replace this snippet in the file on disk"]
-    search_files: ["find files matching a glob under the project folder"]
-    directory_tree: ["show the folder structure of the project"]
+    read_text_file: ["show me the contents of this local file", "print the last 50 lines of the log file", "open config.json and show me what's in it"]
+    write_file: ["save this text into a new file", "create notes.txt with this content, overwriting if it exists", "write the generated script to disk as build.sh"]
+    edit_file: ["replace this snippet in the file on disk", "change the port from 3000 to 8080 in the config", "preview the edits to this file before applying them"]
+    search_files: ["find files matching a glob under the project folder", "find all .md files under the project folder", "search recursively for files named like *.test.ts"]
+    directory_tree: ["show the folder structure of the project", "draw the folder structure of src, skipping node_modules", "give me a recursive tree of this project directory"]
+    read_media_file: ["look at the screenshot saved on my desktop", "load this png or mp3 from disk so you can see it"]
+    read_multiple_files: ["read package.json, tsconfig.json and README.md together", "show me the contents of all these files at once"]
+    create_directory: ["make a new folder called reports and any parent folders", "create the directory src/utils if it doesn't exist"]
+    list_directory: ["what's in my Documents folder", "list the files and subfolders in this path"]
+    list_directory_with_sizes: ["which files in downloads are the biggest", "list this folder sorted by size with totals"]
+    move_file: ["rename report.docx to final-report.docx", "move this file into the archive folder"]
+    get_file_info: ["when was this file last modified and how big is it", "check the permissions and type of this path"]
+    list_allowed_directories: ["which folders are you allowed to access", "what directories can the file server see"]
 health:
   check: initialize

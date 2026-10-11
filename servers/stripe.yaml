@@ -26,9 +26,15 @@ routing:
     - "refund a charge in stripe"
     - "how do I set up stripe checkout"
   tools:
-    stripe_api_read: ["show my stripe customers and their subscriptions"]
-    stripe_api_write: ["create a new product and price in stripe"]
-    get_stripe_account_info: ["which stripe account am I connected to"]
-    search_stripe_documentation: ["stripe docs on webhooks"]
+    stripe_api_read: ["show my stripe customers and their subscriptions", "list the last 10 charges from this week", "look up the invoice and payment intent for customer cus_123"]
+    stripe_api_write: ["create a new product and price in stripe", "refund the last payment from Dana", "cancel this subscription at the end of the billing period"]
+    get_stripe_account_info: ["which stripe account am I connected to", "show my business name and account ID", "which account am I connected to"]
+    search_stripe_documentation: ["stripe docs on webhooks", "how do I verify a webhook signature", "what's the difference between payment intents and charges"]
+    stripe_api_search: ["which API method lists refunds for a charge", "find the endpoint for creating a payment link"]
+    stripe_api_details: ["what parameters does the create customer method take", "show the required fields for creating a payment intent"]
+    stripe_analytics: ["what was my MRR growth last quarter", "build a Sigma query for churned subscriptions by month"]
+    get_balance_summary: ["how much is in my available and pending balance", "show my payout balance and Treasury funds"]
+    stripe_implementation_planner: ["help me plan how to take recurring payments on my site", "which products should I use to build a marketplace checkout"]
+    send_stripe_feedback: ["send feedback to the product team about the dashboard", "report a problem with this integration"]
 health:
   check: initialize

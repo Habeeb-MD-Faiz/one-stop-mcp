@@ -23,9 +23,14 @@ routing:
     - "store this fact about the client for later"
     - "recall what we decided last time"
   tools:
-    create_entities: ["save a new person and their details to memory"]
-    add_observations: ["add this fact to what you know about Priya"]
-    search_nodes: ["look up everything I told you about the billing system"]
-    read_graph: ["show me your whole memory"]
+    create_entities: ["save a new person and their details to memory", "remember a new client called Acme as an organization", "create a node for my project with its type"]
+    add_observations: ["add this fact to what you know about Priya", "note that Sam prefers async updates", "append a new fact to the Acme entity"]
+    search_nodes: ["look up everything I told you about the billing system", "what do you remember about Acme", "find memory entries mentioning the deadline"]
+    read_graph: ["show me your whole memory", "dump the full knowledge graph", "list every entity and relation you remember"]
+    create_relations: ["link Priya to the billing project as its owner", "record that Acme is a customer of my agency"]
+    delete_entities: ["forget everything about the old vendor", "remove that person and all their relations from memory"]
+    delete_observations: ["forget that I like dark mode", "remove the outdated fact about the deadline"]
+    delete_relations: ["unlink Priya from the billing project", "remove the relationship between those two entities"]
+    open_nodes: ["open the memory nodes for Priya and Acme by name", "show those entities and how they connect"]
 health:
   check: initialize

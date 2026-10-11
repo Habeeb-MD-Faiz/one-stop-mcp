@@ -28,10 +28,27 @@ routing:
     - "scale a deployment to three replicas"
     - "which namespaces exist in the cluster"
   tools:
-    pods_list_in_namespace: ["show pods in the production namespace"]
-    pods_log: ["get the container logs for this pod"]
-    resources_scale: ["change the replica count of the deployment"]
-    resources_create_or_update: ["apply this yaml manifest to the cluster"]
-    events_list: ["what warning events happened in the cluster recently"]
+    pods_list_in_namespace: ["show pods in the production namespace", "what pods are running in the staging namespace", "list pods in kube-system"]
+    pods_log: ["get the container logs for this pod", "show the last 100 lines of logs from the failing pod", "tail the logs of the nginx container"]
+    resources_scale: ["change the replica count of the deployment", "scale the web deployment to three replicas", "how many replicas does the worker statefulset have"]
+    resources_create_or_update: ["apply this yaml manifest to the cluster", "create a deployment from this manifest", "update the service definition on the cluster"]
+    events_list: ["what warning events happened in the cluster recently", "show events in the kube-system namespace", "what happened to my pod recently according to cluster events"]
+    configuration_contexts_list: ["which kubeconfig contexts do I have available", "list the cluster contexts and their API server URLs"]
+    targets_list: ["what clusters can you connect to right now", "list the available kubernetes targets"]
+    configuration_view: ["show me my kubeconfig file", "print the current kubeconfig as yaml"]
+    namespaces_list: ["which namespaces exist in the cluster", "list all the namespaces on this cluster"]
+    projects_list: ["list my openshift projects", "which projects can I see on this cluster"]
+    nodes_log: ["fetch the kubelet logs from worker node 3", "show system logs from this node"]
+    nodes_stats_summary: ["get the kubelet summary stats for a node", "show node filesystem and network stats from the kubelet"]
+    nodes_top: ["which nodes are using the most cpu and memory", "show node resource usage from the metrics server"]
+    pods_list: ["list every pod across all namespaces", "show me all running pods in the cluster"]
+    pods_get: ["show the spec and status of the api-server pod", "describe this pod and tell me why it is pending"]
+    pods_delete: ["delete the crashlooping pod so it restarts", "kill the stuck pod named web-5f6d"]
+    pods_top: ["which pods are eating the most memory", "show pod cpu and memory consumption"]
+    pods_exec: ["run ls inside the web pod's container", "exec into the pod and check the env vars"]
+    pods_run: ["start a pod from the busybox image", "run a throwaway pod with this image and expose port 8080"]
+    resources_list: ["list all ingresses in the cluster", "show every statefulset by apiVersion and kind"]
+    resources_get: ["get the yaml of the payments deployment", "show me the configmap named app-config"]
+    resources_delete: ["delete the old cronjob from the cluster", "remove this ingress resource"]
 health:
   check: initialize
