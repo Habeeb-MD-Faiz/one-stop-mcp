@@ -87,20 +87,21 @@ npm run bench -- --compress                     # schema tokens at off / light /
 npm run bench -- --dense --catalog-dir catalog --servers servers --queries bench/seed   # the seed catalog (--queries takes a file or a directory)
 ```
 
-`--cache-dir <dir>` sets where `--dense` keeps the model and the embedding cache. The script is informational: it prints numbers and exits 0 (it exits 1 only on bad input), so CI does not gate on it. Compare the numbers yourself, before and after.
+`--cache-dir <dir>` sets where `--dense` keeps the model and the embedding cache. The script prints numbers and exits 0; with `--min-top3 <fraction>` it exits 1 below that floor. CI runs the lexical legs with floors of 0.78 on `bench/` and 0.87 on the held-out set, a few points under the measured numbers, so only a real regression fails the build.
 
-**Where it stands.** Measured on 2026-10-11 with this build:
+**Where it stands.** Measured on 2026-10-11 with this build. The catalog is the shipped one (926 tools across 51 servers) except for `bench/`, which has its own 82-tool catalog.
 
-| Run | Queries | top-1 | top-3 |
+| Query set | Queries | keyword + BM25: top-1 / top-3 | + dense (`bge-small-en-v1.5`): top-1 / top-3 |
 |---|---|---|---|
-| `bench/`, keyword + BM25 | 34 | 55.9% | 85.3% |
-| `bench/`, + dense (`bge-small-en-v1.5`) | 34 | n/r | 94.1% |
-| `bench/`, + dense (`all-MiniLM-L6-v2`) | 34 | n/r | 91.2% |
-| Seed catalog (50 servers), keyword + BM25 | 200 | 14.0% | 25.5% |
+| `bench/heldout`, written by an author who had not seen the manifests | 153 | 79.7% / 90.8% | 82.4% / **96.1%** |
+| `bench/seed`, adversarial | 200 | 33.0% / 50.5% | n/r / 61.0% |
+| `bench/`, the original set | 34 | 58.8% / 82.4% | n/r / 94.1% |
 
-(n/r: not recorded in the source comment. The dense rows come from the routing lane's run, quoted in `src/routing/embedder.ts`; the keyword rows were re-run for this page.) The target is 90% top-3. The original benchmark meets it only with the dense leg. **The seed catalog does not meet it**: the misses are mostly queries where another server's tool shares more keywords than the right one (`npm run bench` prints each miss), and the keyword legs alone find the right tool in the top three about a quarter of the time. An earlier 33-server draft of the seed catalog scored 44.5% with the dense leg (41.4% for MiniLM); no full 50-server dense figure is recorded yet. Better per-tool `routing.tools` utterances are the main lever left.
+(n/r: not recorded.) The target is 90% top-3. **The held-out set meets it, with or without the dense leg.** It got there through per-tool `routing.tools` utterances (every tool in the catalog now has two or three) and a vote for a server the query names; before those, the same set scored 78.4% lexically ([D38](burndown/DECISIONS.md), [D42](burndown/DECISIONS.md)). With `all-MiniLM-L6-v2` instead of `bge-small`, `bench/` scored 91.2%. Lexical ranking costs about 40 ms per query on the full catalog; the dense leg adds about 50 ms, and building its embedding cache for a fresh catalog takes about 40 s once.
 
-**Read the seed numbers with care.** The seed queries are written by the same people who wrote each server's examples, with a rule not to reuse the examples' wording. That inflates scores somewhat. A held-out query set written by someone who has not seen the manifests is the honest number ([D33](burndown/DECISIONS.md)), and contributions of such queries are welcome.
+The seed set stays below target by design: its queries avoid product names and were written to be ambiguous between similar services, so many misses are a reasonable answer to an underspecified question. A cross-encoder reranker was tried and not adopted ([D39](burndown/DECISIONS.md)).
+
+**Read the seed numbers with care.** The seed queries are written by the same people who wrote each server's examples, with a rule not to reuse the examples' wording. That inflates scores somewhat. That is why the held-out set above exists and is the number to quote ([D33](burndown/DECISIONS.md)). More held-out queries are welcome.
 
 ## Improving routing
 

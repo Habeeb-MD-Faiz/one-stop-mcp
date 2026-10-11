@@ -181,7 +181,7 @@ Every admin call needs the admin's bearer token. On top of that:
 2. A good code returns an `x-osmcp-admin-session` response header. Send that header back (still with the bearer token on every call) and the API stays unlocked for **15 minutes** without another code. The admin page does this for you.
 3. Five wrong codes within five minutes lock that admin out for the rest of the window (HTTP 429). Failed attempts are ledgered as `admin.auth` denials.
 
-Routes (all under `/admin/api/`): `GET ledger` (`user`, `server`, `since`, `limit` query parameters), `GET ledger/verify`, `GET ledger/flagged`, `GET kill`, `POST kill/all`, `POST kill/server/:id`, `POST kill/user/:org/:user`, `POST enable/server/:id`, `POST enable/user/:org/:user`, `POST lockdown/end`, `GET rotation/due`, `POST rotate` (body `{ scope }`, `{ group }` or `{ all: true }`), `POST incident`, `GET users`, `POST users`, `DELETE users/:id`, `POST users/:id/token`, `GET health?ids=a,b`.
+Routes (all under `/admin/api/`): `GET ledger` (`user`, `server`, `since`, `limit` query parameters), `GET ledger/verify`, `GET ledger/flagged`, `GET kill`, `POST kill/all`, `POST kill/server/:id`, `POST kill/user/:org/:user`, `POST enable/server/:id`, `POST enable/user/:org/:user`, `POST lockdown/end`, `GET rotation/due`, `POST rotate` (body `{ scope }`, `{ group }` or `{ all: true }`), `POST incident`, `GET users`, `POST users`, `DELETE users/:id`, `POST users/:id/token`, `DELETE users/:id/token/:tokenId`, `GET health?ids=a,b`.
 
 ### Metrics
 
@@ -199,6 +199,7 @@ Routes (all under `/admin/api/`): `GET ledger` (`user`, `server`, `since`, `limi
 | `user add <id> --org <org> [--admin]` | Add a user. An admin also gets a TOTP enrolment URI. |
 | `user list` / `user remove <id>` | List users, or remove one with their tokens and TOTP secret. |
 | `user token <id>` | Issue a new bearer token (printed once). |
+| `user revoke <id> <tokenId>` | Revoke one bearer token, leaving the user's others working. |
 | `servers list` | List registered servers: category, auth type, whether this user is connected, whether a session is running. |
 | `connect <server> [--user u --org o]` | Start auth for a server from the terminal. It prints the link and serves the OAuth callback / key-entry page itself until you finish or 15 minutes pass, so the port must be free (do not run it while a gateway is up on the same port). |
 | `kill all` / `kill server <id>` / `kill user <org/user>` | [Kill switch](security.md#kill-switch). |
