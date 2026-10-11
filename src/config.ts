@@ -22,9 +22,9 @@ export interface Config {
   vault: {
     backend: "file" | "hashicorp";
     keyProvider: KeyProviderKind;
-    hashicorp?: { addr: string; mount?: string; token?: string };
-    transit?: { addr: string; keyName: string; mount?: string; token?: string };
-    awsKms?: { region: string; keyId: string; credentials?: { accessKeyId: string; secretAccessKey: string; sessionToken?: string } };
+    hashicorp?: { addr: string; mount?: string; token: string };
+    transit?: { addr: string; keyName: string; mount?: string; token: string };
+    awsKms?: { region: string; keyId: string; credentials: { accessKeyId: string; secretAccessKey: string; sessionToken?: string } };
   };
   routing: { embeddings: "on" | "off"; model?: string };
   compress: "off" | "light" | "aggressive";

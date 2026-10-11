@@ -107,7 +107,7 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
   const catalog = new FileCatalogStore({ shippedDir: cfg.catalogDir, stateDir: at("catalog") });
   const discovery = await createDiscovery({ embeddings: cfg.routing.embeddings, model: cfg.routing.model, cacheDir: at("embeddings") });
   const auth = new GatewayAuthBroker({ store, ledger, manifest, publicUrl: cfg.http.publicUrl });
-  const registry = new Registry(manifests, { catalog, discovery, auth, guard: kill, ledger, ttlMs: cfg.ttlMs, compress: cfg.compress });
+  const registry = new Registry(manifests, { catalog, discovery, auth, guard: kill, ledger, secrets: store, ttlMs: cfg.ttlMs, compress: cfg.compress });
   kill.attachSessions(registry);
   const rotation = new RotationService({ store, ledger, broker: auth, manifest, days: cfg.rotation.days });
   const stopRotation = opts.schedule === false ? () => {} : rotation.startSchedule(cfg.rotation.checkEveryMs);
