@@ -116,7 +116,8 @@ export async function startHttp(app: App): Promise<HttpHandle> {
   async function admin(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
     const p = app.users.authenticate(bearer(req));
     const deny = (status: number, why: string): never => {
-      app.ledger.record({ ts: Date.now(), org: p?.org, user: p?.user ?? "anonymous", server: "_admin", tool: "admin.auth", result: "denied", reason: why });
+      // An unknown token is not ledgered: anyone who can reach the port could grow the ledger without bound.
+      if (p) app.ledger.record({ ts: Date.now(), org: p.org, user: p.user, server: "_admin", tool: "admin.auth", result: "denied", reason: why });
       if (status === 401) res.setHeader("WWW-Authenticate", 'Bearer realm="one-stop-mcp-admin"');
       throw new HttpError(status, why);
     };
@@ -124,19 +125,18 @@ export async function startHttp(app: App): Promise<HttpHandle> {
     if (!p.admin) return deny(403, "not an admin");
     const key = `${p.org}/${p.user}`;
     const now = Date.now();
-    let fails = totpFails.get(key);
-    if (fails && fails.until <= now) fails = undefined;
-    if (fails && fails.n >= TOTP_MAX_FAILS) return deny(429, "too many wrong TOTP codes; try again later");
     // A TOTP code is accepted once (RFC 6238 §5.2) and unlocks a short admin session so
     // the admin page can make several calls; the bearer is still required on every call.
+    // A live session is checked first, so a lockout cannot cut off an admin already signed in.
     const sid = header(req, "x-osmcp-admin-session");
     const s = sid ? adminSessions.get(sid) : undefined;
     if (!s || s.key !== key || s.exp <= now) {
+      let fails = totpFails.get(key);
+      if (!fails || fails.until <= now) totpFails.set(key, (fails = { n: 0, until: now + TOTP_LOCK_MS }));
+      if (fails.n >= TOTP_MAX_FAILS) return deny(429, "too many wrong TOTP codes; try again later");
+      fails.n++; // counted before the await, so guesses sent in parallel each cost a strike
       const code = header(req, "x-osmcp-totp");
-      if (!code || !/^\d{6}$/.test(code) || !(await app.verifyTotp(p, code))) {
-        totpFails.set(key, { n: (fails?.n ?? 0) + 1, until: fails?.until ?? now + TOTP_LOCK_MS });
-        return deny(401, "a valid X-OSMCP-TOTP code is required");
-      }
+      if (!code || !/^\d{6}$/.test(code) || !(await app.verifyTotp(p, code))) return deny(401, "a valid X-OSMCP-TOTP code is required");
       totpFails.delete(key);
       for (const [id, x] of adminSessions) if (x.exp <= now) adminSessions.delete(id);
       const id = randomBytes(32).toString("base64url");
@@ -225,7 +225,7 @@ const SECURITY_HEADERS = {
   "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
 };
 
-function keyForm(info: { server: string; name: string; keyUrl?: string; kind: "api_key" | "client" }, error?: string): string {
+function keyForm(info: { server: string; name: string; keyUrl?: string; kind: "api_key" | "client"; account: string }, error?: string): string {
   const name = esc(info.name);
   let link = "";
   try {
@@ -238,7 +238,8 @@ function keyForm(info: { server: string; name: string; keyUrl?: string; kind: "a
     info.kind === "client"
       ? `<label>OAuth client ID<input name="client_id" autocomplete="off" required></label><label>Client secret (if the provider issued one)<input name="client_secret" type="password" autocomplete="off"></label>`
       : `<label>API key<input name="key" type="password" autocomplete="off" required></label>`;
-  const intro = info.kind === "client" ? `Paste the OAuth client you registered for <b>${name}</b>.` : `Paste your API key for <b>${name}</b>.`;
+  // Naming the account lets someone sent another person's link notice before they hand over their key.
+  const intro = info.kind === "client" ? `Paste the OAuth client you registered for <b>${name}</b>. It will be used by ${esc(info.account)}.` : `Paste your API key for <b>${name}</b>. It will be saved for <b>${esc(info.account)}</b>.`;
   return page(
     `Connect ${info.name}`,
     `${error ? `<p role="alert">${esc(error)}</p>` : ""}<p>${intro} It is encrypted into the gateway's vault and never shown to the model.</p>${link}<form method="post">${fields}<button>Save</button></form>`,

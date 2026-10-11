@@ -29,6 +29,8 @@ export interface Config {
   routing: { embeddings: "on" | "off"; model?: string };
   compress: "off" | "light" | "aggressive";
   ttlMs: number;
+  /** Team mode: stdio servers with auth none that may run anyway (they act as the gateway host for every user). */
+  hostServers: string[];
   rotation: { days: number; checkEveryMs: number };
   ledger: { burstMax: number; windowMs: number };
   metrics: { token?: string };
@@ -42,7 +44,7 @@ export const DEFAULT_PORT = 8420; // D32
 // The keys a config file may set. Anything else is a typo or a credential that
 // belongs in the environment — both fail loud.
 const FILE_KEYS = {
-  mode: 1, home: 1, serversDir: 1, catalogDir: 1, compress: 1, ttlMs: 1,
+  mode: 1, home: 1, serversDir: 1, catalogDir: 1, compress: 1, ttlMs: 1, hostServers: 1,
   http: { host: 1, port: 1, publicUrl: 1 },
   vault: { backend: 1, keyProvider: 1, hashicorp: { addr: 1, mount: 1 }, transit: { addr: 1, keyName: 1, mount: 1 }, awsKms: { region: 1, keyId: 1 } },
   routing: { embeddings: 1, model: 1 },
@@ -56,7 +58,7 @@ const ENV_KEYS: Record<string, string> = {
   OSMCP_HOST: "http.host", OSMCP_PORT: "http.port", OSMCP_PUBLIC_URL: "http.publicUrl",
   OSMCP_VAULT_BACKEND: "vault.backend", OSMCP_KEY_PROVIDER: "vault.keyProvider",
   OSMCP_EMBEDDINGS: "routing.embeddings", OSMCP_MODEL: "routing.model", OSMCP_COMPRESS: "compress",
-  OSMCP_TTL_MS: "ttlMs", OSMCP_ROTATION_DAYS: "rotation.days",
+  OSMCP_TTL_MS: "ttlMs", OSMCP_ROTATION_DAYS: "rotation.days", OSMCP_HOST_SERVERS: "hostServers",
 };
 
 type Raw = Record<string, any>;
@@ -135,6 +137,7 @@ export function loadConfig(opts: { argv?: string[]; env?: NodeJS.ProcessEnv } = 
     routing: { embeddings: oneOf(raw.routing?.embeddings ?? "on", "routing.embeddings", ["on", "off"] as const), model: raw.routing?.model },
     compress: oneOf(raw.compress ?? "light", "compress", ["off", "light", "aggressive"] as const),
     ttlMs: int(raw.ttlMs ?? 60_000, "ttlMs", 1000, 86_400_000),
+    hostServers: idList(raw.hostServers, "hostServers"),
     rotation: {
       days: int(raw.rotation?.days ?? 90, "rotation.days", 1, 3650),
       checkEveryMs: int(raw.rotation?.checkEveryMs ?? 3_600_000, "rotation.checkEveryMs", 60_000, 86_400_000),
@@ -146,6 +149,13 @@ export function loadConfig(opts: { argv?: string[]; env?: NodeJS.ProcessEnv } = 
     metrics: { token: env.OSMCP_METRICS_TOKEN || undefined },
     masterKey,
   };
+}
+
+/** A YAML list or a comma-separated env value. */
+function idList(v: unknown, key: string): string[] {
+  if (v === undefined) return [];
+  const list = typeof v === "string" ? v.split(",") : Array.isArray(v) ? v : fail(`${key} must be a list of server ids`);
+  return list.map((x) => String(x).trim()).filter(Boolean);
 }
 
 function readFile(file: string): Raw {

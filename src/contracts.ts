@@ -177,7 +177,7 @@ export interface AuthBroker {
   /** Force an OAuth refresh-token grant. False when there is no refresh token. */
   refresh(scope: SecretScope): Promise<boolean>;
   /** What the key-entry page shows for a ticket; undefined when unknown/expired. */
-  ticketInfo(ticket: string): { server: string; name: string; keyUrl?: string; kind: "api_key" | "client" } | undefined;
+  ticketInfo(ticket: string): { server: string; name: string; keyUrl?: string; kind: "api_key" | "client"; account: string } | undefined;
   /** A fresh key-entry URL for guided API-key rotation. */
   keyEntryUrl(scope: SecretScope): Promise<string>;
 }

@@ -42,7 +42,7 @@ function fakeApp(mode: "local" | "team", name: string) {
     auth: {
       connect: async () => ({ server: "x", auth: "none", status: "ready", message: "" }),
       handleOAuthCallback: async (q: URLSearchParams) => (q.get("state") === "good" ? { server: "gh", ok: true, message: "GitHub connected" } : { server: "", ok: false, message: "<script>unknown state sk-abc</script>" }),
-      ticketInfo: (t: string) => (t === "T".repeat(43) ? { server: "brave", name: "Brave <Search>", keyUrl: "javascript:alert(1)", kind: "api_key" as const } : undefined),
+      ticketInfo: (t: string) => (t === "T".repeat(43) ? { server: "brave", name: "Brave <Search>", keyUrl: "javascript:alert(1)", kind: "api_key" as const, account: "acme/<ann>" } : undefined),
       submitApiKey: async (t: string, key: string) => (calls.push(["submit", t, key]), { server: "brave", ok: true, message: "Brave connected" }),
     },
   };
@@ -110,8 +110,11 @@ test("admin API: needs an admin bearer AND a TOTP code; throttles guessing; ledg
     assert.equal((await viaSession()).status, 401, "but never for the bearer");
     assert.equal((await call(root, "123456", "nope/route")).status, 404);
 
-    for (let i = 0; i < 5; i++) await call(root, "999999");
+    const burst = await Promise.all(Array.from({ length: 8 }, () => call(root, "999999")));
+    assert.ok(burst.filter((r) => r.status === 401).length <= 5, "guesses sent in parallel each cost a strike");
     assert.equal((await call(root, "123456")).status, 429, "locked out after repeated wrong codes");
+    assert.equal((await viaSession(root)).status, 200, "a lockout does not cut off an admin already signed in");
+    assert.ok(!ledger.some((e) => e.user === "anonymous"), "requests without a known token are not ledgered");
 
     const denied = ledger.filter((e) => e.result === "denied").length;
     assert.ok(denied >= 9, `every refused attempt is ledgered (got ${denied})`);
@@ -137,6 +140,7 @@ test("key entry: escaped form, no unsafe links, same-origin POST only; OAuth cal
     const text = await form.text();
     assert.ok(text.includes("Brave &#60;Search&#62;") && !text.includes("<Search>"), "server name escaped");
     assert.ok(!text.includes("javascript:"), "non-http keyUrl dropped");
+    assert.ok(text.includes("acme/&#60;ann&#62;"), "the page names the account the key is saved for, escaped");
 
     assert.equal((await fetch(`${http.url}/connect/${"U".repeat(43)}`)).status, 404, "unknown ticket");
     const post = (headers: Record<string, string>) =>

@@ -51,8 +51,11 @@ const ROUTES: Array<[string, Handler]> = [
     const u = a.users.get(p.id);
     if (!u) throw new HttpError(404, `unknown user ${p.id}`);
     a.users.remove(p.id);
-    await a.store.delete({ org: u.org, user: u.id, server: "_totp" }).catch(() => false); // best effort while frozen
-    return { removed: p.id };
+    // Every cell goes (credentials and TOTP), so a later user with the same org/id inherits nothing.
+    const cells = await a.store.list({ org: u.org, user: u.id }).catch(() => []); // best effort while frozen
+    for (const c of cells) await a.store.delete(c.scope).catch(() => false);
+    await a.store.delete({ org: u.org, user: u.id, server: "_totp" }).catch(() => false);
+    return { removed: p.id, credentials: cells.filter((c) => c.scope.server !== "_totp").length };
   }],
   ["POST users/:id/token", (a, _by, p) => {
     if (!a.users.get(p.id)) throw new HttpError(404, `unknown user ${p.id}`);

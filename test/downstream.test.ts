@@ -1,9 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { AccessDeniedError, type Principal } from "../src/contracts.js";
 import { GatewayAuthBroker } from "../src/auth/broker.js";
 import { Registry } from "../src/downstream/registry.js";
+import { hostSafe } from "../src/server/app.js";
 import type { Manifest } from "../src/types.js";
 import { FakeGuard, lexicalDiscovery, MemoryCatalog, MemoryLedger, MemoryStore } from "./fixtures/fakes.js";
 import { startLegacySse, startMcpHttp } from "./fixtures/oauth-server.js";
@@ -13,14 +17,14 @@ const ANN: Principal = { org: "acme", user: "ann", admin: false };
 const BOB: Principal = { org: "acme", user: "bob", admin: false };
 const PUBLIC = "http://127.0.0.1:1"; // the gateway's own URL; never fetched in these tests
 
-function rig(manifests: Manifest[]) {
+function rig(manifests: Manifest[], home?: string) {
   const store = new MemoryStore();
   const ledger = new MemoryLedger();
   const catalog = new MemoryCatalog();
   const guard = new FakeGuard();
   const byId = new Map(manifests.map((m) => [m.id, m]));
   const broker = new GatewayAuthBroker({ store, ledger, manifest: (id) => byId.get(id), publicUrl: PUBLIC });
-  const registry = new Registry(manifests, { catalog, discovery: lexicalDiscovery, auth: broker, guard, ledger, secrets: store });
+  const registry = new Registry(manifests, { catalog, discovery: lexicalDiscovery, auth: broker, guard, ledger, secrets: store, home });
   return { store, ledger, catalog, guard, broker, registry };
 }
 
@@ -72,7 +76,7 @@ test("api_key over stdio: ticket, env injection, env isolation, redaction, pooli
 
     const c = await broker.connect(ANN, "keyed");
     const ticket = c.url!.slice(`${PUBLIC}/connect/`.length);
-    assert.deepEqual(broker.ticketInfo(ticket), { server: "keyed", name: "Keyed", keyUrl: "https://example.invalid/keys", kind: "api_key" });
+    assert.deepEqual(broker.ticketInfo(ticket), { server: "keyed", name: "Keyed", keyUrl: "https://example.invalid/keys", kind: "api_key", account: "acme/ann" });
     assert.equal((await broker.submitApiKey(ticket, "   ")).ok, false, "empty key rejected, ticket kept");
     assert.ok((await broker.submitApiKey(ticket, "sk-ann-123")).ok);
     assert.equal((await broker.submitApiKey(ticket, "sk-again")).ok, false, "tickets are one-time");
@@ -145,4 +149,25 @@ test("legacy HTTP+SSE server: Streamable 4xx falls back to SSE; health and refre
     await registry.closeAll();
     await sse.close();
   }
+});
+
+test("auth none: sessions per user, the state directory is never an argument, team mode loads only listed ones", async () => {
+  const home = mkdtempSync(join(tmpdir(), "osmcp-home-"));
+  const open: Manifest = { id: "open", name: "Open", category: [], description: "", transport: { type: "stdio", command: process.execPath, args: [envServer] }, auth: { type: "none" } };
+  const exposing: Manifest = { ...open, id: "exposing", transport: { type: "stdio", command: process.execPath, args: [envServer, dirname(home)] } };
+  const remote: Manifest = { ...open, id: "remote", transport: { type: "streamable-http", url: "https://mcp.example.invalid/" } };
+  const { registry } = rig([open, exposing], home);
+  try {
+    await registry.invoke(ANN, "open", "has_env", { name: "X" });
+    await registry.invoke(BOB, "open", "has_env", { name: "X" });
+    assert.equal(await registry.closeUser("ann", "acme"), 1, "ann's session is hers alone");
+    assert.equal(await registry.closeAll(), 1, "bob had his own");
+    await assert.rejects(registry.invoke(ANN, "exposing", "has_env", { name: "X" }), /state directory/);
+  } finally {
+    await registry.closeAll();
+  }
+  const ids = (mode: "local" | "team", hostServers: string[] = []) => hostSafe({ mode, hostServers }, [open, exposing, remote]).map((m) => m.id);
+  assert.deepEqual(ids("local"), ["open", "exposing", "remote"]);
+  assert.deepEqual(ids("team"), ["remote"], "a no-auth stdio server would act as the host for every user");
+  assert.deepEqual(ids("team", ["open"]), ["open", "remote"]);
 });

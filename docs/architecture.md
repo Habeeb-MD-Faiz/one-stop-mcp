@@ -85,7 +85,7 @@ The shortlist is the only way a downstream schema reaches the model, and it reac
 
 1. **Guard.** `AccessGuard.check(principal, server)`. The kill switch throws `AccessDeniedError` if the vault is frozen, the server is revoked, the user is revoked, or the gateway is in lockdown and the server has not been re-enabled. The denial is written to the ledger as `denied`.
 2. **Credentials.** `AuthBroker.outbound(principal, manifest)` reads the caller's credential for this server from the vault and returns it as an environment variable (stdio), a header (HTTP), or an SDK auth provider (MCP-spec OAuth). If there is none, the error tells the model to call `connect_server`. A stored OAuth token that has expired is refreshed first.
-3. **Session.** The registry opens a session on first use and pools it, keyed `org/user/server` (or `shared/server` for servers with `auth: none`). Idle sessions are closed after a TTL (60 seconds by default).
+3. **Session.** The registry opens a session on first use and pools it, keyed `org/user/server`, also for servers with `auth: none`, so no server's in-process state crosses users. Idle sessions are closed after a TTL (60 seconds by default).
 4. **Call.** `callTool` on the downstream server. For stdio servers the child process gets a minimal environment, never the gateway's own ([D31](burndown/DECISIONS.md)).
 5. **Ledger.** One entry per call: org, user, server, tool, result. Anomaly rules run here.
 6. **Redaction.** Any injected secret value is removed from the result and from errors before they go back to the model.

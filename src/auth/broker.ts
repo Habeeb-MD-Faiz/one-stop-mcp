@@ -42,6 +42,10 @@ const isMcpOAuth = (m: Manifest): boolean => m.transport.type === "streamable-ht
 const random = (): string => randomBytes(32).toString("base64url");
 const scopeOf = (p: Principal, server: string): SecretScope => ({ org: p.org, user: p.user, server });
 
+/** The SDK appends a downstream's raw response body to some errors; that body is the
+ *  downstream's (or an internal host's) content and is not passed on to the model. */
+const brief = (err: unknown): string => String((err as Error)?.message ?? err).replace(/\. Raw body: [\s\S]*$/, "");
+
 interface Ticket {
   scope: SecretScope;
   kind: "api_key" | "client";
@@ -101,12 +105,14 @@ export class GatewayAuthBroker implements AuthBroker {
       }
       const client = await this.client(m);
       if (!client) {
+        // The client is gateway-wide: every user's sign-in would go through it, so only an admin sets it.
+        if (!p.admin) return result("error", `${m.name} needs an OAuth client that an admin sets up once. Ask an admin to run connect_server ${server}.`);
         const url = this.mint(clientScope(server), "client", p);
         return result("pending", `${m.name} needs an OAuth client set up once by the operator: open this link, paste the client id and secret, then sign in.`, url);
       }
       return result("pending", `Ask the user to open this link and sign in to ${m.name}.`, await this.startExplicit(p, m, client));
     } catch (err) {
-      return result("error", `Could not start sign-in for ${m.name}: ${(err as Error).message}`);
+      return result("error", `Could not start sign-in for ${m.name}: ${brief(err)}`);
     }
   }
 
@@ -138,7 +144,7 @@ export class GatewayAuthBroker implements AuthBroker {
       }
     } catch (err) {
       this.audit(scope, "auth.connect", "error", `token exchange failed (${(err as Error).name})`);
-      return { server: m.id, ok: false, message: `${m.name} sign-in failed: ${(err as Error).message}` };
+      return { server: m.id, ok: false, message: `${m.name} sign-in failed: ${brief(err)}` };
     }
     this.audit(scope, "auth.connect", "authorized");
     return { server: m.id, ok: true, message: `${m.name} is connected. You can close this tab.` };
@@ -158,6 +164,7 @@ export class GatewayAuthBroker implements AuthBroker {
       this.audit(t.scope, "auth.connect", "authorized");
       return { server: m.id, ok: true, message: `${m.name} is connected. You can close this tab.` };
     }
+    if (await this.client(m)) return { server: m.id, ok: false, message: "An OAuth client is already configured for this server; nothing was saved." };
     await this.store.put(t.scope, client, "client");
     this.audit(t.scope, "auth.client", "authorized");
     const next = t.principal ? await this.startExplicit(t.principal, m, client!) : undefined;
@@ -200,11 +207,12 @@ export class GatewayAuthBroker implements AuthBroker {
     return true;
   }
 
-  ticketInfo(ticket: string): { server: string; name: string; keyUrl?: string; kind: "api_key" | "client" } | undefined {
+  ticketInfo(ticket: string): { server: string; name: string; keyUrl?: string; kind: "api_key" | "client"; account: string } | undefined {
     const t = this.live(ticket);
     if (!t) return undefined;
     const m = this.manifest(t.scope.server);
-    return m && { server: m.id, name: m.name, keyUrl: m.auth?.keyUrl, kind: t.kind };
+    const account = t.kind === "client" ? "every user of this gateway" : `${t.scope.org}/${t.scope.user}`;
+    return m && { server: m.id, name: m.name, keyUrl: m.auth?.keyUrl, kind: t.kind, account };
   }
 
   async keyEntryUrl(scope: SecretScope): Promise<string> {

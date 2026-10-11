@@ -64,6 +64,7 @@ routing:
 
 compress: light             # off | light | aggressive
 ttlMs: 60000                # idle downstream sessions are closed after this
+hostServers: [time]         # team mode: no-credential stdio servers allowed to run (see security.md)
 
 rotation:
   days: 90
@@ -94,6 +95,7 @@ ledger:
 | `routing.model` | `Xenova/bge-small-en-v1.5` | Embedding model id. The other tested model is `Xenova/all-MiniLM-L6-v2`. |
 | `compress` | `light` | Schema compression for `find_tools` results. `off`, `light`, or `aggressive`. See [routing](routing.md#schema-compression). |
 | `ttlMs` | `60000` | Idle time before a pooled downstream session is closed. 1000-86400000. |
+| `hostServers` | `[]` | Team mode only. Ids of stdio servers with `auth: none` that may load. Such a server acts as the gateway host (its files, network and local cloud credentials) for every user, so none load unless listed here. Local mode ignores it. |
 | `rotation.days` | `90` | Credentials older than this are reported by `rotate due`. 1-3650. |
 | `rotation.checkEveryMs` | `3600000` (one hour) | How often the rotation scheduler runs. 60000-86400000. |
 | `ledger.burstMax` | `100` | More than this many calls to one (user, server, tool) inside `windowMs` is flagged. |
@@ -136,6 +138,7 @@ GCP and Azure KMS sit behind the same `KeyProvider` interface but are not built.
 | `OSMCP_MODEL` | `routing.model` | Embedding model id. |
 | `OSMCP_COMPRESS` | `compress` | `off`, `light` or `aggressive`. |
 | `OSMCP_TTL_MS` | `ttlMs` | Idle session timeout. |
+| `OSMCP_HOST_SERVERS` | `hostServers` | Comma-separated server ids. |
 | `OSMCP_ROTATION_DAYS` | `rotation.days` | Rotation policy age. |
 | `OSMCP_VAULT_TOKEN`, `VAULT_TOKEN` | none (env only) | Token for the HashiCorp KV backend and the Transit key provider. `OSMCP_VAULT_TOKEN` wins. |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` | none (env only) | Credentials for the `aws-kms` key provider. |

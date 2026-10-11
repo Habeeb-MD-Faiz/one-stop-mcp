@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { isAbsolute, relative, resolve } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { StreamableHTTPClientTransport, StreamableHTTPError } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
@@ -74,12 +75,13 @@ export interface RegistryDeps {
   secrets: SecretStore;
   ttlMs?: number;
   compress?: CompressLevel;
+  /** The gateway's state directory: no stdio server is started with it in reach of a path argument. */
+  home?: string;
 }
 
 interface Session {
   server: string;
-  /** Undefined for shared (auth: none) sessions. */
-  owner?: { org: string; user: string };
+  owner: { org: string; user: string };
   /** Hash of the injected env/headers: a refreshed or rotated credential means a new session. */
   fp: string;
   ready: Promise<Client>;
@@ -211,7 +213,7 @@ export class Registry implements SessionControl {
   }
 
   closeUser(user: string, org?: string): Promise<number> {
-    return this.closeWhere((s) => s.owner?.user === user && (org === undefined || s.owner.org === org));
+    return this.closeWhere((s) => s.owner.user === user && (org === undefined || s.owner.org === org));
   }
 
   runningServers(): string[] {
@@ -261,8 +263,9 @@ export class Registry implements SessionControl {
 
   // --- session pooling -----------------------------------------------------------
 
+  // Per user even without credentials: a server's in-process state (memory, browser tabs) must not cross tenants.
   private key(p: Principal, m: Manifest): string {
-    return (m.auth?.type ?? "none") === "none" ? `shared/${m.id}` : `${p.org}/${p.user}/${m.id}`;
+    return `${p.org}/${p.user}/${m.id}`;
   }
 
   private async session(p: Principal, m: Manifest, out: OutboundAuth, secrets: string[]): Promise<Session> {
@@ -276,8 +279,7 @@ export class Registry implements SessionControl {
     }
     if (existing) await this.drop(existing); // credential changed (refresh, rotation): respawn with the new one
 
-    const owner = key.startsWith("shared/") ? undefined : { org: p.org, user: p.user };
-    const s: Session = { server: m.id, owner, fp, ready: this.open(m, out, secrets) };
+    const s: Session = { server: m.id, owner: { org: p.org, user: p.user }, fp, ready: this.open(m, out, secrets) };
     this.sessions.set(key, s); // concurrent callers for the same key await the same connect
     let client: Client;
     try {
@@ -336,6 +338,10 @@ export class Registry implements SessionControl {
     const t = m.transport;
     const client = new Client({ name: "one-stop-mcp", version: "0.0.0" });
     if (t.type === "stdio") {
+      // ponytail: catches a path argument that contains the state directory ("." started from ~, "/").
+      // A server that takes paths at call time (git) still runs as this OS user; see docs/security.md.
+      const exposed = this.deps.home && (t.args ?? []).find((a) => !a.startsWith("-") && contains(resolve(a), this.deps.home!));
+      if (exposed) throw new Error(`refusing to start ${m.id}: its argument "${exposed}" would give it the gateway's state directory`);
       // D31: the child gets the SDK's safe default variables + manifest env + the
       // injected credential — never the gateway's own environment (OSMCP_MASTER_KEY).
       const transport = new StdioClientTransport({ command: t.command, args: t.args, env: { ...t.env, ...out.env }, stderr: "pipe" });
@@ -385,3 +391,7 @@ async function providerSecrets(out: OutboundAuth): Promise<string[]> {
   return t ? [t.access_token, t.refresh_token ?? ""].filter(Boolean) : [];
 }
 
+function contains(dir: string, inner: string): boolean {
+  const r = relative(dir, inner);
+  return r === "" || (!r.startsWith("..") && !isAbsolute(r));
+}

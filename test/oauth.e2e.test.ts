@@ -14,6 +14,7 @@ import { startAuthServer, startMcpHttp } from "./fixtures/oauth-server.js";
 
 const envServer = fileURLToPath(new URL("./fixtures/env-server.mjs", import.meta.url));
 const ANN: Principal = { org: "acme", user: "ann", admin: false };
+const OPS: Principal = { org: "acme", user: "ops", admin: true };
 const PUBLIC = "http://127.0.0.1:1";
 const text = (res: unknown) => (res as { content: { text: string }[] }).content[0].text;
 
@@ -115,8 +116,13 @@ test("explicit-endpoint OAuth without a client id: operator pastes client id/sec
   };
   const { registry, broker, store } = rig([local]);
   try {
-    const c = await broker.connect(ANN, "conf");
+    const refused = await broker.connect(ANN, "conf");
+    assert.equal(refused.status, "error", "a non-admin cannot set the gateway-wide OAuth client");
+    assert.match(refused.message, /admin/);
+    assert.equal(refused.url, undefined);
+    const c = await broker.connect(OPS, "conf");
     assert.ok(c.url!.startsWith(`${PUBLIC}/connect/`));
+    const spare = (await broker.connect(OPS, "conf")).url!.slice(`${PUBLIC}/connect/`.length);
     const ticket = c.url!.slice(`${PUBLIC}/connect/`.length);
     assert.equal(broker.ticketInfo(ticket)?.kind, "client");
     assert.equal((await broker.submitApiKey(ticket, "{not json")).ok, false);
@@ -124,7 +130,13 @@ test("explicit-endpoint OAuth without a client id: operator pastes client id/sec
     assert.ok(r.ok, r.message);
     assert.deepEqual(await store.get(clientScope("conf")), { client_id: "conf-app", client_secret: "conf-secret" });
 
+    const again = await broker.submitApiKey(spare, JSON.stringify({ client_id: "evil-app", client_secret: "x" }));
+    assert.equal(again.ok, false, "an earlier ticket cannot replace the configured client");
+    assert.deepEqual(await store.get(clientScope("conf")), { client_id: "conf-app", client_secret: "conf-secret" });
+
     await signIn(broker, r.message.match(/https?:\/\/\S+/)![0]); // the token endpoint 401s unless the secret is sent
+    assert.deepEqual(JSON.parse(text(await registry.invoke(OPS, "conf", "has_env", { name: "FIXTURE_TOKEN" }))), { present: true });
+    await signIn(broker, (await broker.connect(ANN, "conf")).url!); // once the client exists, anyone signs in with it
     assert.deepEqual(JSON.parse(text(await registry.invoke(ANN, "conf", "has_env", { name: "FIXTURE_TOKEN" }))), { present: true });
   } finally {
     await registry.closeAll();

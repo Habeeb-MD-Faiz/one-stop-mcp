@@ -4,6 +4,10 @@ import { mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { UserStore } from "../src/tenancy/users.js";
+import { adminCall } from "../src/server/admin.js";
+import type { App } from "../src/server/app.js";
+import { LOCAL_PRINCIPAL } from "../src/contracts.js";
+import { MemoryStore } from "./fixtures/fakes.js";
 
 const dir = mkdtempSync(join(tmpdir(), "osmcp-users-"));
 after(() => rmSync(dir, { recursive: true, force: true }));
@@ -50,4 +54,16 @@ test("ids are validated; duplicates and unknown users rejected", () => {
   assert.throws(() => users.add("cy", "other"), /already exists/);
   assert.throws(() => users.issueToken("nobody"), /unknown user/);
   assert.equal(users.remove("nobody"), false);
+});
+
+test("removing a user removes every credential, so a new user with the same id inherits nothing", async () => {
+  const users = new UserStore(join(dir, "users-remove.json"));
+  users.add("ana", "acme");
+  const store = new MemoryStore();
+  await store.put({ org: "acme", user: "ana", server: "gmail" }, { access_token: "t" }, "oauth2");
+  await store.put({ org: "acme", user: "ana", server: "_totp" }, { secret: "s" }, "api_key");
+  await store.put({ org: "acme", user: "bob", server: "gmail" }, { access_token: "b" }, "oauth2");
+  const app = { users, store, ledger: { record: (e: unknown) => e } } as unknown as App;
+  assert.deepEqual(await adminCall(app, LOCAL_PRINCIPAL, "DELETE", "users/ana"), { removed: "ana", credentials: 1 });
+  assert.deepEqual((await store.list({ org: "acme" })).map((c) => c.scope.user), ["bob"]);
 });

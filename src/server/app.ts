@@ -102,13 +102,13 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
   const ledger = new UsageLedger({ path: ledgerPath, signingKeyPath: at("ledger-signing.pem"), burstMax: cfg.ledger.burstMax, windowMs: cfg.ledger.windowMs });
   const kill = new KillSwitch({ statePath: at("killswitch.json"), store, ledger });
 
-  const manifests = loadManifests(cfg.serversDir);
+  const manifests = hostSafe(cfg, loadManifests(cfg.serversDir));
   const byId = new Map(manifests.map((m) => [m.id, m]));
   const manifest = (id: string) => byId.get(id);
   const catalog = new FileCatalogStore({ shippedDir: cfg.catalogDir, stateDir: at("catalog") });
   const discovery = await createDiscovery({ embeddings: cfg.routing.embeddings, model: cfg.routing.model, cacheDir: at("embeddings") });
   const auth = new GatewayAuthBroker({ store, ledger, manifest, publicUrl: cfg.http.publicUrl });
-  const registry = new Registry(manifests, { catalog, discovery, auth, guard: kill, ledger, secrets: store, ttlMs: cfg.ttlMs, compress: cfg.compress });
+  const registry = new Registry(manifests, { catalog, discovery, auth, guard: kill, ledger, secrets: store, ttlMs: cfg.ttlMs, compress: cfg.compress, home: cfg.home });
   kill.attachSessions(registry);
   const rotation = new RotationService({ store, ledger, broker: auth, manifest, kill, days: cfg.rotation.days });
   const stopRotation = opts.schedule === false ? () => {} : rotation.startSchedule(cfg.rotation.checkEveryMs);
@@ -147,4 +147,14 @@ export async function createApp(cfg: Config, opts: { schedule?: boolean } = {}):
     },
   };
   return app;
+}
+
+/** Team mode: a stdio server with no per-user credential acts as this host (its files, network,
+ *  ~/.aws, ~/.kube) for every user, so it is loaded only when the operator lists it in hostServers. */
+export function hostSafe(cfg: Pick<Config, "mode" | "hostServers">, all: Manifest[]): Manifest[] {
+  if (cfg.mode !== "team") return all;
+  const held = all.filter((m) => m.transport.type === "stdio" && (m.auth?.type ?? "none") === "none" && !cfg.hostServers.includes(m.id));
+  if (held.length) process.stderr.write(`team mode: not loading ${held.length} stdio servers that would act as this host for every user (${held.map((m) => m.id).join(", ")}); list the ones you trust in hostServers
+`);
+  return all.filter((m) => !held.includes(m));
 }
