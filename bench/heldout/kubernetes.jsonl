@@ -1,0 +1,3 @@
+{"query":"Scale the checkout deployment to 5 replicas in my Kubernetes cluster","server":"kubernetes","tool":"resources_scale"}
+{"query":"Pull the logs for the api-7d9f pod in the staging namespace of my k8s cluster","server":"kubernetes","tool":"pods_log"}
+{"query":"Which pods are chewing through the most CPU and memory right now?","server":"kubernetes","tool":"pods_top"}

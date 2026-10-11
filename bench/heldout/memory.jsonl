@@ -1,0 +1,3 @@
+{"query":"Record in the knowledge graph that Maria works on the Atlas project","server":"memory","tool":"create_relations"}
+{"query":"Dump everything you remember, the whole knowledge graph","server":"memory","tool":"read_graph"}
+{"query":"Search your memory server for anything mentioning Atlas","server":"memory","tool":"search_nodes"}

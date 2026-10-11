@@ -1,0 +1,3 @@
+{"query":"Find the Q3 budget spreadsheet in my Google Drive","server":"google-drive","tool":"search_files"}
+{"query":"Is the 'Board deck' file shared with anyone outside the company?","server":"google-drive","tool":"get_file_permissions"}
+{"query":"Export the 'Board Update' slides as a PDF","server":"google-drive","tool":"download_file_content"}

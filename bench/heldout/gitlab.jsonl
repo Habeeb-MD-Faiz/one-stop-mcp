@@ -1,0 +1,3 @@
+{"query":"Open a merge request from fix/timeout into main titled 'Raise API timeout'","server":"gitlab","tool":"save_merge_request"}
+{"query":"Show the latest pipelines on GitLab for the main branch of the payments project","server":"gitlab","tool":"list_pipelines"}
+{"query":"Set the MR to merge automatically once its pipeline goes green","server":"gitlab","tool":"accept_merge_request"}
