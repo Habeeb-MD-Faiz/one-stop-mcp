@@ -50,9 +50,22 @@ routing:
     - "catch me up on the thread in #support"
     - "schedule a reminder message for tomorrow morning"
   tools:
-    slack_send_message: ["tell the team in #general that the deploy is done"]
-    slack_search_public: ["find messages about the outage in public channels"]
-    slack_read_channel: ["show recent messages in the sales channel"]
-    slack_schedule_message: ["send this announcement at 9am Monday"]
+    slack_send_message: ["tell the team in #general that the deploy is done", "reply in the thread saying I'll take a look", "DM Sam that the report is ready"]
+    slack_search_public: ["find messages about the outage in public channels", "search public channels for the pricing discussion last week", "did anyone mention the migration in a public channel"]
+    slack_read_channel: ["show recent messages in the sales channel", "catch me up on what happened in #incidents overnight", "read the last 50 messages in the support channel"]
+    slack_schedule_message: ["send this announcement at 9am Monday", "schedule a reminder in the standup channel for tomorrow at 9", "post this update on Friday afternoon, not now"]
+    slack_search_public_and_private: ["search my DMs and private channels for what Dana said about the contract", "find that message across all my conversations including group DMs"]
+    slack_search_channels: ["is there a channel for the data team", "find the channel about customer escalations"]
+    slack_search_users: ["who is the person named Alex in design", "look up a teammate by their email address"]
+    slack_read_thread: ["show all the replies in this thread", "open the full conversation under that message"]
+    slack_read_user_profile: ["what's Priya's title and current status", "show the profile and timezone for this user ID"]
+    slack_read_file: ["read the contents of the file that search turned up", "open the shared doc from that message"]
+    slack_list_channel_members: ["who is in the #launch channel", "list all the members of this channel"]
+    slack_send_message_draft: ["draft a message to the team but let me review before sending", "write a reply to the channel and save it as a draft"]
+    slack_create_canvas: ["write up the meeting notes as a canvas and share it", "make a canvas with the project plan for the channel"]
+    slack_add_reaction: ["react with a thumbs up to that message", "add a checkmark emoji to Jo's post"]
+    slack_get_reactions: ["who reacted to the announcement", "which emojis are on that message"]
+    slack_get_file_upload_url: ["get an upload link so I can add a PDF to a channel", "get a signed url so I can attach a file"]
+    slack_complete_file_upload: ["finish the file upload and share it in #design with a note", "finalize the uploaded file and post it to the channel"]
 health:
   check: initialize

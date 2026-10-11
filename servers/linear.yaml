@@ -28,9 +28,26 @@ routing:
     - "update the status of ENG-123"
     - "list the projects on the platform team"
   tools:
-    list_issues: ["show my open linear issues"]
-    save_issue: ["file a ticket for the login crash and assign it to Dana"]
-    get_issue: ["open ENG-482 and read the description"]
-    list_projects: ["which projects are in progress"]
+    list_issues: ["show my open linear issues", "what's on my plate this cycle for the mobile team", "find all urgent bugs still in Todo"]
+    save_issue: ["file a ticket for the login crash and assign it to Dana", "move ENG-210 to In Review and bump it to high priority", "create a bug for the checkout timeout under the web team"]
+    get_issue: ["open ENG-482 and read the description", "show me the comments and attachments on ENG-123", "pull up the details of that ticket by its identifier"]
+    list_projects: ["which projects are in progress", "what projects does the platform team have going", "show me all projects led by Priya"]
+    list_comments: ["what did people say on ENG-340", "show the discussion thread under this issue"]
+    save_comment: ["comment on ENG-98 that the fix is deployed", "reply in Linear saying I'm picking this one up"]
+    get_project: ["show me the Q4 migration project and its status", "open the project called Onboarding Revamp"]
+    save_project: ["start a new project for the billing rewrite with Sam as lead", "change the target date on the onboarding project to March"]
+    list_teams: ["which teams exist in our workspace", "list the teams including archived ones"]
+    get_team: ["show me the details of the Infra team", "what's the identifier prefix for the design team"]
+    list_users: ["who is in our workspace", "list everyone on the team so I can assign something"]
+    get_user: ["look up Maria's profile by her email", "who am I logged in as"]
+    list_issue_statuses: ["what workflow states does the backend team use", "list the statuses an issue can move through"]
+    list_issue_labels: ["which labels can I put on an issue", "show the labels used by the growth team"]
+    list_cycles: ["what cycles has the platform team run", "show the current and upcoming sprints for this team"]
+    list_documents: ["find our docs about the release process", "list the documents under the design team"]
+    get_document: ["open the architecture doc by its slug", "read the RFC document in full"]
+    save_document: ["write up this spec as a document under the Search project", "update the onboarding doc with the new steps"]
+    list_customer_needs: ["which customers asked for this feature", "show the customer requests attached to this project"]
+    save_customer_need: ["log a customer request from Acme about SSO with a link to the call", "record that this customer needs bulk export"]
+    search_documentation: ["how do triage and cycles work", "look up how to set up Linear's GitHub integration"]
 health:
   check: initialize
