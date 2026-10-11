@@ -28,7 +28,7 @@ routing:
     - "search my qdrant collection for similar notes"
     - "store this information for semantic retrieval"
   tools:
-    qdrant-store: ["remember this paragraph in the vector store"]
-    qdrant-find: ["find documents related to refund policy in qdrant"]
+    qdrant-store: ["remember this paragraph in the vector store", "save this note with metadata into the collection", "store this snippet so I can recall it semantically later"]
+    qdrant-find: ["find documents related to refund policy in qdrant", "search my stored memories for the deployment steps", "do a semantic lookup of snippets about authentication"]
 health:
   check: initialize

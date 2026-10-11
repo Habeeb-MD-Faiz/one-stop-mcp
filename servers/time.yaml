@@ -20,7 +20,7 @@ routing:
     - "convert 3pm London time to New York"
     - "what's the current time in my timezone"
   tools:
-    get_current_time: ["tell me the time in Sydney"]
-    convert_time: ["when it is 9am in Berlin what time is it in Mumbai"]
+    get_current_time: ["tell me the time in Sydney", "what time is it right now", "current time in America/New_York"]
+    convert_time: ["when it is 9am in Berlin what time is it in Mumbai", "convert 14:30 UTC to Tokyo time", "what is 5pm in New York over in London"]
 health:
   check: initialize

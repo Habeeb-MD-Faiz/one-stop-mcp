@@ -27,9 +27,9 @@ routing:
     - "list the zones in my Cloudflare account"
     - "how do I configure R2 buckets on Cloudflare"
   tools:
-    docs: ["search the Cloudflare developer docs for Workers KV limits"]
-    search: ["find the API endpoint for purging the cache"]
-    execute: ["call the Cloudflare API to add a DNS A record"]
-    whoami: ["which Cloudflare account am I connected to"]
+    docs: ["search the Cloudflare developer docs for Workers KV limits", "how do I bind an R2 bucket to a Worker", "what do the docs say about Pages custom domains"]
+    search: ["find the API endpoint for purging the cache", "which endpoint lists all zones on my account", "look through the API spec for the Workers script upload route"]
+    execute: ["call the Cloudflare API to add a DNS A record", "purge the cached files for my zone", "list the Workers scripts deployed on my account"]
+    whoami: ["which Cloudflare account am I connected to", "who am I authenticated as", "show my account id and the accounts I can manage"]
 health:
   check: initialize
