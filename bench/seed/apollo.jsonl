@@ -1,0 +1,4 @@
+{"query":"build me a prospect list of CTOs at series B startups","server":"apollo","tool":"apollo_mixed_people_api_search"}
+{"query":"look up the company details and funding for stripe.com","server":"apollo","tool":"apollo_organizations_enrich"}
+{"query":"what outbound campaigns have we set up","server":"apollo","tool":"apollo_emailer_campaigns_search"}
+{"query":"show me the open follow-up tasks on my plate","server":"apollo","tool":"apollo_tasks_search"}

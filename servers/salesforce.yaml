@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/tsmztech/mcp-server-salesforce (community, MIT), npm @tsmztech/mcp-server-salesforce 0.0.8.
+# Why community: Salesforce's own local server @salesforce/mcp is a developer-tooling server (metadata, Apex tests, one
+#   SOQL tool) and reaches end of life on 2026-11-02 (https://github.com/forcedotcom/mcp/issues/46). The hosted
+#   Salesforce MCP docs (developer.salesforce.com) returned 403 to WebFetch, so no hosted endpoint could be verified.
+# Auth: the package supports SALESFORCE_CONNECTION_TYPE = User_Password | OAuth_2.0_Client_Credentials | Salesforce_CLI |
+#   Access_Token. This manifest uses Access_Token: the gateway's OAuth flow supplies SALESFORCE_ACCESS_TOKEN. A deployment
+#   must also set SALESFORCE_INSTANCE_URL (from the token response / org My Domain) and provide a Connected App client id.
+#   NOT VERIFIED: the Salesforce authorize/token URLs below are the standard login.salesforce.com OAuth endpoints; use
+#   test.salesforce.com for sandboxes or the org's My Domain.
+id: salesforce
+name: Salesforce
+category: [crm, sales]
+tags: [community, local]
+description: >
+  Query and modify Salesforce records with SOQL and SOSL, describe objects and fields, and manage
+  custom objects, fields, Apex classes and triggers.
+homepage: https://github.com/tsmztech/mcp-server-salesforce
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@tsmztech/mcp-server-salesforce@0.0.8"]
+  env:
+    SALESFORCE_CONNECTION_TYPE: Access_Token
+auth:
+  type: oauth2
+  env: SALESFORCE_ACCESS_TOKEN
+  scopes: [api, refresh_token]
+  authorizationUrl: https://login.salesforce.com/services/oauth2/authorize
+  tokenUrl: https://login.salesforce.com/services/oauth2/token
+routing:
+  examples:
+    - "query my salesforce opportunities"
+    - "update the stage of this salesforce deal"
+    - "describe the fields on the account object"
+    - "create a new lead in salesforce"
+  tools:
+    salesforce_query_records: ["list open opportunities over fifty thousand"]
+    salesforce_dml_records: ["insert a new contact record"]
+    salesforce_describe_object: ["what fields does the case object have"]
+    salesforce_aggregate_query: ["sum of closed won amount grouped by owner"]
+health:
+  check: initialize

@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-hubspot-mcp-server
+#   (official, hosted by HubSpot). Server https://mcp.hubspot.com , Streamable HTTP, OAuth 2.1 with PKCE (S256).
+# Tools: 32 names + descriptions from that page (parameter schemas are not published; a few constraints are noted).
+# Auth: a deployment must create an MCP connector in HubSpot (Development > MCP Connectors) to get a client id/secret and
+#   register the redirect URL. Scopes follow the tools and the user's permissions, so none are listed.
+# NOT VERIFIED: dynamic client registration and explicit authorize/token URLs are not documented; MCP auth discovery assumed.
+id: hubspot
+name: HubSpot
+category: [crm, marketing, sales]
+tags: [official, remote]
+description: >
+  Search and manage HubSpot CRM records (contacts, companies, deals, tickets), activities, segments
+  and properties, and read marketing campaign, email, content and conversation data.
+homepage: https://developers.hubspot.com/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.hubspot.com
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "find the deal for acme in hubspot"
+    - "create a new contact in my crm"
+    - "log a note on this company record"
+    - "how are our marketing emails performing"
+  tools:
+    search_crm_objects: ["show contacts created this month in hubspot"]
+    manage_crm_objects: ["update the stage of this deal"]
+    query_crm_data: ["total closed won revenue by owner this quarter"]
+    get_marketing_email_analytics: ["open rates for last week's newsletter"]
+health:
+  check: initialize

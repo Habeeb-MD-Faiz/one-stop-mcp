@@ -1,0 +1,4 @@
+{"query":"pull all accounts in the energy sector created this year","server":"salesforce","tool":"salesforce_query_records"}
+{"query":"change the status on lead 00Q123 to qualified","server":"salesforce","tool":"salesforce_dml_records"}
+{"query":"what picklist values are allowed on opportunity stage","server":"salesforce","tool":"salesforce_describe_object"}
+{"query":"run a text search for Acme across contacts and accounts","server":"salesforce","tool":"salesforce_search_all"}
