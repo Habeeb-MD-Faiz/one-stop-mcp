@@ -111,9 +111,6 @@ export class Bm25Router implements Router {
 export interface Embedder {
   /** One vector per input text. Same dimensionality across calls. */
   embed(texts: string[]): Promise<number[][]>;
-  /** Prepended to queries (never to tool documents) for models trained with an
-   *  asymmetric retrieval instruction. */
-  readonly queryPrefix?: string;
 }
 
 // Dense retrieval: cosine similarity between the query vector and each tool's
@@ -133,7 +130,7 @@ export class VectorRouter implements Router {
   async rank(query: string, tools: RoutableTool[], k: number): Promise<ScoredTool[]> {
     if (tools.length === 0) return [];
     const docVecs = await this.docVectors(tools);
-    const [qVec] = await this.embedder.embed([(this.embedder.queryPrefix ?? "") + query]);
+    const [qVec] = await this.embedder.embed([query]);
     return tools
       .map((t, i) => ({ ...t, score: cosine(qVec, docVecs[i]) }))
       .filter((t) => t.score > 0)

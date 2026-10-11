@@ -175,14 +175,6 @@ test("VectorRouter: concurrent first queries embed the catalog once", async () =
   assert.equal(e.texts, catalog.length + 3);
 });
 
-test("VectorRouter prepends the embedder's query prefix to queries only", async () => {
-  const seen: string[] = [];
-  const e: Embedder = { queryPrefix: "Q: ", embed: async (ts) => (seen.push(...ts), ts.map(() => [1, 0])) };
-  await new VectorRouter(e).rank("find it", catalog.slice(0, 1), 1);
-  assert.equal(seen.at(-1), "Q: find it");
-  assert.ok(!seen[0].startsWith("Q: "));
-});
-
 // --- createDiscovery ----------------------------------------------------------
 
 test("createDiscovery: off = lexical + BM25; on = + dense; a failed load falls back with one stderr line", async () => {
