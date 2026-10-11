@@ -1,0 +1,4 @@
+{"query":"give me the open production bugs in our Sentry from the last 24 hours","server":"sentry","tool":"search_issues"}
+{"query":"how many exceptions did we log today grouped by type","server":"sentry","tool":"search_errors"}
+{"query":"have Seer figure out why this crash is happening","server":"sentry","tool":"analyze_issue_with_seer"}
+{"query":"mute this noisy alert until next week","server":"sentry","tool":"update_issue"}

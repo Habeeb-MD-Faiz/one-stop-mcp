@@ -1,0 +1,4 @@
+{"query":"a pod keeps restarting, show me what it prints","server":"kubernetes","tool":"pods_log"}
+{"query":"what is eating CPU on my worker machines","server":"kubernetes","tool":"nodes_top"}
+{"query":"open a shell command inside the api container","server":"kubernetes","tool":"pods_exec"}
+{"query":"give me the yaml of the ingress named web","server":"kubernetes","tool":"resources_get"}

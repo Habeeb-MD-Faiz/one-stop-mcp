@@ -1,0 +1,70 @@
+{
+  "server": "terraform",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "search_providers",
+      "description": "Search the Terraform Registry for providers and their resource, data source and guide documentation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_provider_details",
+      "description": "Get the full documentation of a Terraform provider resource, data source or guide.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_latest_provider_version",
+      "description": "Get the latest published version of a Terraform provider.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_provider_capabilities",
+      "description": "Get the capabilities of a Terraform provider: the resources, data sources and functions it offers.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_modules",
+      "description": "Search the Terraform Registry for modules.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_module_details",
+      "description": "Get the details of a Terraform Registry module: inputs, outputs and usage.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_latest_module_version",
+      "description": "Get the latest published version of a Terraform module.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_policies",
+      "description": "Search the Terraform Registry for Sentinel policies.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_policy_details",
+      "description": "Get the details of a Terraform Registry policy.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

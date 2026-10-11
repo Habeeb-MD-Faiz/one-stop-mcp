@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/mongodb-js/mongodb-mcp-server (official, MongoDB). npm
+# mongodb-mcp-server, version pinned (npm view = 3.0.5). Connection string comes from
+# MDB_MCP_CONNECTION_STRING (the injected credential). Add "--readOnly" to args to limit the server
+# to read/connect/metadata tools (README), which hides the write tools listed in the snapshot.
+# Snapshot = the 25 "MongoDB Database Tools" plus the knowledge-base pair; Atlas / Atlas Local tools
+# need separate Atlas API credentials and are not included. The README gives names and one-line
+# descriptions only: schemas are limited to database/collection, the arguments every data tool takes.
+id: mongodb
+name: MongoDB
+category: [database, data]
+tags: [official, local]
+description: >
+  MongoDB's official MCP server. Connect to a MongoDB deployment, run find and aggregation queries,
+  insert, update and delete documents, inspect schemas, indexes and stats, and manage collections.
+homepage: https://github.com/mongodb-js/mongodb-mcp-server
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "mongodb-mcp-server@3.0.5"]
+auth:
+  type: api_key
+  env: MDB_MCP_CONNECTION_STRING
+routing:
+  examples:
+    - "find documents in a mongodb collection"
+    - "run an aggregation pipeline on my mongo database"
+    - "what is the schema of this mongodb collection"
+    - "add an index to a mongo collection"
+  tools:
+    find: ["get the latest 20 documents where status is active"]
+    aggregate: ["group orders by customer and sum the totals"]
+    collection-schema: ["what fields do documents in this collection have"]
+    create-index: ["index the email field in users"]
+    insert-many: ["insert these records into the collection"]
+health:
+  check: initialize

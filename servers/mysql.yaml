@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/benborla/mcp-server-mysql (community, most-starred MySQL MCP server,
+# ~2.2k stars; no MySQL/Oracle-published server verified). npm @benborla29/mcp-server-mysql,
+# version pinned (npm view = 2.0.9). Read-only by default; writes need
+# ALLOW_INSERT_OPERATION / ALLOW_UPDATE_OPERATION / ALLOW_DELETE_OPERATION=true (README).
+# Env var names from the README. The password is the injected credential (MYSQL_PASS).
+# Alternative if this one goes stale: PyPI mysql-mcp-server (designcomputer, ~1.4k stars,
+# tools execute_sql / get_schema_info / get_table_sample).
+id: mysql
+name: MySQL
+category: [database, data]
+tags: [community, local]
+description: >
+  Run SQL against a MySQL database through one query tool. Read-only by default; the connection
+  host, user and database come from the environment.
+homepage: https://github.com/benborla/mcp-server-mysql
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@benborla29/mcp-server-mysql@2.0.9"]
+  env:
+    MYSQL_HOST: "127.0.0.1"
+    MYSQL_PORT: "3306"
+    MYSQL_USER: "root"
+    MYSQL_DB: ""
+auth:
+  type: api_key
+  env: MYSQL_PASS
+routing:
+  examples:
+    - "run a query on my mysql database"
+    - "how many rows are in the customers table in mysql"
+    - "look something up in the MySQL db"
+    - "inspect the tables of my mysql schema"
+  tools:
+    mysql_query: ["select all users created this month from mysql"]
+health:
+  check: initialize

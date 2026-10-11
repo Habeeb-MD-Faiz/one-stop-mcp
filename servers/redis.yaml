@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/redis/mcp-redis (official, Redis). PyPI redis-mcp-server, version pinned
+# (PyPI = 0.5.1). README runs it as `uvx --from redis-mcp-server@latest redis-mcp-server --url ...`;
+# here connection comes from the REDIS_* env vars it documents (defaults 127.0.0.1:6379 db 0), and
+# the password is the injected credential (REDIS_PWD). Tool names/descriptions are from src/tools/*.py
+# (the README only groups tools by data type). 45 of the 53 tools are in the snapshot (cap; left out: set_vector_in_hash, get_vector_from_hash, lrem, xdel, xgroup_destroy, scan_all_keys, create_vector_index_hash, get_indexed_keys_number).
+id: redis
+name: Redis
+category: [database, data]
+tags: [official, local]
+description: >
+  Read and write Redis data: strings, hashes, lists, sets, sorted sets, streams, JSON documents and
+  pub/sub, scan and manage keys, run vector and hybrid searches, and inspect server stats.
+homepage: https://github.com/redis/mcp-redis
+transport:
+  type: stdio
+  command: uvx
+  args: ["--from", "redis-mcp-server@0.5.1", "redis-mcp-server"]
+  env:
+    REDIS_HOST: "127.0.0.1"
+    REDIS_PORT: "6379"
+auth:
+  type: api_key
+  env: REDIS_PWD
+routing:
+  examples:
+    - "get a value from redis by key"
+    - "push a job onto a redis queue"
+    - "how much memory is my redis server using"
+    - "publish a message to a redis channel"
+  tools:
+    get: ["fetch the cached string stored under this key"]
+    scan_keys: ["find keys that start with session:"]
+    lpush: ["add an item to the front of the redis list"]
+    zrange: ["show the top ten members of the leaderboard"]
+    info: ["show redis server statistics"]
+health:
+  check: initialize

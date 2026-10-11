@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://vercel.com/docs/agent-resources/vercel-mcp (official, Vercel). Remote MCP with
+# OAuth at https://mcp.vercel.com (MCP Authorization + Streamable HTTP). Vercel only allows
+# clients it has reviewed and approved (its supported-clients list); a gateway may need that
+# approval before the OAuth step works - UNVERIFIED for this gateway.
+# The server has ~210 tools in 28 categories (docs tools reference); the snapshot is a curated 32:
+# deployments, projects, docs, observability, environment variables and teams. Tool names,
+# descriptions and parameters come from the per-category reference pages (parameters trimmed to the
+# common ones; most tools also take teamId/slug). Out of the snapshot: domains/DNS, sandboxes,
+# firewall, feature flags, rolling releases, routing, billing, storage and the rest.
+id: vercel
+name: Vercel
+category: [cloud, dev]
+tags: [official, remote]
+description: >
+  Vercel's official MCP server. Search Vercel docs, manage teams, projects and deployments, read
+  build and runtime logs and errors, and manage project environment variables.
+homepage: https://vercel.com/docs/agent-resources/vercel-mcp
+transport:
+  type: streamable-http
+  url: https://mcp.vercel.com
+auth:
+  type: oauth2
+routing:
+  examples:
+    - "show my latest Vercel deployment"
+    - "why is my Vercel production build failing"
+    - "list my projects on Vercel"
+    - "add an environment variable to my Vercel project"
+  tools:
+    list_deployments: ["list the deployments of my blog project"]
+    get_deployment: ["get details about my latest production deployment"]
+    get_runtime_logs: ["show me the runtime error logs from the last hour"]
+    list_deployment_events: ["show the build logs for the failed deployment"]
+    search_vercel_documentation: ["how do I configure custom domains on vercel"]
+health:
+  check: initialize

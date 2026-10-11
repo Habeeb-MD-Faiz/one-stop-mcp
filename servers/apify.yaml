@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/apify/apify-mcp-server (official, Apify). Hosted Streamable HTTP
+# endpoint https://mcp.apify.com (the /sse endpoint was removed). OAuth works from the URL alone for
+# clients such as Claude.ai and VS Code; `Authorization: Bearer <APIFY_TOKEN>` also works.
+# Stdio alternative: `npx @apify/actors-mcp-server` with APIFY_TOKEN (npm 0.17.4).
+# The README lists 39 tools; all are in the snapshot. It gives names and one-line descriptions only,
+# so input schemas are left open.
+id: apify
+name: Apify
+category: [web, data]
+tags: [official, remote]
+description: >
+  Apify's MCP server. Find and run Actors from the Apify Store for web scraping and automation,
+  read their datasets and run logs, manage tasks and schedules, and search the Apify docs.
+homepage: https://github.com/apify/apify-mcp-server
+transport:
+  type: streamable-http
+  url: https://mcp.apify.com
+auth:
+  type: oauth2
+routing:
+  examples:
+    - "find an Apify actor that scrapes instagram"
+    - "run a web scraper and get the results"
+    - "scrape google maps listings for restaurants"
+    - "check the status of my last Apify run"
+  tools:
+    search-actors: ["look in the Apify store for a tiktok scraper"]
+    call-actor: ["start this actor with these inputs and return its output"]
+    get-dataset-items: ["download the rows the scraper collected"]
+    get-actor-run-log: ["show the logs from that actor run"]
+    create-schedule: ["run this scraper every morning at 8"]
+health:
+  check: initialize

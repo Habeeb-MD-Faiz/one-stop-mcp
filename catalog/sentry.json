@@ -1,0 +1,326 @@
+{
+  "server": "sentry",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "find_organizations",
+      "description": "Find the Sentry organizations the user has access to.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "find_projects",
+      "description": "Find the Sentry projects in an organization.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "regionUrl": {
+            "type": "string",
+            "description": "Region URL of the organization."
+          },
+          "query": {
+            "type": "string",
+            "description": "Filter projects by name."
+          }
+        }
+      }
+    },
+    {
+      "name": "update_issue",
+      "description": "Update a Sentry issue's status or assignment: resolve, reopen, assign, unassign or ignore it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "regionUrl": {
+            "type": "string",
+            "description": "Region URL."
+          },
+          "issueId": {
+            "type": "string",
+            "description": "Issue id or short id."
+          },
+          "issueUrl": {
+            "type": "string",
+            "description": "Issue URL."
+          },
+          "status": {
+            "type": "string",
+            "description": "New status."
+          },
+          "assignedTo": {
+            "type": "string",
+            "description": "Assignee."
+          },
+          "ignoreMode": {
+            "type": "string",
+            "description": "How to ignore the issue."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for the change."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_errors",
+      "description": "Search Sentry error events: exceptions and crashes with stack traces, for counts, statistics, trends and individual events.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_logs",
+      "description": "Search Sentry log events.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_traces",
+      "description": "Search Sentry traces and spans for performance analysis.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_metrics",
+      "description": "Search Sentry metrics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_profiles",
+      "description": "Search Sentry profiles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_replays",
+      "description": "Search Sentry session replays.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry search query."
+          }
+        }
+      }
+    },
+    {
+      "name": "find_dropped_events",
+      "description": "Find events that Sentry dropped or discarded for a project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          }
+        }
+      }
+    },
+    {
+      "name": "analyze_issue_with_seer",
+      "description": "Use Seer to analyze a production error and return a root-cause analysis with specific code fixes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "regionUrl": {
+            "type": "string",
+            "description": "Region URL."
+          },
+          "issueId": {
+            "type": "string",
+            "description": "Issue id or short id."
+          },
+          "issueUrl": {
+            "type": "string",
+            "description": "Issue URL."
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Extra guidance for the analysis."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_issues",
+      "description": "Search for grouped issues in Sentry; returns a list of issues, not counts or aggregations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language or Sentry issue search syntax."
+          },
+          "sort": {
+            "type": "string",
+            "description": "Sort order."
+          },
+          "projectSlugOrId": {
+            "type": "string",
+            "description": "Limit to a project."
+          },
+          "regionUrl": {
+            "type": "string",
+            "description": "Region URL."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Maximum results."
+          },
+          "period": {
+            "type": "string",
+            "description": "Time period."
+          },
+          "includeExplanation": {
+            "type": "boolean",
+            "description": "Explain the translated query."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_sentry_resource",
+      "description": "Fetch a Sentry resource by URL, or by resource type plus id; the type is auto-detected from a URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Sentry URL."
+          },
+          "resourceType": {
+            "type": "string",
+            "description": "Resource type."
+          },
+          "resourceId": {
+            "type": "string",
+            "description": "Resource id."
+          },
+          "organizationSlug": {
+            "type": "string",
+            "description": "Organization slug."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_sentry_tools",
+      "description": "Search the Sentry MCP tool catalog by name and description to find tools not exposed at the top level.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Keywords describing the Sentry operation, resource or workflow."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum matching tools to return (max 20, default 8)."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "execute_sentry_tool",
+      "description": "Run a Sentry MCP tool found through search_sentry_tools, with arguments matching its schema.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the tool to execute."
+          },
+          "arguments": {
+            "type": "object",
+            "description": "Arguments for the target tool."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"push the current build output live","server":"netlify","tool":"netlify-deploy-services-updater"}
+{"query":"who owns this Netlify account and which team am I on","server":"netlify","tool":"netlify-team-services-reader"}
+{"query":"lock the staging site behind a password","server":"netlify","tool":"netlify-project-services-updater"}
+{"query":"show me the contact form entries people have sent","server":"netlify","tool":"netlify-project-services-reader"}

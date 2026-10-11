@@ -1,0 +1,4 @@
+{"query":"pull the last week of signups out of the database","server":"postgres","tool":"execute_sql"}
+{"query":"what does the invoices table look like","server":"postgres","tool":"get_object_details"}
+{"query":"the dashboard query takes forever, tell me what the planner is doing","server":"postgres","tool":"explain_query"}
+{"query":"are there missing indexes hurting us","server":"postgres","tool":"analyze_workload_indexes"}

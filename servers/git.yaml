@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/git (reference).
+# PyPI mcp-server-git, version pinned (PyPI = 2026.8.18). Run with `uvx mcp-server-git`.
+# The README calls the server "in early development".
+id: git
+name: Git
+category: [dev, code]
+tags: [reference, local]
+description: >
+  Read and manipulate local Git repositories: status, diffs, history, staging, commits and
+  branch operations.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/git
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-git@2026.8.18"]
+auth:
+  type: none
+routing:
+  examples:
+    - "what changed in my git working tree"
+    - "commit my staged changes with a message"
+    - "show the recent commit history of this repo"
+    - "create a new git branch and switch to it"
+  tools:
+    git_status: ["is my working directory clean"]
+    git_diff_unstaged: ["show me the changes I have not staged yet"]
+    git_commit: ["commit what I staged with this message"]
+    git_log: ["list the last ten commits"]
+    git_create_branch: ["start a new branch off main"]
+health:
+  check: initialize

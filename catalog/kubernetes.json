@@ -1,0 +1,262 @@
+{
+  "server": "kubernetes",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "configuration_contexts_list",
+      "description": "List the kubeconfig context names and their server URLs.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "targets_list",
+      "description": "List all available targets.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "configuration_view",
+      "description": "Return the kubeconfig content as YAML.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "events_list",
+      "description": "List cluster events, optionally filtered.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "namespaces_list",
+      "description": "List the namespaces in the cluster.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "projects_list",
+      "description": "List OpenShift projects.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "nodes_log",
+      "description": "Get the kubelet or other system logs from a node.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "nodes_stats_summary",
+      "description": "Get node resource statistics from the kubelet Summary API.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "nodes_top",
+      "description": "Show node CPU and memory usage from the Metrics Server.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pods_list",
+      "description": "List pods across all namespaces.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pods_list_in_namespace",
+      "description": "List pods in a given namespace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "description": "Namespace to list pods from."
+          }
+        },
+        "required": [
+          "namespace"
+        ]
+      }
+    },
+    {
+      "name": "pods_get",
+      "description": "Get a pod by name.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pod name."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "pods_delete",
+      "description": "Delete a pod.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pod name."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "pods_top",
+      "description": "Show pod CPU and memory usage.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pods_exec",
+      "description": "Run a command in a pod container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pods_log",
+      "description": "Get the logs of a pod container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pods_run",
+      "description": "Run a pod from an image, optionally exposing a port.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Container image to run."
+          },
+          "port": {
+            "type": "number",
+            "description": "Port to expose."
+          }
+        },
+        "required": [
+          "image"
+        ]
+      }
+    },
+    {
+      "name": "resources_list",
+      "description": "List Kubernetes resources by apiVersion and kind.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "description": "API version, such as apps/v1."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Resource kind, such as Deployment."
+          }
+        },
+        "required": [
+          "apiVersion",
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "resources_get",
+      "description": "Get a Kubernetes resource by apiVersion, kind and name.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "description": "API version."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Resource kind."
+          },
+          "name": {
+            "type": "string",
+            "description": "Resource name."
+          }
+        },
+        "required": [
+          "apiVersion",
+          "kind",
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "resources_create_or_update",
+      "description": "Create or update Kubernetes resources from a YAML or JSON manifest using Server-Side Apply.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "string",
+            "description": "YAML or JSON manifest."
+          }
+        },
+        "required": [
+          "resource"
+        ]
+      }
+    },
+    {
+      "name": "resources_delete",
+      "description": "Delete a Kubernetes resource.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "description": "API version."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Resource kind."
+          },
+          "name": {
+            "type": "string",
+            "description": "Resource name."
+          }
+        },
+        "required": [
+          "apiVersion",
+          "kind",
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "resources_scale",
+      "description": "Get or set the scale (replica count) of a Kubernetes resource.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

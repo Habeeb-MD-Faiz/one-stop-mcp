@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/crystaldba/postgres-mcp (community, "Postgres MCP Pro"). The reference
+# @modelcontextprotocol/server-postgres is unmaintained (last npm release 0.6.2, single read-only
+# `query` tool, lives in servers-archived), so the maintained community server is used instead.
+# PyPI postgres-mcp, version pinned (PyPI = 0.3.0). Connection URI is read from DATABASE_URI.
+# --access-mode=restricted = read-only transactions with a time limit; use unrestricted only
+# for development databases.
+id: postgres
+name: PostgreSQL
+category: [database, data]
+tags: [community, local]
+description: >
+  Query and inspect a PostgreSQL database: list schemas and objects, describe tables, run SQL,
+  explain query plans, and get index-tuning and health-check recommendations.
+homepage: https://github.com/crystaldba/postgres-mcp
+transport:
+  type: stdio
+  command: uvx
+  args: ["postgres-mcp@0.3.0", "--access-mode=restricted"]
+auth:
+  type: api_key
+  env: DATABASE_URI
+routing:
+  examples:
+    - "run a SQL query against my postgres database"
+    - "what tables are in the public schema"
+    - "why is this postgres query slow"
+    - "check the health of my postgres database"
+  tools:
+    execute_sql: ["select the ten newest rows from the orders table"]
+    get_object_details: ["show the columns and indexes of the users table"]
+    explain_query: ["explain the execution plan of this query"]
+    get_top_queries: ["which queries take the most total time"]
+    analyze_db_health: ["run health checks on the database"]
+health:
+  check: initialize

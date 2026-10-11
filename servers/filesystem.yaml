@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem (reference).
+# npm @modelcontextprotocol/server-filesystem, version pinned (npm view = 2026.8.31).
+# Allowed directories are positional args; with none the server fails to initialize (README).
+# "." = the gateway's working directory. Edit the args to the directories you want exposed.
+id: filesystem
+name: Filesystem
+category: [dev, utility]
+tags: [reference, local]
+description: >
+  Read, write, edit, move and search files and directories on the local machine, restricted to
+  the directories the server is started with.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@modelcontextprotocol/server-filesystem@2026.8.31", "."]
+auth:
+  type: none
+routing:
+  examples:
+    - "read a file on my computer"
+    - "list the files in this folder"
+    - "edit a few lines in a local source file"
+    - "find all markdown files under the project directory"
+  tools:
+    read_text_file: ["show me the contents of this local file"]
+    write_file: ["save this text into a new file"]
+    edit_file: ["replace this snippet in the file on disk"]
+    search_files: ["find files matching a glob under the project folder"]
+    directory_tree: ["show the folder structure of the project"]
+health:
+  check: initialize

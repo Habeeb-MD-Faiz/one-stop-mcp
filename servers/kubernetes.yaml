@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/containers/kubernetes-mcp-server (community; maintained by the
+# `containers` org, ~2.2k GitHub stars vs ~1.6k for Flux159/mcp-server-kubernetes; no CNCF/Kubernetes
+# project server exists). npm kubernetes-mcp-server, version pinned (npm view = 0.0.67).
+# Snapshot = the default toolsets, config (3) + core (19). Extra toolsets (helm, kiali, kubevirt,
+# tekton, netobserv, kcp) are opt-in via its config and not enabled here. Read-only mode is a TOML
+# setting (read_only = true), not a CLI flag. Uses the local kubeconfig (~/.kube/config), so the
+# gateway's stdio child environment must allow HOME/KUBECONFIG through (see D31).
+id: kubernetes
+name: Kubernetes
+category: [infra, dev]
+tags: [community, local]
+description: >
+  Inspect and manage a Kubernetes or OpenShift cluster: list and get resources, read pod logs,
+  exec into pods, run pods, create, update, scale and delete resources, and view node and pod
+  resource usage.
+homepage: https://github.com/containers/kubernetes-mcp-server
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "kubernetes-mcp-server@0.0.67"]
+auth:
+  type: none
+routing:
+  examples:
+    - "list the pods running in my kubernetes cluster"
+    - "show the logs of a failing pod"
+    - "scale a deployment to three replicas"
+    - "which namespaces exist in the cluster"
+  tools:
+    pods_list_in_namespace: ["show pods in the production namespace"]
+    pods_log: ["get the container logs for this pod"]
+    resources_scale: ["change the replica count of the deployment"]
+    resources_create_or_update: ["apply this yaml manifest to the cluster"]
+    events_list: ["what warning events happened in the cluster recently"]
+health:
+  check: initialize

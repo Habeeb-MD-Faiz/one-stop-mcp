@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://mcp.sentry.dev and https://github.com/getsentry/sentry-mcp (official, Sentry).
+# Hosted endpoint https://mcp.sentry.dev/mcp, "all connections use OAuth" (mcp.sentry.dev).
+# The snapshot lists the 15 tools on the default tools/list surface (src/tools/surfaces.ts);
+# the rest of the ~74-tool catalog is reached through search_sentry_tools + execute_sentry_tool.
+# Scope to an org or project with https://mcp.sentry.dev/mcp/{org}/{project}. A stdio form exists:
+# npx @sentry/mcp-server@latest --access-token=<token> (not used here: needs a long-lived token).
+id: sentry
+name: Sentry
+category: [dev, infra]
+tags: [official, remote]
+description: >
+  Sentry's hosted MCP server. Search errors, logs, traces and issues, inspect and triage issues,
+  run Seer root-cause analysis, and manage organizations and projects.
+homepage: https://mcp.sentry.dev
+transport:
+  type: streamable-http
+  url: https://mcp.sentry.dev/mcp
+auth:
+  type: oauth2
+routing:
+  examples:
+    - "what errors is production throwing in Sentry"
+    - "show me the stack trace for this Sentry issue"
+    - "resolve the Sentry issue and assign it to me"
+    - "which exceptions spiked after the last release"
+  tools:
+    search_issues: ["list the unresolved sentry issues from the past day"]
+    search_errors: ["count the TypeError events in sentry this week"]
+    update_issue: ["mark this sentry issue as resolved"]
+    analyze_issue_with_seer: ["ask Seer for the root cause of this sentry issue"]
+    find_projects: ["list the projects in my sentry organization"]
+health:
+  check: initialize

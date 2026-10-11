@@ -1,0 +1,4 @@
+{"query":"add a nullable email column to the customers table and track it as a schema change","server":"supabase","tool":"apply_migration"}
+{"query":"read the most recent rows from my hosted postgres","server":"supabase","tool":"execute_sql"}
+{"query":"anything wrong with row level security on my backend","server":"supabase","tool":"get_advisors"}
+{"query":"show me the error output from my api service in the last hour","server":"supabase","tool":"query_logs"}

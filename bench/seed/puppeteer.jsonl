@@ -1,0 +1,4 @@
+{"query":"load the pricing page and show me how it renders","server":"puppeteer","tool":"puppeteer_screenshot"}
+{"query":"pick Canada from the country dropdown","server":"puppeteer","tool":"puppeteer_select"}
+{"query":"read the document title using the page's own JS","server":"puppeteer","tool":"puppeteer_evaluate"}
+{"query":"visit our staging site in a real browser","server":"puppeteer","tool":"puppeteer_navigate"}

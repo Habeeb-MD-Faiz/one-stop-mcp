@@ -1,0 +1,140 @@
+{
+  "server": "docker",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "list_containers",
+      "description": "List Docker containers, running or all.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_container",
+      "description": "Create a Docker container from an image without starting it.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "run_container",
+      "description": "Create and start a Docker container from an image.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "recreate_container",
+      "description": "Recreate an existing Docker container, replacing it with a fresh one.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "start_container",
+      "description": "Start a stopped Docker container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "fetch_container_logs",
+      "description": "Retrieve the logs of a Docker container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stop_container",
+      "description": "Stop a running Docker container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "remove_container",
+      "description": "Remove a Docker container.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_images",
+      "description": "List the Docker images on the host.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pull_image",
+      "description": "Pull a Docker image from a registry.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "push_image",
+      "description": "Push a Docker image to a registry.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "build_image",
+      "description": "Build a Docker image from a Dockerfile and build context.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "remove_image",
+      "description": "Remove a Docker image from the host.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_networks",
+      "description": "List Docker networks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_network",
+      "description": "Create a Docker network.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "remove_network",
+      "description": "Remove a Docker network.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_volumes",
+      "description": "List Docker volumes.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_volume",
+      "description": "Create a Docker volume.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "remove_volume",
+      "description": "Remove a Docker volume.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

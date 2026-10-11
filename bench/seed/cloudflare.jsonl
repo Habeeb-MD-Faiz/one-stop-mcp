@@ -1,0 +1,4 @@
+{"query":"I forgot which account this connection is logged into","server":"cloudflare","tool":"whoami"}
+{"query":"what is the proper way to bind a KV namespace to my worker","server":"cloudflare","tool":"docs"}
+{"query":"work out which API route lists all the tunnels","server":"cloudflare","tool":"search"}
+{"query":"create a new R2 bucket in eu","server":"cloudflare","tool":"execute"}

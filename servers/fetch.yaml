@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch (reference).
+# PyPI mcp-server-fetch, version pinned (PyPI = 2026.8.18). Run with `uvx mcp-server-fetch`.
+# One tool (`fetch`) plus a `fetch` prompt; the server makes outbound HTTP requests from this host.
+id: fetch
+name: Fetch
+category: [web, utility]
+tags: [reference, local]
+description: >
+  Fetch a URL and return its contents converted to markdown, with paging through long pages
+  or raw HTML on request.
+homepage: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-fetch@2026.8.18"]
+auth:
+  type: none
+routing:
+  examples:
+    - "fetch this web page and show me the content"
+    - "read the article at this URL"
+    - "download a page as markdown"
+    - "get the raw html of a website"
+  tools:
+    fetch: ["open this link and summarize the page", "pull the text of a documentation page"]
+health:
+  check: initialize

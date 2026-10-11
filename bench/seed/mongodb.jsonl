@@ -1,0 +1,4 @@
+{"query":"pull every customer record whose plan is premium","server":"mongodb","tool":"find"}
+{"query":"work out revenue per region using a pipeline","server":"mongodb","tool":"aggregate"}
+{"query":"how big has the events collection gotten","server":"mongodb","tool":"collection-storage-size"}
+{"query":"speed up lookups by username","server":"mongodb","tool":"create-index"}

@@ -1,0 +1,232 @@
+{
+  "server": "brave-search",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "brave_web_search",
+      "description": "Web search with rich result types and filtering.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code for results."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results (1-20)."
+          },
+          "freshness": {
+            "type": "string",
+            "description": "Recency filter."
+          },
+          "safesearch": {
+            "type": "string",
+            "description": "Safe search level."
+          },
+          "summary": {
+            "type": "boolean",
+            "description": "Request a summary key for brave_summarizer."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "brave_local_search",
+      "description": "Local business and place search with ratings, hours and descriptions. Full features need a Pro plan.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query, such as a business type and area."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "brave_video_search",
+      "description": "Video search with metadata and thumbnails.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results (1-50)."
+          },
+          "freshness": {
+            "type": "string",
+            "description": "Recency filter."
+          },
+          "safesearch": {
+            "type": "string",
+            "description": "Safe search level."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "brave_image_search",
+      "description": "Image search returning image URLs, dimensions and confidence scores.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results (1-200)."
+          },
+          "safesearch": {
+            "type": "string",
+            "description": "Safe search level."
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "brave_news_search",
+      "description": "Search current news articles with freshness controls.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results (1-50)."
+          },
+          "freshness": {
+            "type": "string",
+            "description": "Recency filter, default past day."
+          },
+          "safesearch": {
+            "type": "string",
+            "description": "Safe search level."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "brave_summarizer",
+      "description": "Generate an AI summary from web search results, using the key returned by a web search with summary enabled.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Summary key from a brave_web_search call with summary true."
+          },
+          "entity_info": {
+            "type": "boolean",
+            "description": "Include entity information."
+          },
+          "inline_references": {
+            "type": "boolean",
+            "description": "Add source references inline."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "brave_place_search",
+      "description": "Search points of interest in a geographic area.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "latitude": {
+            "type": "number",
+            "description": "Latitude."
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude."
+          },
+          "location": {
+            "type": "string",
+            "description": "Place name instead of coordinates."
+          },
+          "radius": {
+            "type": "number",
+            "description": "Radius in meters."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results (1-50)."
+          }
+        }
+      }
+    },
+    {
+      "name": "brave_llm_context",
+      "description": "Return pre-extracted web content for AI agents and RAG pipelines.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          },
+          "maximum_number_of_tokens": {
+            "type": "integer",
+            "description": "Token budget."
+          },
+          "maximum_number_of_urls": {
+            "type": "integer",
+            "description": "Maximum sources."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of results."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  ]
+}

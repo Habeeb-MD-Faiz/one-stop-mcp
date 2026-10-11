@@ -1,0 +1,273 @@
+{
+  "server": "git",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "git_status",
+      "description": "Show the working tree status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          }
+        },
+        "required": [
+          "repo_path"
+        ]
+      }
+    },
+    {
+      "name": "git_diff_unstaged",
+      "description": "Show changes in the working directory that are not yet staged.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "context_lines": {
+            "type": "number",
+            "description": "Number of context lines."
+          }
+        },
+        "required": [
+          "repo_path"
+        ]
+      }
+    },
+    {
+      "name": "git_diff_staged",
+      "description": "Show changes that are staged for commit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "context_lines": {
+            "type": "number",
+            "description": "Number of context lines."
+          }
+        },
+        "required": [
+          "repo_path"
+        ]
+      }
+    },
+    {
+      "name": "git_diff",
+      "description": "Show differences between the current state and a branch or commit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "target": {
+            "type": "string",
+            "description": "Branch or commit to compare with."
+          },
+          "context_lines": {
+            "type": "number",
+            "description": "Number of context lines."
+          }
+        },
+        "required": [
+          "repo_path",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "git_commit",
+      "description": "Record staged changes to the repository as a commit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "message": {
+            "type": "string",
+            "description": "Commit message."
+          }
+        },
+        "required": [
+          "repo_path",
+          "message"
+        ]
+      }
+    },
+    {
+      "name": "git_add",
+      "description": "Add file contents to the staging area.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Files to stage."
+          }
+        },
+        "required": [
+          "repo_path",
+          "files"
+        ]
+      }
+    },
+    {
+      "name": "git_reset",
+      "description": "Unstage all staged changes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          }
+        },
+        "required": [
+          "repo_path"
+        ]
+      }
+    },
+    {
+      "name": "git_log",
+      "description": "Show the commit logs, with optional date filtering.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "max_count": {
+            "type": "number",
+            "description": "Maximum number of commits."
+          },
+          "start_timestamp": {
+            "type": "string",
+            "description": "Only commits after this date."
+          },
+          "end_timestamp": {
+            "type": "string",
+            "description": "Only commits before this date."
+          }
+        },
+        "required": [
+          "repo_path"
+        ]
+      }
+    },
+    {
+      "name": "git_create_branch",
+      "description": "Create a new branch, optionally from a base branch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "branch_name": {
+            "type": "string",
+            "description": "Name of the new branch."
+          },
+          "base_branch": {
+            "type": "string",
+            "description": "Base branch to create from."
+          }
+        },
+        "required": [
+          "repo_path",
+          "branch_name"
+        ]
+      }
+    },
+    {
+      "name": "git_checkout",
+      "description": "Switch to another branch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "branch_name": {
+            "type": "string",
+            "description": "Branch to switch to."
+          }
+        },
+        "required": [
+          "repo_path",
+          "branch_name"
+        ]
+      }
+    },
+    {
+      "name": "git_show",
+      "description": "Show the contents of a commit or other revision.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "revision": {
+            "type": "string",
+            "description": "Revision to show."
+          }
+        },
+        "required": [
+          "repo_path",
+          "revision"
+        ]
+      }
+    },
+    {
+      "name": "git_branch",
+      "description": "List local, remote or all Git branches, optionally filtered by commit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repo_path": {
+            "type": "string",
+            "description": "Path to the Git repository."
+          },
+          "branch_type": {
+            "type": "string",
+            "description": "local, remote or all."
+          },
+          "contains": {
+            "type": "string",
+            "description": "Only branches containing this commit."
+          },
+          "not_contains": {
+            "type": "string",
+            "description": "Only branches not containing this commit."
+          }
+        },
+        "required": [
+          "repo_path",
+          "branch_type"
+        ]
+      }
+    }
+  ]
+}

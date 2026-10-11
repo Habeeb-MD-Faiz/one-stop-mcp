@@ -1,0 +1,4 @@
+{"query":"is there a ready-made crawler for amazon product pages","server":"apify","tool":"search-actors"}
+{"query":"kick off the google maps scraper for dentists in Austin","server":"apify","tool":"call-actor"}
+{"query":"export the results table from my finished scraping job","server":"apify","tool":"get-dataset-items"}
+{"query":"stop the scraper, it is burning credits","server":"apify","tool":"abort-actor-run"}

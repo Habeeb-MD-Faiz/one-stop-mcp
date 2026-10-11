@@ -1,0 +1,65 @@
+{
+  "server": "exa",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "web_search_exa",
+      "description": "Search the web for any topic and get clean, ready-to-use content back.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "web_fetch_exa",
+      "description": "Fetch the full content of one or more web pages as clean markdown.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "URLs to fetch."
+          }
+        },
+        "required": [
+          "urls"
+        ]
+      }
+    },
+    {
+      "name": "web_search_advanced_exa",
+      "description": "Advanced web search with filters, domains, dates, highlights, summaries and subpage crawling.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "agent_run",
+      "description": "Run an Exa Agent for multi-step research, list-building, enrichment and structured output. Requires authentication.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

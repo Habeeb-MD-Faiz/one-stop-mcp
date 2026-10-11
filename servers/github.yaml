@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/github/github-mcp-server (official, GitHub). Remote endpoint
+# https://api.githubcopilot.com/mcp/ and the Bearer-PAT header verified in its README.
+# The README also says the remote server can do OAuth, but only for hosts GitHub registers;
+# a generic gateway uses a fine-grained personal access token instead.
+id: github
+name: GitHub
+category: [dev, code]
+tags: [official, remote]
+description: >
+  GitHub's official MCP server. Browse repositories and files, read and write issues and pull
+  requests, search code, inspect Actions runs and security alerts, and manage branches, releases
+  and notifications.
+homepage: https://github.com/github/github-mcp-server
+transport:
+  type: streamable-http
+  url: https://api.githubcopilot.com/mcp/
+auth:
+  type: api_key
+  header: Authorization
+  prefix: "Bearer "
+  keyUrl: https://github.com/settings/personal-access-tokens/new
+routing:
+  examples:
+    - "open a pull request for my feature branch"
+    - "list the open issues in my repository"
+    - "search GitHub for code that uses this function"
+    - "why did the CI workflow fail on this commit"
+  tools:
+    issue_read: ["show me issue 42 and its comments"]
+    issue_write: ["file a new bug report in the repo"]
+    create_pull_request: ["open a PR from my branch into main"]
+    search_code: ["find where this function is defined across GitHub"]
+    get_job_logs: ["show the failing job logs from the last workflow run"]
+health:
+  check: initialize

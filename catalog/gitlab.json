@@ -1,0 +1,1281 @@
+{
+  "server": "gitlab",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "get_mcp_server_version",
+      "description": "Return the version of the GitLab MCP server.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_project",
+      "description": "Get metadata for one GitLab project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or full path."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "List the GitLab projects you can access.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "description": "Limit to a group."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          },
+          "min_access_level": {
+            "type": "integer",
+            "description": "Minimum access level."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility filter."
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Include archived projects."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_groups",
+      "description": "List GitLab groups and subgroups.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "description": "Parent group."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility filter."
+          },
+          "include_subgroups": {
+            "type": "boolean",
+            "description": "Include subgroups."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_project_members",
+      "description": "List project members and their roles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "include_inherited": {
+            "type": "boolean",
+            "description": "Include inherited members."
+          },
+          "query": {
+            "type": "string",
+            "description": "Filter by name."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_user",
+      "description": "Resolve a GitLab user by username, id, or the current user.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username."
+          },
+          "id": {
+            "type": "string",
+            "description": "User id."
+          },
+          "me": {
+            "type": "boolean",
+            "description": "Return the authenticated user."
+          }
+        }
+      }
+    },
+    {
+      "name": "fork_repository",
+      "description": "Fork a GitLab project into a namespace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "namespace_id": {
+            "type": "string",
+            "description": "Target namespace id."
+          },
+          "namespace_path": {
+            "type": "string",
+            "description": "Target namespace path."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the fork."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path of the fork."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_branch",
+      "description": "Create a branch from a ref in a GitLab project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch": {
+            "type": "string",
+            "description": "Name of the new branch."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch, tag or SHA to branch from."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          }
+        },
+        "required": [
+          "branch",
+          "ref"
+        ]
+      }
+    },
+    {
+      "name": "list_branches",
+      "description": "List branches of a GitLab project, optionally filtered by name.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "search": {
+            "type": "string",
+            "description": "Filter by name."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Results per page."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_commit",
+      "description": "Commit one or more file actions (create, update, delete) to a branch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "commit_message": {
+            "type": "string",
+            "description": "Commit message."
+          },
+          "actions": {
+            "type": "array",
+            "description": "File actions to apply."
+          },
+          "branch": {
+            "type": "string",
+            "description": "Target branch."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "start_branch": {
+            "type": "string",
+            "description": "Branch to start from."
+          }
+        },
+        "required": [
+          "commit_message",
+          "actions",
+          "branch"
+        ]
+      }
+    },
+    {
+      "name": "get_repository_file",
+      "description": "Read a file from a GitLab repository at a given ref.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "file_path": {
+            "type": "string",
+            "description": "Path of the file."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch, tag or SHA."
+          },
+          "url": {
+            "type": "string",
+            "description": "File URL."
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Line offset."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum lines."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_repository_tree",
+      "description": "List directory entries of a GitLab repository without file contents.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "path": {
+            "type": "string",
+            "description": "Directory path."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch, tag or SHA."
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "List recursively."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_commit",
+      "description": "Get commit metadata from GitLab, with an optional diff or notes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "commit_sha": {
+            "type": "string",
+            "description": "Commit SHA."
+          },
+          "url": {
+            "type": "string",
+            "description": "Commit URL."
+          },
+          "include": {
+            "type": "array",
+            "description": "Extra data to include."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_commits",
+      "description": "List commits of a GitLab project with filters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "ref_name": {
+            "type": "string",
+            "description": "Branch or tag."
+          },
+          "author": {
+            "type": "string",
+            "description": "Author filter."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path filter."
+          },
+          "since": {
+            "type": "string",
+            "description": "Start time."
+          },
+          "until": {
+            "type": "string",
+            "description": "End time."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_releases",
+      "description": "List releases of a GitLab project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "state": {
+            "type": "string",
+            "description": "State filter."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Results per page."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_tags",
+      "description": "List tags of a GitLab project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "search": {
+            "type": "string",
+            "description": "Filter by name."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "save_work_item",
+      "description": "Create or update a GitLab work item such as an issue, task or epic.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Work item URL."
+          },
+          "work_item_iid": {
+            "type": "string",
+            "description": "IID of the item to update."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title when creating."
+          },
+          "type_name": {
+            "type": "string",
+            "description": "Work item type when creating."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "labels": {
+            "type": "array",
+            "description": "Labels."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_work_item",
+      "description": "Get one GitLab work item, with optional notes, discussions or related merge requests.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Work item URL."
+          },
+          "work_item_iid": {
+            "type": "string",
+            "description": "Work item IID."
+          },
+          "include": {
+            "type": "array",
+            "description": "Extra data to include."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_work_items",
+      "description": "List or search GitLab work items in a project or group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Container URL."
+          },
+          "state": {
+            "type": "string",
+            "description": "State filter."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          },
+          "author_username": {
+            "type": "string",
+            "description": "Author filter."
+          },
+          "label_name": {
+            "type": "array",
+            "description": "Label filter."
+          },
+          "types": {
+            "type": "array",
+            "description": "Work item types."
+          },
+          "sort": {
+            "type": "string",
+            "description": "Sort order."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_work_item_types",
+      "description": "List the work item types available in a project or group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Container URL."
+          }
+        }
+      }
+    },
+    {
+      "name": "link_work_items",
+      "description": "Link GitLab work items to each other.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "work_items_ids": {
+            "type": "array",
+            "description": "Work item ids to link."
+          },
+          "link_type": {
+            "type": "string",
+            "description": "Kind of link."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          }
+        },
+        "required": [
+          "work_items_ids"
+        ]
+      }
+    },
+    {
+      "name": "save_note",
+      "description": "Comment on a merge request or work item, or reply to a discussion thread.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "description": "Comment text."
+          },
+          "url": {
+            "type": "string",
+            "description": "Target URL."
+          },
+          "internal": {
+            "type": "boolean",
+            "description": "Make the note internal."
+          },
+          "discussion_id": {
+            "type": "string",
+            "description": "Discussion to reply to."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "save_merge_request",
+      "description": "Create a merge request, or update one when merge_request_iid is given.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "merge_request_iid": {
+            "type": "string",
+            "description": "IID of the merge request to update."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title."
+          },
+          "source_branch": {
+            "type": "string",
+            "description": "Source branch."
+          },
+          "target_branch": {
+            "type": "string",
+            "description": "Target branch."
+          },
+          "labels": {
+            "type": "array",
+            "description": "Labels."
+          },
+          "reviewers": {
+            "type": "array",
+            "description": "Reviewers."
+          },
+          "assignees": {
+            "type": "array",
+            "description": "Assignees."
+          },
+          "state_event": {
+            "type": "string",
+            "description": "Close or reopen."
+          },
+          "squash": {
+            "type": "boolean",
+            "description": "Squash on merge."
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "name": "get_merge_request",
+      "description": "Get a GitLab merge request, with optional diffs, commits, notes, pipelines, discussions, approvals or conflicts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "merge_request_iid": {
+            "type": "string",
+            "description": "Merge request IID."
+          },
+          "url": {
+            "type": "string",
+            "description": "Merge request URL."
+          },
+          "include": {
+            "type": "array",
+            "description": "Facets to include."
+          },
+          "detail": {
+            "type": "string",
+            "description": "Level of detail."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_merge_requests",
+      "description": "List or search merge requests in a GitLab project or group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Group id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Container URL."
+          },
+          "state": {
+            "type": "string",
+            "description": "State filter."
+          },
+          "scope": {
+            "type": "string",
+            "description": "Scope filter."
+          },
+          "author_username": {
+            "type": "string",
+            "description": "Author filter."
+          },
+          "reviewer_username": {
+            "type": "string",
+            "description": "Reviewer filter."
+          },
+          "labels": {
+            "type": "array",
+            "description": "Label filter."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "save_merge_request_review",
+      "description": "Perform one review action on a merge request: comment, diff comment, resolve, submit review, approve or unapprove.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "Review action to perform."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "merge_request_iid": {
+            "type": "string",
+            "description": "Merge request IID."
+          },
+          "url": {
+            "type": "string",
+            "description": "Merge request URL."
+          },
+          "body": {
+            "type": "string",
+            "description": "Comment text."
+          },
+          "discussion_id": {
+            "type": "string",
+            "description": "Discussion id."
+          },
+          "verdict": {
+            "type": "string",
+            "description": "Review verdict."
+          }
+        },
+        "required": [
+          "method"
+        ]
+      }
+    },
+    {
+      "name": "accept_merge_request",
+      "description": "Merge a merge request now or arm auto-merge.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sha": {
+            "type": "string",
+            "description": "Expected head SHA."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "merge_request_iid": {
+            "type": "string",
+            "description": "Merge request IID."
+          },
+          "url": {
+            "type": "string",
+            "description": "Merge request URL."
+          },
+          "strategy": {
+            "type": "string",
+            "description": "Merge strategy."
+          },
+          "squash": {
+            "type": "boolean",
+            "description": "Squash commits."
+          },
+          "should_remove_source_branch": {
+            "type": "boolean",
+            "description": "Delete the source branch."
+          }
+        },
+        "required": [
+          "sha"
+        ]
+      }
+    },
+    {
+      "name": "list_pipelines",
+      "description": "List GitLab CI/CD pipelines of a project with filters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch or tag."
+          },
+          "status": {
+            "type": "string",
+            "description": "Pipeline status."
+          },
+          "source": {
+            "type": "string",
+            "description": "Pipeline source."
+          },
+          "created_after": {
+            "type": "string",
+            "description": "Created after."
+          },
+          "created_before": {
+            "type": "string",
+            "description": "Created before."
+          },
+          "order_by": {
+            "type": "string",
+            "description": "Order field."
+          },
+          "sort": {
+            "type": "string",
+            "description": "Sort direction."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Results per page."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "get_pipeline",
+      "description": "Get a GitLab pipeline, with optional jobs, downstream pipelines, bridges or artifacts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "pipeline_id": {
+            "type": "string",
+            "description": "Pipeline id."
+          },
+          "include": {
+            "type": "array",
+            "description": "Facets to include."
+          },
+          "job_status": {
+            "type": "string",
+            "description": "Filter included jobs by status."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        },
+        "required": [
+          "id",
+          "pipeline_id"
+        ]
+      }
+    },
+    {
+      "name": "save_pipeline",
+      "description": "Create, retry, cancel or rename a GitLab pipeline.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project URL."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Ref to run when creating."
+          },
+          "pipeline_id": {
+            "type": "string",
+            "description": "Existing pipeline id."
+          },
+          "action": {
+            "type": "string",
+            "description": "retry, cancel or rename."
+          },
+          "name": {
+            "type": "string",
+            "description": "Pipeline name."
+          },
+          "variables": {
+            "type": "array",
+            "description": "Pipeline variables."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_job",
+      "description": "Get GitLab CI job metadata, with an optional job log or artifacts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "job_id": {
+            "type": "string",
+            "description": "Job id."
+          },
+          "include": {
+            "type": "array",
+            "description": "Facets to include, such as the log."
+          },
+          "byte_offset": {
+            "type": "integer",
+            "description": "Log byte offset."
+          },
+          "byte_limit": {
+            "type": "integer",
+            "description": "Maximum log bytes."
+          }
+        },
+        "required": [
+          "id",
+          "job_id"
+        ]
+      }
+    },
+    {
+      "name": "get_artifact_file",
+      "description": "Read a text file inside a GitLab CI job artifact archive.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "artifact_path": {
+            "type": "string",
+            "description": "Path inside the artifact archive."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "job_id": {
+            "type": "string",
+            "description": "Job id."
+          },
+          "url": {
+            "type": "string",
+            "description": "Job URL."
+          },
+          "byte_offset": {
+            "type": "integer",
+            "description": "Byte offset."
+          },
+          "byte_limit": {
+            "type": "integer",
+            "description": "Maximum bytes."
+          }
+        },
+        "required": [
+          "artifact_path"
+        ]
+      }
+    },
+    {
+      "name": "list_vulnerabilities",
+      "description": "List the vulnerabilities of a GitLab project (Ultimate tier).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_full_path": {
+            "type": "string",
+            "description": "Full project path."
+          },
+          "severity": {
+            "type": "string",
+            "description": "Severity filter."
+          },
+          "report_type": {
+            "type": "string",
+            "description": "Report type filter."
+          },
+          "state": {
+            "type": "string",
+            "description": "State filter."
+          },
+          "first": {
+            "type": "integer",
+            "description": "Page size."
+          },
+          "after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        },
+        "required": [
+          "project_full_path"
+        ]
+      }
+    },
+    {
+      "name": "get_vulnerability",
+      "description": "Get the full details of a GitLab vulnerability (Ultimate tier).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "vulnerability_id": {
+            "type": "string",
+            "description": "Vulnerability id."
+          }
+        },
+        "required": [
+          "vulnerability_id"
+        ]
+      }
+    },
+    {
+      "name": "save_vulnerability",
+      "description": "Dismiss, confirm, revert, change the severity of, or open an issue for a vulnerability (Ultimate tier).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Action to perform."
+          },
+          "vulnerability_id": {
+            "type": "string",
+            "description": "Vulnerability id."
+          },
+          "dismissal_reason": {
+            "type": "string",
+            "description": "Reason when dismissing."
+          },
+          "severity": {
+            "type": "string",
+            "description": "New severity."
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment."
+          }
+        },
+        "required": [
+          "action",
+          "vulnerability_id"
+        ]
+      }
+    },
+    {
+      "name": "search",
+      "description": "Search across GitLab by term and scope.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "description": "What to search, such as issues, merge requests, blobs or projects."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          },
+          "group_id": {
+            "type": "string",
+            "description": "Limit to a group."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Limit to a project."
+          },
+          "state": {
+            "type": "string",
+            "description": "State filter."
+          },
+          "order_by": {
+            "type": "string",
+            "description": "Order field."
+          },
+          "sort": {
+            "type": "string",
+            "description": "Sort direction."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Results per page."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page."
+          }
+        },
+        "required": [
+          "scope",
+          "search"
+        ]
+      }
+    },
+    {
+      "name": "search_labels",
+      "description": "Search the labels of a GitLab project or group.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "full_path": {
+            "type": "string",
+            "description": "Project or group full path."
+          },
+          "is_project": {
+            "type": "boolean",
+            "description": "True when full_path is a project."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search term."
+          }
+        },
+        "required": [
+          "full_path",
+          "is_project"
+        ]
+      }
+    },
+    {
+      "name": "semantic_search",
+      "description": "Search GitLab code by meaning rather than keywords (add-on feature, beta).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "description": "Search scope."
+          },
+          "q": {
+            "type": "string",
+            "description": "Natural-language query."
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project id or path."
+          },
+          "directory_path": {
+            "type": "string",
+            "description": "Limit to a directory."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum results."
+          }
+        },
+        "required": [
+          "scope",
+          "q",
+          "project_id"
+        ]
+      }
+    }
+  ]
+}

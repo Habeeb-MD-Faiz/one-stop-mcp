@@ -1,0 +1,567 @@
+{
+  "server": "playwright",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "browser_navigate",
+      "description": "Navigate to a URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to navigate to."
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    {
+      "name": "browser_navigate_back",
+      "description": "Go back to the previous page in the history.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "browser_snapshot",
+      "description": "Capture an accessibility snapshot of the current page; better than a screenshot for acting on it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element to snapshot instead of the whole page."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Save the snapshot to a file."
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Limit the snapshot depth."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_take_screenshot",
+      "description": "Take a screenshot of the current page or of an element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element to capture."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "png",
+              "jpeg"
+            ],
+            "description": "Image format."
+          },
+          "filename": {
+            "type": "string",
+            "description": "File name to save to."
+          },
+          "fullPage": {
+            "type": "boolean",
+            "description": "Capture the full scrollable page."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_click",
+      "description": "Perform a click on an element of the page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element reference from the snapshot."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          },
+          "doubleClick": {
+            "type": "boolean",
+            "description": "Double-click."
+          },
+          "button": {
+            "type": "string",
+            "description": "Mouse button."
+          },
+          "modifiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Modifier keys to hold."
+          }
+        },
+        "required": [
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "browser_hover",
+      "description": "Hover over an element on the page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element reference from the snapshot."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          }
+        },
+        "required": [
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "browser_drag",
+      "description": "Drag one element onto another.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "startTarget": {
+            "type": "string",
+            "description": "Element to drag."
+          },
+          "endTarget": {
+            "type": "string",
+            "description": "Element to drop onto."
+          },
+          "startElement": {
+            "type": "string",
+            "description": "Description of the source element."
+          },
+          "endElement": {
+            "type": "string",
+            "description": "Description of the target element."
+          }
+        },
+        "required": [
+          "startTarget",
+          "endTarget"
+        ]
+      }
+    },
+    {
+      "name": "browser_drop",
+      "description": "Drop files or MIME-typed data onto an element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element to drop onto."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Files to drop."
+          },
+          "data": {
+            "type": "object",
+            "description": "MIME-typed data to drop."
+          }
+        },
+        "required": [
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "browser_type",
+      "description": "Type text into an editable element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Element reference from the snapshot."
+          },
+          "text": {
+            "type": "string",
+            "description": "Text to type."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          },
+          "submit": {
+            "type": "boolean",
+            "description": "Press Enter afterwards."
+          },
+          "slowly": {
+            "type": "boolean",
+            "description": "Type one character at a time."
+          }
+        },
+        "required": [
+          "target",
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "browser_press_key",
+      "description": "Press a key on the keyboard, or type a character.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Key name, such as ArrowLeft, or a character."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "name": "browser_fill_form",
+      "description": "Fill several form fields at once.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "description": "Fields to fill, each with its target and value."
+          }
+        },
+        "required": [
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "browser_select_option",
+      "description": "Select one or more options in a dropdown.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Dropdown element reference."
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Values to select."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          }
+        },
+        "required": [
+          "target",
+          "values"
+        ]
+      }
+    },
+    {
+      "name": "browser_file_upload",
+      "description": "Upload one or more files through a file chooser.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Absolute paths of files to upload."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_handle_dialog",
+      "description": "Accept or dismiss a dialog, optionally with prompt text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "description": "Accept the dialog."
+          },
+          "promptText": {
+            "type": "string",
+            "description": "Text for a prompt dialog."
+          }
+        },
+        "required": [
+          "accept"
+        ]
+      }
+    },
+    {
+      "name": "browser_evaluate",
+      "description": "Run a JavaScript function on the page or on an element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "function": {
+            "type": "string",
+            "description": "JavaScript function to evaluate."
+          },
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description."
+          },
+          "target": {
+            "type": "string",
+            "description": "Element reference to pass in."
+          }
+        },
+        "required": [
+          "function"
+        ]
+      }
+    },
+    {
+      "name": "browser_run_code_unsafe",
+      "description": "Run a Playwright code snippet on the server. Unsafe: it can execute arbitrary code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Playwright code to run."
+          },
+          "filename": {
+            "type": "string",
+            "description": "File containing the code."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_wait_for",
+      "description": "Wait for text to appear or disappear, or for a set amount of time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "number",
+            "description": "Seconds to wait."
+          },
+          "text": {
+            "type": "string",
+            "description": "Text to wait for."
+          },
+          "textGone": {
+            "type": "string",
+            "description": "Text to wait to disappear."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_find",
+      "description": "Search the accessibility snapshot for text or a regular expression.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to find."
+          },
+          "regex": {
+            "type": "string",
+            "description": "Regular expression to find."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Save results to a file."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_console_messages",
+      "description": "Return the console messages of the page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "description": "Minimum message level."
+          },
+          "all": {
+            "type": "boolean",
+            "description": "Include messages from before the last navigation."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Save to a file."
+          }
+        },
+        "required": [
+          "level"
+        ]
+      }
+    },
+    {
+      "name": "browser_network_requests",
+      "description": "List the network requests made since the page loaded.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "static": {
+            "type": "boolean",
+            "description": "Include static resources."
+          },
+          "filter": {
+            "type": "string",
+            "description": "Filter requests."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Save to a file."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_network_request",
+      "description": "Show the full details of one network request.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "Request index from the list."
+          },
+          "part": {
+            "type": "string",
+            "description": "Part of the request to show."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Save to a file."
+          }
+        },
+        "required": [
+          "index"
+        ]
+      }
+    },
+    {
+      "name": "browser_emulate_media",
+      "description": "Emulate color scheme, reduced motion, forced colors, contrast or media type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "colorScheme": {
+            "type": "string",
+            "description": "Color scheme."
+          },
+          "reducedMotion": {
+            "type": "string",
+            "description": "Reduced motion preference."
+          },
+          "forcedColors": {
+            "type": "string",
+            "description": "Forced colors."
+          },
+          "contrast": {
+            "type": "string",
+            "description": "Contrast preference."
+          },
+          "media": {
+            "type": "string",
+            "description": "Media type."
+          }
+        }
+      }
+    },
+    {
+      "name": "browser_resize",
+      "description": "Resize the browser window.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "description": "Width in pixels."
+          },
+          "height": {
+            "type": "integer",
+            "description": "Height in pixels."
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ]
+      }
+    },
+    {
+      "name": "browser_tabs",
+      "description": "List, create, close or select browser tabs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "list",
+              "new",
+              "close",
+              "select"
+            ],
+            "description": "Tab operation."
+          },
+          "index": {
+            "type": "integer",
+            "description": "Tab index."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL for a new tab."
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "browser_close",
+      "description": "Close the page.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

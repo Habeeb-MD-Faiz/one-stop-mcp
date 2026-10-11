@@ -1,0 +1,63 @@
+{
+  "server": "cloudflare",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "docs",
+      "description": "Search the Cloudflare developer documentation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "What to look up in the Cloudflare docs."
+          }
+        }
+      }
+    },
+    {
+      "name": "search",
+      "description": "Run JavaScript that queries the Cloudflare API spec (spec.paths) to find the endpoints for a task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "JavaScript to run against the API spec."
+          }
+        },
+        "required": [
+          "code"
+        ]
+      }
+    },
+    {
+      "name": "execute",
+      "description": "Run JavaScript that calls cloudflare.request() against the discovered Cloudflare API endpoints.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "JavaScript to run."
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Cloudflare account id; optional for user tokens, auto-detected for account tokens."
+          }
+        },
+        "required": [
+          "code"
+        ]
+      }
+    },
+    {
+      "name": "whoami",
+      "description": "Return the user or account the connection is authenticated as.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

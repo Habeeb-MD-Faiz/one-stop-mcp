@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/microsoft/mcp (servers/Azure.Mcp.Server, official, Microsoft) and
+# https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/tools/. npm @azure/mcp, whose
+# latest tag is a beta (npm view = 3.0.0-beta.50); pinned to it. Command from the README:
+# `npx -y @azure/mcp@latest server start`. Auth is the developer's own Azure identity (az login /
+# managed identity; Docker setups use AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET), so
+# no credential is injected by the gateway. The stdio child must be able to see the Azure CLI
+# profile (HOME/USERPROFILE, see D31). The docs list a "read only" start option but name no CLI
+# flag, so none is passed.
+# UNVERIFIED: in the default `namespace` mode the server exposes one tool per service namespace.
+# The docs' "Namespace" column (storage, keyvault, group, ...) is used here as the tool name and its
+# description as the tool description; the exact registered names and each tool's input schema were
+# not published on the pages read. Individual tools (azmcp_storage_account_get ...) are exposed in
+# `all` mode or via the Tool option. Re-snapshot from a live tools/list when possible.
+id: azure
+name: Microsoft Azure
+category: [cloud, infra]
+tags: [official, local]
+description: >
+  Microsoft's Azure MCP server. Work with Azure resources by service: subscriptions and resource
+  groups, storage, Key Vault, App Service, AKS, Cosmos DB and SQL, Monitor, RBAC, pricing and more,
+  using your own Azure sign-in.
+homepage: https://github.com/microsoft/mcp
+transport:
+  type: stdio
+  command: npx
+  args: ["-y", "@azure/mcp@3.0.0-beta.50", "server", "start"]
+auth:
+  type: none
+routing:
+  examples:
+    - "show me all my Azure resource groups"
+    - "list the blobs in my Azure storage container"
+    - "query my Log Analytics workspace for errors"
+    - "what is the value of a key in Azure App Configuration"
+  tools:
+    group: ["list the resources inside this resource group"]
+    storage: ["list storage accounts and blob containers"]
+    keyvault: ["fetch the secrets stored in my key vault"]
+    monitor: ["run a kusto query on the logs from the last hour"]
+    cosmos: ["show my cosmos db databases"]
+health:
+  check: initialize

@@ -1,0 +1,4 @@
+{"query":"what does the page at https://example.com/blog/launch say","server":"fetch","tool":"fetch"}
+{"query":"grab the text of that docs link I pasted","server":"fetch","tool":"fetch"}
+{"query":"continue reading the long page from where it got cut off","server":"fetch","tool":"fetch"}
+{"query":"I want the unprocessed HTML source of a site","server":"fetch","tool":"fetch"}

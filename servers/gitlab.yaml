@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://docs.gitlab.com/user/model_context_protocol/mcp_server/ (official, GitLab).
+# Endpoint POST /api/v4/mcp over HTTP, OAuth 2.0 dynamic client registration (scope: mcp).
+# Self-managed / Dedicated users replace gitlab.com with their own host. The MCP server must be
+# enabled for the top-level group (GitLab.com) or instance.
+id: gitlab
+name: GitLab
+category: [dev, code]
+tags: [official, remote]
+description: >
+  GitLab's built-in MCP server. Read and create issues and work items, merge requests and reviews,
+  inspect pipelines and job logs, browse repository files and commits, and search a GitLab instance.
+homepage: https://docs.gitlab.com/user/model_context_protocol/mcp_server/
+transport:
+  type: streamable-http
+  url: https://gitlab.com/api/v4/mcp
+auth:
+  type: oauth2
+  scopes: [mcp]
+routing:
+  examples:
+    - "show the merge requests waiting for my review in GitLab"
+    - "create a GitLab issue for this bug"
+    - "what is the status of the latest pipeline on main"
+    - "read a file from my GitLab project"
+  tools:
+    list_merge_requests: ["list open merge requests in my gitlab project"]
+    get_pipeline: ["show the jobs of this gitlab pipeline"]
+    get_job: ["get the log of the failed gitlab CI job"]
+    save_work_item: ["create a gitlab issue titled login page broken"]
+    search: ["search gitlab for the word deprecated"]
+health:
+  check: initialize

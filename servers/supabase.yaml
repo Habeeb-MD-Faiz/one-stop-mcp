@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://supabase.com/mcp and https://github.com/supabase-community/supabase-mcp (official,
+# Supabase). Hosted endpoint https://mcp.supabase.com/mcp; default auth is browser OAuth, a scoped
+# personal access token as `Authorization: Bearer` is documented for CI. Optional URL params:
+# project_ref=<id> (scope to one project, disables account tools), read_only=true, features=<groups>.
+# The 27 tools below are the default feature groups (account, database, debugging, development,
+# docs, functions, branching); storage tools are off by default and omitted.
+# supabase.com/mcp lists names and descriptions only. Only get_project_url(project_id) was checked
+# against the README; the other argument names (project_id, query, name, function_slug, branch_id,
+# graphql_query ...) follow the project's conventions and are NOT individually verified.
+id: supabase
+name: Supabase
+category: [database, dev]
+tags: [official, remote]
+description: >
+  Supabase's hosted MCP server. Manage projects and branches, inspect tables and run SQL, apply
+  migrations, read logs and advisors, deploy Edge Functions, generate TypeScript types and search
+  the docs.
+homepage: https://supabase.com/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.supabase.com/mcp
+auth:
+  type: oauth2
+routing:
+  examples:
+    - "run a SQL query on my supabase project"
+    - "apply a database migration to supabase"
+    - "list the tables in my supabase database"
+    - "deploy an edge function to supabase"
+  tools:
+    execute_sql: ["run this select against the supabase postgres"]
+    apply_migration: ["add a column to the table through a migration"]
+    get_advisors: ["are there security warnings on my supabase project"]
+    generate_typescript_types: ["generate types for my database schema"]
+    deploy_edge_function: ["publish this function to supabase"]
+health:
+  check: initialize

@@ -1,0 +1,4 @@
+{"query":"what is in the config file sitting in my home folder","server":"filesystem","tool":"read_text_file"}
+{"query":"dump the whole layout of this repo so I can see how it is organised","server":"filesystem","tool":"directory_tree"}
+{"query":"change the port number inside server.js from 3000 to 8080","server":"filesystem","tool":"edit_file"}
+{"query":"rename the draft document to final","server":"filesystem","tool":"move_file"}

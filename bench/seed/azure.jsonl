@@ -1,0 +1,4 @@
+{"query":"enumerate everything deployed under my dev resource group","server":"azure","tool":"group"}
+{"query":"grant a user the reader role on this subscription","server":"azure","tool":"role"}
+{"query":"how much would a D4s VM cost per month in West Europe","server":"azure","tool":"pricing"}
+{"query":"pull the connection settings stored in my app config store","server":"azure","tool":"appconfig"}

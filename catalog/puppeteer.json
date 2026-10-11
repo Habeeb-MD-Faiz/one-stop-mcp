@@ -1,0 +1,153 @@
+{
+  "server": "puppeteer",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "puppeteer_navigate",
+      "description": "Navigate the browser to a URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to navigate to."
+          },
+          "launchOptions": {
+            "type": "object",
+            "description": "Puppeteer launch options; changing them restarts the browser."
+          },
+          "allowDangerous": {
+            "type": "boolean",
+            "description": "Allow launch options that reduce security (default false)."
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_screenshot",
+      "description": "Take a screenshot of the full page or of a specific element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name for the screenshot."
+          },
+          "selector": {
+            "type": "string",
+            "description": "CSS selector of an element to capture."
+          },
+          "width": {
+            "type": "number",
+            "description": "Width in pixels (default 800)."
+          },
+          "height": {
+            "type": "number",
+            "description": "Height in pixels (default 600)."
+          },
+          "encoded": {
+            "type": "boolean",
+            "description": "Return the screenshot as a base64 data URI (default false)."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_click",
+      "description": "Click an element on the page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector of the element to click."
+          }
+        },
+        "required": [
+          "selector"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_hover",
+      "description": "Hover over an element on the page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector of the element to hover."
+          }
+        },
+        "required": [
+          "selector"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_fill",
+      "description": "Fill out an input field.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector of the input field."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value to fill in."
+          }
+        },
+        "required": [
+          "selector",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_select",
+      "description": "Select an option in a SELECT element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "CSS selector of the SELECT element."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value to select."
+          }
+        },
+        "required": [
+          "selector",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "puppeteer_evaluate",
+      "description": "Execute JavaScript in the browser console.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "string",
+            "description": "JavaScript to execute."
+          }
+        },
+        "required": [
+          "script"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"query":"which files have I touched since the last commit","server":"git","tool":"git_status"}
+{"query":"who changed things in this project over the past week","server":"git","tool":"git_log"}
+{"query":"compare my current code against origin main","server":"git","tool":"git_diff"}
+{"query":"put these two files into the next commit","server":"git","tool":"git_add"}

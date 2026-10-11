@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/ckreiling/mcp-server-docker (community; no Docker-Inc server for this
+# job was found, Docker's own MCP Toolkit/Gateway is a different product). PyPI mcp-server-docker,
+# version pinned (PyPI = 0.3.0). Talks to the local Docker socket; set DOCKER_HOST (env) to use
+# a remote daemon, e.g. ssh://user@host (README).
+# The README lists tool names only, so tool descriptions in the snapshot are written from the names
+# and the input schemas are left open.
+id: docker
+name: Docker
+category: [dev, infra]
+tags: [community, local]
+description: >
+  Manage a Docker daemon: list, create, start, stop and remove containers, fetch container logs,
+  pull, build and push images, and manage networks and volumes.
+homepage: https://github.com/ckreiling/mcp-server-docker
+transport:
+  type: stdio
+  command: uvx
+  args: ["mcp-server-docker@0.3.0"]
+auth:
+  type: none
+routing:
+  examples:
+    - "list the running docker containers"
+    - "start a container from this image"
+    - "show the logs of a docker container"
+    - "pull the latest image and rebuild"
+  tools:
+    list_containers: ["what containers are running on this machine"]
+    run_container: ["run nginx in a container on port 8080"]
+    fetch_container_logs: ["tail the logs of my api container"]
+    build_image: ["build an image from this Dockerfile"]
+    list_volumes: ["which docker volumes exist"]
+health:
+  check: initialize
