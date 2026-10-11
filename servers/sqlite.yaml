@@ -24,9 +24,11 @@ routing:
     - "list the tables in this sqlite db"
     - "insert a row into a local sqlite database"
   tools:
-    read_query: ["select rows from a table in the sqlite database"]
-    write_query: ["update a record in the local sqlite file"]
-    create_table: ["make a new sqlite table with these columns"]
-    describe-table: ["show the column types of this sqlite table"]
+    read_query: ["select rows from a table in the sqlite database", "show me the ten newest orders in the database", "count rows grouped by status"]
+    write_query: ["update a record in the local sqlite file", "insert a new row into the users table", "delete the rows older than 30 days"]
+    create_table: ["make a new sqlite table with these columns", "create a customers table with id and email columns", "add a table to hold the log entries"]
+    describe-table: ["show the column types of this sqlite table", "what columns does the orders table have", "show the schema for the users table"]
+    list_tables: ["what tables are in the database", "show me all the tables in this sqlite file"]
+    append_insight: ["save this finding to the analysis memo", "note down a business insight from this data"]
 health:
   check: initialize

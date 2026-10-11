@@ -27,7 +27,7 @@ routing:
     - "get up to date code examples for react hooks"
     - "check the current documentation before writing this code"
   tools:
-    resolve-library-id: ["find the context7 id for supabase"]
-    query-docs: ["pull the official docs on prisma migrations"]
+    resolve-library-id: ["find the context7 id for supabase", "what is the library id for next.js", "look up the docs identifier for the react-query package"]
+    query-docs: ["pull the official docs on prisma migrations", "how do I use middleware in Next.js per the latest docs", "show a code example of zod schema validation from the library docs"]
 health:
   check: initialize

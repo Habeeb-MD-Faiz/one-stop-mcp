@@ -29,9 +29,9 @@ routing:
     - "get the full text of this page as markdown"
     - "do deep research and compile a list"
   tools:
-    web_search_exa: ["look up recent coverage of this subject online"]
-    web_fetch_exa: ["read these two urls in full"]
-    web_search_advanced_exa: ["search only these domains within the last month"]
-    agent_run: ["build me a list of startups in this niche with their funding"]
+    web_search_exa: ["look up recent coverage of this subject online", "search the web for the latest news on this topic", "find articles comparing these two frameworks"]
+    web_fetch_exa: ["read these two urls in full", "get the full text of this article as markdown", "fetch this web page and show me what it says"]
+    web_search_advanced_exa: ["search only these domains within the last month", "find pages published after March with highlighted excerpts", "crawl the subpages of this site and summarize them"]
+    agent_run: ["build me a list of startups in this niche with their funding", "research this company in several steps and return structured data", "enrich this list of leads with details from the web"]
 health:
   check: initialize
