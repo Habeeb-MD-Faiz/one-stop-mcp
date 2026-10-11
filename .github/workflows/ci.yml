@@ -37,7 +37,7 @@ jobs:
         run: npm test
       - name: Startup surface under 2k tokens
         run: npm run budget
-      # Lexical legs only here (no optional deps). Floors sit a few points under the
+      # Lexical legs only (no --dense, so no model download). Floors sit a few points under the
       # measured numbers (bench/ 82.4%, held-out 90.8%) so only a real regression fails.
       - name: Routing benchmark (regression floors)
         run: |
