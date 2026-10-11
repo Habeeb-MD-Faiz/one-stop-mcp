@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/hashicorp/terraform-mcp-server (official, HashiCorp). Stdio via Docker:
+# `docker run -i --rm hashicorp/terraform-mcp-server:1.3.0` (tag = most recent in the README).
+# Default toolset is `registry` (9 Terraform Registry tools, no credential). The HCP Terraform /
+# Terraform Enterprise tools (toolsets `terraform` 48 tools, `registry-private` 4 tools) need
+# TFE_TOKEN (+ TFE_ADDRESS) and a --toolsets flag; they are NOT enabled or snapshotted here.
+# Tool names are from pkg/toolsets/registry.go; the source carries no descriptions, so the
+# descriptions below are written from the names, and input schemas are left open.
+id: terraform
+name: Terraform
+category: [infra, dev]
+tags: [official, local]
+description: >
+  HashiCorp's Terraform MCP server. Search the Terraform Registry for providers, modules and
+  policies, and read their documentation and latest versions to write accurate Terraform code.
+homepage: https://github.com/hashicorp/terraform-mcp-server
+transport:
+  type: stdio
+  command: docker
+  args: ["run", "-i", "--rm", "hashicorp/terraform-mcp-server:1.3.0"]
+auth:
+  type: none
+routing:
+  examples:
+    - "find the terraform provider for a cloud service"
+    - "look up a terraform module in the registry"
+    - "what is the latest version of the aws provider"
+    - "show the documentation for a terraform resource"
+  tools:
+    search_providers: ["find provider documentation for google_compute_instance"]
+    get_provider_details: ["read the docs for this terraform resource"]
+    search_modules: ["search the registry for a vpc module"]
+    get_latest_provider_version: ["newest release of the azurerm provider"]
+    search_policies: ["find sentinel policies about tagging"]
+health:
+  check: initialize

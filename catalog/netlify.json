@@ -1,0 +1,63 @@
+{
+  "server": "netlify",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "netlify-user-services-reader",
+      "description": "Read the authenticated Netlify user's details.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-team-services-reader",
+      "description": "Read Netlify teams, a single team's details, and a team's environment variables.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-deploy-services-reader",
+      "description": "Read Netlify deploys: a deploy by id, or the deploys of a site.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-deploy-services-updater",
+      "description": "Deploy a Netlify site, including remote deploys from a project directory.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-project-services-reader",
+      "description": "Read Netlify projects: list projects, get one project, read its forms and form submissions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-project-services-updater",
+      "description": "Change Netlify projects: create a project, rename it, update visitor access controls, forms and form submissions, and manage environment variables and secrets.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-extension-services-reader",
+      "description": "Read the Netlify extensions available to a team and the full details of one extension.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "netlify-extension-services-updater",
+      "description": "Install or uninstall a Netlify extension, and initialize a Netlify database.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

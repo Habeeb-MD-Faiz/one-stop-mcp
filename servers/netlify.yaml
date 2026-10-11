@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/ and
+# https://github.com/netlify/netlify-mcp (official, Netlify). The docs recommend the hosted server
+# https://netlify-mcp.netlify.app/mcp. Its OAuth was confirmed by an unauthenticated probe:
+# /.well-known/oauth-protected-resource returns authorization_servers and scopes
+# [offline_access, read, write, claudeai]; POST /mcp without a token returns 401.
+# Local alternative: `npx -y @netlify/mcp` (npm 1.18.0) with NETLIFY_PERSONAL_ACCESS_TOKEN.
+# Tool names: src/tools/index.ts builds them as netlify-<domain>-services-<reader|updater> (default,
+# non-verbose mode; verbose mode makes one tool per operation). Domains and their operations from
+# the per-domain index files: user (get user), team (get teams / team / team env vars), deploy
+# (get deploy, get deploy for site, deploy site), project (get/list projects, access controls,
+# forms, form submissions, rename, env vars, create project), extension (get extensions, extension
+# details, change installation, initialize database). Reader/updater split follows read vs write
+# operations. The repo does NOT publish the descriptions or input schemas, so the eight names below
+# are derived and their descriptions are written from those operations; schemas are left open.
+id: netlify
+name: Netlify
+category: [cloud, dev]
+tags: [official, remote]
+description: >
+  Netlify's official MCP server. Create and deploy sites, manage project settings, access
+  controls, forms and environment variables, install extensions and read team and user details.
+homepage: https://github.com/netlify/netlify-mcp
+transport:
+  type: streamable-http
+  url: https://netlify-mcp.netlify.app/mcp
+auth:
+  type: oauth2
+  scopes: [read, write, offline_access]
+routing:
+  examples:
+    - "deploy my site to Netlify"
+    - "list my Netlify sites"
+    - "set an environment variable on a Netlify project"
+    - "check the status of my latest Netlify deploy"
+  tools:
+    netlify-deploy-services-updater: ["publish this folder as a new netlify deploy"]
+    netlify-deploy-services-reader: ["did my last netlify build succeed"]
+    netlify-project-services-reader: ["show the netlify sites on my team"]
+    netlify-project-services-updater: ["create a new netlify project"]
+    netlify-extension-services-reader: ["which netlify extensions are installed"]
+health:
+  check: initialize

@@ -1,0 +1,294 @@
+{
+  "server": "azure",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T17:30:00Z",
+  "tools": [
+    {
+      "name": "subscription",
+      "description": "List Azure subscriptions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "group",
+      "description": "List Azure resource groups and list the resources within a group.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "storage",
+      "description": "Manage Azure Storage accounts, containers, blobs and tables.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "keyvault",
+      "description": "List and create keys, secrets and certificates in Azure Key Vault.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "appservice",
+      "description": "Manage web apps, database connections, diagnostics, deployments and application settings for Azure App Service.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "functionapp",
+      "description": "List Azure Functions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "aks",
+      "description": "List Azure Kubernetes Service clusters.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "acr",
+      "description": "List Azure Container Registry instances.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "compute",
+      "description": "Get details for Azure virtual machines, virtual machine scale sets and managed disks.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "cosmos",
+      "description": "Work with Azure Cosmos DB accounts, databases, containers and documents.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "sql",
+      "description": "Work with Azure SQL Database servers, databases, firewall rules and elastic pools.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "postgres",
+      "description": "Manage Azure Database for PostgreSQL servers, databases and tables.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "mysql",
+      "description": "Manage Azure Database for MySQL servers, databases and tables.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "redis",
+      "description": "Create and list Azure Redis resources, including Managed Redis and Cache for Redis.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "monitor",
+      "description": "Query Azure Monitor logs and metrics.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "applicationinsights",
+      "description": "List Application Insights resources.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "appconfig",
+      "description": "Manage centralized application settings and feature flags in Azure App Configuration.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "eventhubs",
+      "description": "Manage Azure Event Hubs namespaces and event hubs.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "servicebus",
+      "description": "Manage Azure Service Bus resources, including queues, topics and peeking at messages.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "eventgrid",
+      "description": "Manage Azure Event Grid resources, including topics and subscriptions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search",
+      "description": "Manage Azure AI Search resources, including search services, indexes and queries.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "foundry",
+      "description": "Work with Microsoft Foundry models, deployments and endpoints.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "kusto",
+      "description": "Work with Azure Data Explorer clusters, databases, tables and queries.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "role",
+      "description": "View and manage Azure role-based access control assignments.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "policy",
+      "description": "Manage Azure Policy assignments, definitions and initiatives.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "pricing",
+      "description": "Get Azure retail pricing, cost estimates and billing details for services, SKUs and regions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "advisor",
+      "description": "List and summarize Azure Advisor recommendations and apply them to infrastructure-as-code files.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "resourcehealth",
+      "description": "Check availability status, view health events and track service-impacting issues for Azure resources.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "quota",
+      "description": "Manage Azure resource quotas and limits.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy and manage Azure resources using templates and scripts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "bicepschema",
+      "description": "Retrieve Bicep schemas for Azure resources to use in Infrastructure as Code templates.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "azureterraform",
+      "description": "Retrieve Terraform provider documentation, discover Azure Verified Modules, export Azure resources to Terraform and validate configurations against the Azure policy library.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "cloudarchitect",
+      "description": "Design cloud systems by gathering requirements through guided questions and recommending optimal solutions.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "wellarchitectedframework",
+      "description": "Get architectural best practices, design patterns and recommendations for Azure services based on the five Well-Architected Framework pillars.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "workbooks",
+      "description": "Create, manage and update Azure Workbooks for data visualization and reporting.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "grafana",
+      "description": "List Azure Managed Grafana workspaces.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "loadtesting",
+      "description": "Create, run and view Azure load tests.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "signalr",
+      "description": "Manage Azure SignalR resources and runtimes.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "communication",
+      "description": "Send SMS and email messages using Azure Communication Services.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "marketplace",
+      "description": "Discover Azure Marketplace products and offers.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "extension",
+      "description": "Find Azure CLI commands and get installation instructions for Azure CLI and Azure Developer CLI.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

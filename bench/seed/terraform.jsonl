@@ -1,0 +1,4 @@
+{"query":"what arguments does the aws_s3_bucket resource accept","server":"terraform","tool":"get_provider_details"}
+{"query":"is there a ready-made module for an EKS cluster","server":"terraform","tool":"search_modules"}
+{"query":"which version of the kubernetes provider should I pin","server":"terraform","tool":"get_latest_provider_version"}
+{"query":"does the cloudflare provider support workers kv","server":"terraform","tool":"get_provider_capabilities"}

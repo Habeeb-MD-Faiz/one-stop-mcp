@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://github.com/cloudflare/mcp-server-cloudflare (README: the "Cloudflare API MCP Server",
+# repo cloudflare/mcp, is the recommended server; the per-product servers - bindings, builds,
+# observability, radar, ... - are deprecated in its favour) and https://github.com/cloudflare/mcp
+# (official, Cloudflare). Streamable HTTP at https://mcp.cloudflare.com/mcp. Auth per cloudflare/mcp:
+# OAuth (redirect to Cloudflare, pick permissions) or a Cloudflare API token as a Bearer token.
+# It is a "code mode" server: `search` runs JavaScript over the API spec to find endpoints and
+# `execute` runs JavaScript that calls cloudflare.request(), so four tools cover the whole API.
+id: cloudflare
+name: Cloudflare
+category: [cloud, infra]
+tags: [official, remote]
+description: >
+  Cloudflare's API MCP server. Search Cloudflare's developer docs, discover API endpoints by
+  querying the API spec, and execute Cloudflare API calls to manage Workers, DNS, R2, KV, D1,
+  zones and the rest of an account.
+homepage: https://github.com/cloudflare/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.cloudflare.com/mcp
+auth:
+  type: oauth2
+routing:
+  examples:
+    - "deploy or inspect a Cloudflare Worker"
+    - "update a DNS record in Cloudflare"
+    - "list the zones in my Cloudflare account"
+    - "how do I configure R2 buckets on Cloudflare"
+  tools:
+    docs: ["search the Cloudflare developer docs for Workers KV limits"]
+    search: ["find the API endpoint for purging the cache"]
+    execute: ["call the Cloudflare API to add a DNS A record"]
+    whoami: ["which Cloudflare account am I connected to"]
+health:
+  check: initialize

@@ -1,0 +1,4 @@
+{"query":"has my last push to main finished building yet","server":"vercel","tool":"list_deployments"}
+{"query":"the site returns 500 on the checkout route, dig into what the functions logged","server":"vercel","tool":"get_runtime_logs"}
+{"query":"which routes crash most often in prod","server":"vercel","tool":"get_runtime_errors"}
+{"query":"set STRIPE_KEY for the preview environment of my app","server":"vercel","tool":"create_project_env"}
