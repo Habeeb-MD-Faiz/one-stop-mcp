@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci --omit=optional
+      - run: npm ci # not --omit=optional: TypeScript 7 ships its compiler binary as an optional dependency
       - name: Typecheck (src, tests, scripts)
         run: npm run typecheck
       - name: Unit and end-to-end tests
