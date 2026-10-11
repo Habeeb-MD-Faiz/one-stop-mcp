@@ -7,6 +7,15 @@
   "bin": {
     "one-stop-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "servers",
+    "catalog",
+    "schema",
+    "examples",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json",
