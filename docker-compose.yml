@@ -29,7 +29,7 @@ services:
       OSMCP_HOME: /data
       OSMCP_CONFIG: /config/one-stop-mcp.config.yaml
     ports:
-      - "${OSMCP_BIND:-127.0.0.1}:${OSMCP_PORT:-8420}:8420"
+      - "${OSMCP_BIND:-127.0.0.1}:${OSMCP_PUBLISH_PORT:-8420}:8420"
     volumes:
       - osmcp-data:/data
       - ${OSMCP_CONFIG_FILE:-./docs/examples/team.config.yaml}:/config/one-stop-mcp.config.yaml:ro

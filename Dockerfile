@@ -48,10 +48,9 @@ USER node
 VOLUME ["/data"]
 EXPOSE 8420
 
-# /healthz is served in both modes. 8420 is the default port (D32); if you
-# change http.port, override this with --health-cmd or in compose.
+# /healthz is served in both modes. The probe follows OSMCP_PORT (default 8420, D32).
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD ["node", "-e", "fetch('http://127.0.0.1:8420/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+  CMD ["node", "-e", "fetch('http://127.0.0.1:'+(process.env.OSMCP_PORT||8420)+'/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
 
 # Team mode: Streamable HTTP for clients. Needs OSMCP_MASTER_KEY at run time.
 # package.json's bin is dist/index.js, which hands argv to the CLI.

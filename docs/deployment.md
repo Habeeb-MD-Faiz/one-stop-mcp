@@ -24,7 +24,9 @@ node dist/index.js     # serves MCP on stdio; waits for a client
 
 State (generated key file, vault, ledger) goes to `~/.one-stop-mcp`. Set `OSMCP_HOME` to move it. Loading `servers/` and `catalog/` happens from the clone, so keep the clone where it is, or point `serversDir` and `catalogDir` elsewhere ([configuration](configuration.md)).
 
-> Once the package is published, `node /path/to/dist/index.js` becomes `npx -y one-stop-mcp`. <!-- verify: package.json is still private: true and has no "files" list; the npx form does not work until that changes. -->
+> Once the package is published, `node /path/to/dist/index.js` becomes `npx -y one-stop-mcp`. Until then `package.json` keeps `"private": true`, so `npm publish` refuses; `npm pack` builds the tarball, which contains `dist`, `servers`, `catalog`, `schema`, `examples` and the license.
+
+**Windows.** Local embeddings run on the ONNX runtime, which needs the Microsoft Visual C++ 2015-2022 x64 redistributable. Without it the gateway prints one line (`local embeddings unavailable`) at start-up and routing uses keyword + BM25 only; everything else works.
 
 Use an absolute path in every client config below; clients do not start in your repository directory.
 
@@ -83,19 +85,18 @@ chmod 600 team.env
 # One-off: create the state directory and the first admin user
 docker run --rm -it --env-file team.env -v osmcp-data:/data one-stop-mcp node dist/index.js init
 
-# Run it
+# Run it (team mode: binds 0.0.0.0 inside the container)
 docker run -d --name one-stop-mcp --restart unless-stopped \
   --env-file team.env -v osmcp-data:/data \
-  -v "$PWD/team.config.yaml:/config/one-stop-mcp.config.yaml:ro" \
-  -e OSMCP_CONFIG=/config/one-stop-mcp.config.yaml \
+  -e OSMCP_PUBLIC_URL=https://mcp.example.com \
   -p 127.0.0.1:8420:8420 one-stop-mcp
 ```
 
-Inside a container the gateway must bind `0.0.0.0`, so the config needs `http.host: 0.0.0.0`; the example in [`examples/team.config.yaml`](examples/team.config.yaml) has it. <!-- verify: default http.host in team mode; if it is already 0.0.0.0 this note can go. -->
+Team mode binds `0.0.0.0` by default (`OSMCP_HOST` or `http.host` change it), which is what a container needs; the published port (`-p 127.0.0.1:8420:8420`) decides who can reach it. Set `OSMCP_PUBLIC_URL` to the address browsers use, since OAuth redirects and key-entry links are built from it. If you change the listen port with `OSMCP_PORT`, change the `-p` mapping to match; the image's health check follows `OSMCP_PORT`.
 
 The master key is the one thing you cannot recover: lose it and the vault is unreadable. Store a copy in a password manager, apart from the volume backups.
 
-The embedding model is not baked into the image. With `EMBEDDINGS=1` it downloads from the Hugging Face hub the first time routing needs it. Without it, or if the download fails, routing uses lexical + BM25 only. <!-- verify: the model cache directory should sit under /data so it survives container replacement. -->
+The embedding model is not baked into the image. With `EMBEDDINGS=1` it downloads from the Hugging Face hub the first time routing needs it, into `$OSMCP_HOME/embeddings/models`, which is inside the `/data` volume and so survives container replacement. Without `EMBEDDINGS=1`, or if the download fails, routing uses keyword + BM25 only (one line on stderr says so).
 
 ## Docker Compose (team mode)
 
@@ -113,7 +114,7 @@ Variables you can set in `.env` or the shell:
 
 | Variable | Default | Effect |
 |---|---|---|
-| `OSMCP_PORT` | `8420` | Host port. |
+| `OSMCP_PUBLISH_PORT` | `8420` | Host port the container's 8420 is published on. (`OSMCP_PORT`, by contrast, is the gateway's own listen port inside the container.) |
 | `OSMCP_BIND` | `127.0.0.1` | Host address the port is published on. `0.0.0.0` exposes **plain HTTP** to the network; put TLS in front first. |
 | `OSMCP_ENV_FILE` | `.env` | Env file holding `OSMCP_MASTER_KEY`. |
 | `OSMCP_CONFIG_FILE` | `docs/examples/team.config.yaml` | Config file mounted into the container. |
@@ -125,14 +126,14 @@ Variables you can set in `.env` or the shell:
 docker compose --profile vault up -d
 ```
 
-This starts `hashicorp/vault` in **dev mode**: in-memory, auto-unsealed, root token `dev-only-token`, published on `127.0.0.1:8200`. Switch the gateway to it with the `vault` block commented at the bottom of `docs/examples/team.config.yaml`, then `docker compose up -d`. Dev mode is for trying the integration only. For real use, point `vault.hashicorp.addr` at a production Vault with a properly scoped token.
+This starts `hashicorp/vault` in **dev mode**: in-memory, auto-unsealed, root token `dev-only-token`, published on `127.0.0.1:8200`. Switch the gateway to it by replacing the `vault` block in `docs/examples/team.config.yaml` with the commented one at the bottom, add `OSMCP_VAULT_TOKEN=dev-only-token` to `.env` (the token is read from the environment, never from the config file), then `docker compose up -d`. Team mode still wants `OSMCP_MASTER_KEY` set. Dev mode is for trying the integration only. For real use, point `vault.hashicorp.addr` at a production Vault with a properly scoped token.
 
 ## Team-mode bootstrap
 
 1. **Set the master key** (`OSMCP_MASTER_KEY`), or configure a KMS key provider ([configuration](configuration.md#key-providers)).
 2. **`init`** creates the state directory, the first admin user, and prints, once:
    - the admin's bearer token (`osmcp_...`), and
-   - an `otpauth://` URI. Add it to an authenticator app (scan it as a QR code, or paste the secret). The admin API needs a code from it on every request.
+   - an `otpauth://` URI. Add it to an authenticator app (scan it as a QR code, or paste the secret). The admin API needs a code from it; a code works once, and a good one unlocks the API for 15 minutes.
 3. **Start the gateway** (`serve --http`, or `docker compose up -d`).
 4. **Add users.** Each user belongs to an org. Keys are separated per org and per user, so one user cannot read another's credentials.
    ```bash
@@ -140,7 +141,7 @@ This starts `hashicorp/vault` in **dev mode**: in-memory, auto-unsealed, root to
    one-stop-mcp user token alice     # prints the token once; send it over a private channel
    one-stop-mcp user list
    ```
-   Tokens are stored only as SHA-256 hashes, so a lost token cannot be recovered, only replaced with `user token`. `user remove` deletes a user and with them every token. <!-- verify: the token store can revoke a single token, but the CLI and admin API in the brief do not expose it. -->
+   Tokens are stored only as SHA-256 hashes, so a lost token cannot be recovered, only replaced with `user token`. `user remove` deletes a user together with every token they hold. There is no command to revoke a single token while keeping the user.
 5. **Connect clients** with that token (below).
 6. **Each user connects their own servers** by asking the model to use them; `connect_server` runs the OAuth or key-entry flow for that user. Credentials are stored under that user's key.
 
@@ -181,19 +182,19 @@ Claude Desktop's config file starts local processes, so to reach an HTTP gateway
 }
 ```
 
-<!-- verify: mcp-remote flags and Claude Desktop's current remote-server support change often; re-check before release. -->
+<!-- verify: external tool, not checked against this repository: mcp-remote flags and Claude Desktop's remote-server support change often; re-check before release. -->
 
 Any client that supports Streamable HTTP with custom headers works the same way: URL `https://<host>/mcp`, header `Authorization: Bearer <token>`.
 
 ### Admin access
 
 - **Admin page**: `https://<host>/admin`. Enter the admin token and a current TOTP code; they live in page memory only. Ledger, kill switch, rotation and incident controls are there.
-- **Admin API**: `/admin/api/*`, e.g.
+- **Admin API**: `/admin/api/*`. Every call needs the admin bearer token. The first call also needs a TOTP code, and its response carries an `x-osmcp-admin-session` header; send that header back on later calls (with the bearer token again) instead of another code, for the next 15 minutes:
   ```bash
-  curl -H "Authorization: Bearer $OSMCP_ADMIN_TOKEN" -H "X-OSMCP-TOTP: 123456" \
+  curl -i -H "Authorization: Bearer $OSMCP_ADMIN_TOKEN" -H "X-OSMCP-TOTP: 123456" \
     https://mcp.example.com/admin/api/ledger/flagged
   ```
-- **CLI against a remote gateway**: add `--remote https://mcp.example.com --token <admin token> --totp <code>` to any admin command.
+- **CLI against a remote gateway**: add `--remote https://mcp.example.com --token <admin token> --totp <code>` to any admin command (or set `OSMCP_ADMIN_TOKEN` and `OSMCP_TOTP`). Plain `http://` is refused except to loopback.
 
 ## TLS and reverse proxies
 
@@ -223,12 +224,12 @@ If a provider needs a registered redirect URI (stdio servers using generic OAuth
 ## Monitoring
 
 - `GET /healthz` for liveness (the image's `HEALTHCHECK` uses it).
-- `GET /metrics` in Prometheus text format. Set `metrics.token` to require a bearer token:
+- `GET /metrics` in Prometheus text format. Set `OSMCP_METRICS_TOKEN` to require a bearer token:
   ```yaml
   scrape_configs:
     - job_name: one-stop-mcp
       authorization:
-        credentials: <metrics.token>
+        credentials: <the value of OSMCP_METRICS_TOKEN>
       static_configs:
         - targets: ["gateway:8420"]
   ```
@@ -236,7 +237,7 @@ If a provider needs a registered redirect URI (stdio servers using generic OAuth
 
 ## Backup, upgrade, recovery
 
-- **Back up** the state directory (`/data` in Docker) and keep `OSMCP_MASTER_KEY` separately. The ledger is append-only; keep copies of it and of its public key so `ledger verify` can still prove nothing was changed.
+- **Back up** the state directory (`/data` in Docker) and keep `OSMCP_MASTER_KEY` separately. The ledger is append-only; keep copies of `ledger.jsonl` and of the public key `ledger-signing.pem.pub` somewhere the gateway host cannot rewrite, so `ledger verify` can still prove nothing was changed (and so a truncated tail is noticed).
 - **Upgrade** by rebuilding the image or pulling the new commit and restarting. Run `one-stop-mcp validate` after pulling to check the catalog.
 - **Restore** by putting the state directory back with the same master key.
 
@@ -247,6 +248,6 @@ If a provider needs a registered redirect URI (stdio servers using generic OAuth
 | Gateway exits at start-up naming `OSMCP_MASTER_KEY` | Team mode needs a master key or a KMS key provider. Set it in the env file. |
 | `/mcp` returns 401 | Missing or wrong bearer token. Issue a new one with `user token`. |
 | OAuth finishes but the provider says the redirect URI is invalid | `http.publicUrl` does not match what the browser used, or the provider's registered redirect URI is not `{publicUrl}/oauth/callback`. |
-| Container is "unhealthy" | The port was changed: the built-in health check probes 8420. Override the health check. |
+| Container is "unhealthy" | The image's health check probes `OSMCP_PORT` (default 8420) inside the container. If you changed the port in the config file instead of the variable, set `OSMCP_PORT` as well. |
 | Every call returns an access-denied message | The kill switch is active. Check the kill-switch panel in the admin page (or `GET /admin/api/kill`); re-enable servers one at a time. |
-| `ledger verify` reports a broken entry | The ledger file was edited or truncated. Compare with a backup; see [security](security.md#usage-ledger). |
+| `ledger verify` reports a broken entry | The ledger file was edited, reordered, or had entries removed from the middle. (Cutting off the newest entries does not break the chain, so compare with a backup copy.) see [security](security.md#usage-ledger). |
