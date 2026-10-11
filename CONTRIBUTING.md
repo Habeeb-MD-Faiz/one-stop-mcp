@@ -30,14 +30,14 @@ npm ci
 | `npm run typecheck` | Type-check `src/`, `test/` and `scripts/`. |
 | `npm test` | All tests (`node:test` run through `tsx`). |
 | `npm run budget` | Fails if the four meta-tools exceed 2,000 tokens. |
-| `npm run bench` | Routing accuracy (top-1, top-3). |
+| `npm run bench` | Routing accuracy (top-1, top-3). Informational: it prints numbers and exits 0, so compare before and after yourself. |
 | `npm run validate` | Every manifest and snapshot, and the bench queries' gold tools. |
 | `npm run probe -- <id>` | MCP `initialize` against a server's real endpoint. |
 | `npm run build` / `npm start` | Compile to `dist/`; run the gateway. |
 | `npm run dev` | Run from source with `tsx`. |
 | `npm run cli -- <command>` | The `one-stop-mcp` CLI from source ([commands](docs/configuration.md#cli)). |
 
-Before you open a PR, run `npm run typecheck && npm test && npm run validate`. CI runs the same plus `budget` and `bench` ([`ci.yml`](.github/workflows/ci.yml)).
+Before you open a PR, run `npm run typecheck && npm test && npm run validate`. CI runs the same plus `budget` and `bench` ([`ci.yml`](.github/workflows/ci.yml)); `typecheck`, `test`, `budget` and `validate` fail the build, `bench` only reports.
 
 ### Test rules
 
@@ -55,7 +55,7 @@ You need: the server's documentation or repository, and ten minutes. No gateway 
 2. **Write `servers/<id>.yaml`.** The id is lowercase-kebab and equals the file name. Start with the editor line `# yaml-language-server: $schema=../schema/manifest.schema.json`, then a `# Source: <url> (official | reference | community)` comment. Pin `npx` / `uvx` packages to an exact version (`npm view <pkg> version`). Set `auth` correctly, with `keyUrl` for API-key servers. Add 3-5 `routing.examples` and, for the main tools, `routing.tools`.
 3. **Write `catalog/<id>.json`**, the tool snapshot. Either run `npm run cli -- catalog refresh <id>` against the live server and copy the result, or write it by hand from the docs (`"source": "docs"`) using the real tool names and the vendor's wording.
 4. **Write `bench/seed/<id>.jsonl`**: four lines of `{"query": "...", "server": "<id>", "tool": "<tool in the snapshot>"}`. Phrase them like a user, vary them, and do not reuse the manifest's example wording.
-5. **Run `npm run validate`.** It must be green. Then `npm run bench` (top-3 must not drop) and `npm run probe -- <id>`.
+5. **Run `npm run validate`.** It must be green. Then `npm run bench` (note top-3 before and after; it must not drop) and `npm run probe -- <id>`.
 6. **Open a PR** with the template filled in. Commit message: `servers: add <id>`.
 
 Never put a real key, token or account id in any of these files.

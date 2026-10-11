@@ -26,6 +26,7 @@ The gateway is a single place that holds every OAuth token and API key a user ha
 | **Someone who copies the state directory** | AES-256-GCM at rest; `vault.json` is mode 0600; token hashes only. | The root key is the weak point. In local mode the key file sits beside the vault (the SSH-key model): anyone who can read both can decrypt. Use `OSMCP_MASTER_KEY` or a KMS provider if that matters. |
 | **A downstream server that turns out to be hostile or compromised** | It receives only the credential for its own call, and stdio children get a minimal environment, never the gateway's. Results and errors are scrubbed of known secrets. | The downstream server **does** see the credential it is sent; that is the point of calling it. Choose servers you trust, prefer official ones, and scope tokens narrowly. |
 | **A network attacker** | Bearer tokens on `/mcp`, TOTP on the admin API, strict headers on the key-entry page. | The gateway speaks plain HTTP. Without TLS in front of it, tokens and admin codes cross the network in clear text. Always terminate TLS ([deployment](deployment.md#tls-and-reverse-proxies)). |
+| **A malicious web page (local mode)** | The loopback listener serves only the auth pages, answers only requests whose `Host` is `127.0.0.1`, `localhost` or the `publicUrl` host (DNS-rebinding guard), and requires key-entry POSTs to be same-origin. | A tab you open yourself on the loopback address can still reach those pages, which are protected by one-time tickets. |
 | **A leaked gateway bearer token** | It identifies one user. Only its hash is stored. Revoke the user, or cut one server or everything with the kill switch. | The token holds that user's access until revoked. |
 | **A leaked admin token** | The admin API also needs a current TOTP code. | A leaked admin token plus the authenticator secret is full admin. |
 | **Tampering with the audit log** | Hash chain plus an Ed25519 signature per entry; `ledger verify` needs only the public key. | Truncating the tail of the log removes the newest entries without breaking the chain; keep external copies or the latest hash. An attacker who also holds the signing key can forge a new chain. |
@@ -56,7 +57,7 @@ root key  (32 bytes)
   - `passphrase`: `OSMCP_MASTER_KEY` stretched with scrypt and a salt file. Team default.
   - `vault-transit`: a random data key, stored wrapped by HashiCorp Vault Transit and unwrapped on start.
   - `aws-kms`: a random data key via `GenerateDataKey`, stored wrapped by KMS and unwrapped with `Decrypt`. Requests are signed with AWS SigV4 implemented on `node:crypto`; it is checked against AWS's published example.
-- **Storage backends.** `file` (`vault.json`, written atomically through a temporary file, mode 0600) or HashiCorp Vault KV v2 at `<mount>/data/one-stop-mcp/<org>/<user>/<server>`. <!-- verify: whether values stored in Vault KV are also sealed client-side with the user key, or rely on Vault's own encryption only. -->
+- **Storage backends.** `file` (`vault.json`, written atomically through a temporary file, mode 0600) or HashiCorp Vault KV v2 at `<mount>/data/one-stop-mcp/<org>/<user>/<server>`. With the Vault backend the values are ordinary KV v2 secrets and Vault encrypts them at rest; the gateway does not add its own AES-GCM layer. The key hierarchy above therefore applies to the `file` backend. (Team mode still requires `OSMCP_MASTER_KEY` or a KMS provider whichever backend you choose.)
 - **Not built:** GCP KMS and Azure Key Vault. They fit behind the `KeyProvider` interface.
 
 The master key is only ever read from `OSMCP_MASTER_KEY` ([D29](burndown/DECISIONS.md)). Team mode refuses to start without it or a KMS provider.
@@ -65,7 +66,7 @@ The master key is only ever read from `OSMCP_MASTER_KEY` ([D29](burndown/DECISIO
 
 A credential is added to an outbound call and nowhere else:
 
-- **stdio servers**: put in the one environment variable the manifest names (`auth.env`). The child's environment is built from the SDK's default safe variables, the manifest's `transport.env`, and that credential. It is **not** a copy of the gateway's environment, so `OSMCP_MASTER_KEY` cannot reach a downstream server ([D31](burndown/DECISIONS.md)).
+- **stdio servers**: put in the one environment variable the manifest names (`auth.env`). The child's environment is built from the MCP SDK's default safe variables (on Linux and macOS `HOME`, `LOGNAME`, `PATH`, `SHELL`, `TERM`, `USER`; on Windows `APPDATA`, `USERPROFILE`, `PATH`, `TEMP` and similar), the manifest's `transport.env`, and that credential. `HOME` is what lets `aws`, `kubectl` and similar find `~/.aws` and `~/.kube`; a server that needs `AWS_PROFILE` or `KUBECONFIG` gets it from its manifest's `transport.env`. It is **not** a copy of the gateway's environment, so `OSMCP_MASTER_KEY` cannot reach a downstream server ([D31](burndown/DECISIONS.md)).
 - **HTTP servers**: put in one header (`auth.header`, default `Authorization` with a `Bearer ` prefix), or handled by the SDK's OAuth provider.
 - It is never placed in tool results, error messages, the ledger, logs, or the client's configuration.
 
@@ -93,17 +94,16 @@ A downstream server that echoes the key it was given returns `[REDACTED]`; there
 
 Every credential use and every admin action is appended to the ledger: which user, which server, which tool, when, and the result (`authorized`, `denied`, `error`).
 
-- **Tamper evidence** ([D19](burndown/DECISIONS.md)). Entries are JSON lines. Each has a sequence number, the hash of the previous entry, its own SHA-256 hash over its canonical JSON, and an Ed25519 signature over that hash. The signing key pair is a PEM created with mode 0600 on first use. `one-stop-mcp ledger verify` re-checks the chain and every signature using the **public** key alone; a verifier needs no secret. A reload continues the existing chain.
+- **Tamper evidence** ([D19](burndown/DECISIONS.md)). Entries are JSON lines. Each has a sequence number, the hash of the previous entry, its own SHA-256 hash over its canonical JSON, and an Ed25519 signature over that hash. The signing key is a PEM (`ledger-signing.pem`, mode 0600, created on first use) with its public half beside it as `ledger-signing.pem.pub`. `one-stop-mcp ledger verify` re-checks the chain and every signature using the **public** key alone (the check is a function of `ledger.jsonl` and the `.pub` file, so an auditor needs nothing else); a verifier needs no secret. A reload continues the existing chain.
 - **Why Ed25519 and not an HMAC:** with an HMAC the verifier must hold the secret, and then can also forge entries.
 - **Anomaly flags** ([D11](burndown/DECISIONS.md)). Rules work from the first call:
-  - **Burst**: more than `ledger.burstMax` calls to one (user, server, tool) within `ledger.windowMs` (default 100 in 60 s).
-  - **Bulk-shaped tools**: tool names containing `export`, `dump`, `download`, `bulk`, `list_all` or `backup` are flagged at a lower threshold.
-  - **Denied rate**: a user whose calls keep being denied.
-  - **Baseline**: a per-server exponentially weighted moving average of calls per minute; a z-score above 3 after a warm-up period flags the call. This catches connectors whose normal is very different from the defaults.
+  - **Burst**: more than `ledger.burstMax` calls (default 100) to one (user, server, tool) within `ledger.windowMs` (default 60 s).
+  - **Bulk-shaped tools**: tool names containing `export`, `dump`, `download`, `bulk`, `list_all` or `backup` are flagged at a lower threshold: 20 calls per window.
+  - **Denied rate**: a user with more than 10 denied calls in a window.
+  - **Baseline**: a per-server exponentially weighted moving average of calls per minute (smoothing 0.1); a z-score above 3 after a 10-minute warm-up flags the call. This catches connectors whose normal is very different from the defaults.
   There is no learned model. Rules are explainable: each flagged entry has `flagged: true` and a `reason`.
 - **Reading it**: `one-stop-mcp ledger tail`, `ledger flagged`, the admin page, or `GET /admin/api/ledger` with `user`, `server`, `since` and `limit` filters.
 
-<!-- verify: anomaly thresholds for the bulk-shaped and denied-rate rules are not fixed in the briefs; fill in the defaults from src/security/ledger.ts. -->
 
 ## Kill switch
 
@@ -117,7 +117,7 @@ Three scopes, all ledgered with who did it ([D17](burndown/DECISIONS.md), [D30](
 
 **Re-enabling is deliberate and one at a time.** During lockdown `enable server <id>` unfreezes the vault but keeps denying every other server, so you bring connectors back individually once you have found the culprit. `lockdown end` leaves lockdown entirely. `enable user <org/user>` re-enables a revoked user.
 
-State lives in a file that the guard re-reads whenever it changes. Running `kill all` in a terminal therefore takes effect inside an already-running local gateway at once, without a restart or a network call. Denied calls raise an access-denied error with a reason and are recorded in the ledger as `denied`.
+State lives in a file (`killswitch.json`) that the guard re-reads whenever it changes. A corrupt file makes every check fail closed. Running `kill all` in a terminal therefore takes effect inside an already-running local gateway at once, without a restart or a network call. Denied calls raise an access-denied error with a reason and are recorded in the ledger as `denied`.
 
 Admin powers are deliberately not meta-tools: they are available through the CLI, the TOTP-protected admin API and the admin page, never through the model.
 
@@ -133,7 +133,7 @@ Rotate **one** credential, a **group** (by server, category, org or user), or **
 | **API key, provider has a key-management API** | An adapter named in the manifest (`auth.rotation`) issues a new key and retires the old one. Cloudflare's API-token roll ships first. It is written from Cloudflare's API documentation and tested against a fake, so check it against the real API before relying on it. |
 | **API key, no such API** | **Guided**: the outcome is `guided` with a link to the gateway's key-entry page and the provider's key page (`auth.keyUrl`). The user issues a new key and pastes it in. |
 
-Commands: `rotate due`, `rotate <server>`, `rotate --category <c>`, `rotate --all`. Each credential returns an outcome (`rotated`, `guided`, `failed`, `skipped`).
+Commands: `rotate due`, `rotate <server>`, `rotate --category <c>`, `rotate --all`. OAuth client registrations and TOTP secrets are not rotated. Each credential returns an outcome (`rotated`, `guided`, `failed`, `skipped`).
 
 ### After a scare: the incident flow
 
@@ -141,7 +141,7 @@ Commands: `rotate due`, `rotate <server>`, `rotate --category <c>`, `rotate --al
 
 1. **Revoke all**: kill every session and freeze the vault.
 2. **Collect suspects** from the ledger: flagged entries, or those matching your filter.
-3. **Work out the scopes** those entries could have touched.
+3. **Work out the scopes** those entries could have touched. A denied call never received a credential, so denied entries are skipped.
 4. **Rotate** exactly those credentials (or everything, if you gave no filter).
 5. **Report** what was revoked and rotated. Credentials that could only be rotated by guidance appear with their links.
 
@@ -152,7 +152,8 @@ The gateway stays in lockdown afterwards. Re-enable servers one at a time once y
 ([D16](burndown/DECISIONS.md))
 
 - Users authenticate to the gateway with a bearer token `osmcp_<base64url of 32 random bytes>`. Only the SHA-256 hash is stored.
-- The admin API needs the admin's bearer token **and** a TOTP code in `X-OSMCP-TOTP`: RFC 6238, SHA-1, 30-second step, 6 digits, accepting one step either side. Secrets are stored in the vault under the admin's own scope.
+- The admin API needs the admin's bearer token **and** a TOTP code in `X-OSMCP-TOTP`: RFC 6238, SHA-1, 30-second step, 6 digits, accepting one step either side. A code is accepted **once** (RFC 6238 section 5.2). A good code returns an `x-osmcp-admin-session` header; sending that header back, with the bearer token still required on every call, keeps the API unlocked for 15 minutes. Five wrong codes in five minutes lock the admin out (HTTP 429). Secrets are stored in the vault under the admin's own scope, and are also cached in memory so an admin can still authenticate to end a lockdown while the vault is frozen.
+- Failed admin authentication attempts are written to the ledger as `admin.auth` denials.
 - Every admin call is written to the ledger.
 - In local mode the person at the terminal is the admin, with no MFA: access to the state directory is already full control. The CLI is the interface.
 - Becoming a full OAuth authorization server for clients is a possible later upgrade; the MCP authorization specification makes server-side auth optional.
@@ -162,7 +163,7 @@ The gateway stays in lockdown afterwards. Re-enable servers one at a time once y
 - [ ] TLS in front of the gateway; `http.publicUrl` is `https://...`.
 - [ ] `OSMCP_MASTER_KEY` comes from a secret manager or env file with mode 0600, not from a shell history or compose file. Or a KMS provider.
 - [ ] The host port is published on loopback or a private network only.
-- [ ] `metrics.token` is set if `/metrics` is reachable.
+- [ ] `OSMCP_METRICS_TOKEN` is set if `/metrics` is reachable.
 - [ ] Only trusted people have admin accounts; each uses their own authenticator.
 - [ ] The state directory and its backups are protected like a password database; the ledger and its public key are copied somewhere the gateway host cannot rewrite.
 - [ ] You have tried `kill all`, `enable server` and `ledger verify` once before you need them.

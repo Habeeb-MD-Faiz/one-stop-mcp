@@ -45,7 +45,7 @@ The full decision log with the other 24 build decisions is in [`docs/burndown/DE
 
 ## Q3. Embeddings: local small model or pluggable remote? (D5, reversible)
 
-**Decision.** Local embeddings through `@huggingface/transformers` (ONNX runtime). No embedding API is called. Candidates are `all-MiniLM-L6-v2` and `bge-small-en-v1.5`; the routing benchmark chooses the default. Vectors are searched exactly (cosine) over an on-disk cache; an approximate index (hnswlib) only past about 50,000 tools. If the package or the model is unavailable, routing falls back to keyword + BM25 rather than failing. Remote providers can plug in behind the `Embedder` interface, but none is wired.
+**Decision.** Local embeddings through `@huggingface/transformers` (ONNX runtime). No embedding API is called. Candidates were `all-MiniLM-L6-v2` and `bge-small-en-v1.5`; the routing benchmark chose `bge-small-en-v1.5` (top-3 on the original benchmark 94.1% against 91.2%; see [routing](../routing.md#the-benchmark)). Vectors are searched exactly (cosine) over an on-disk cache; an approximate index (hnswlib) only past about 50,000 tools. If the package or the model is unavailable, routing falls back to keyword + BM25 rather than failing. Remote providers can plug in behind the `Embedder` interface, but none is wired.
 
 **Why.** Local keeps the product's privacy story intact (tool queries never leave the machine) and costs nothing to run. At catalog sizes of thousands of tools, exact search builds instantly, has perfect recall and takes milliseconds, so an approximate index would add complexity for no gain. The fallback makes the optional model an enhancement, not a point of failure.
 

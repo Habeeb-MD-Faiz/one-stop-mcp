@@ -1,11 +1,12 @@
 # Example config for a team-mode gateway (used by docker-compose.yml).
-# Every field is documented in docs/configuration.md. The master key is NOT
-# here: it comes only from the OSMCP_MASTER_KEY environment variable.
+# Every field is documented in docs/configuration.md. Credentials are NOT
+# allowed here (the gateway rejects them): OSMCP_MASTER_KEY, OSMCP_VAULT_TOKEN,
+# OSMCP_METRICS_TOKEN and AWS_* come from the environment only.
 
 mode: team
 
 http:
-  host: 0.0.0.0                       # inside a container; compose publishes it on loopback by default
+  host: 0.0.0.0                       # the team-mode default; compose publishes the port on loopback unless told otherwise
   port: 8420
   publicUrl: http://localhost:8420    # what browsers reach: OAuth redirects and key-entry links are built from it
 
@@ -15,16 +16,12 @@ vault:
 
 routing:
   embeddings: off                     # "on" needs the image built with EMBEDDINGS=1
-  # model: Xenova/all-MiniLM-L6-v2
+  # model: Xenova/bge-small-en-v1.5   # the default
 
 compress: light                       # off | light | aggressive
 
 rotation:
   days: 90
-
-# Uncomment to protect /metrics with a bearer token.
-# metrics:
-#   token: change-me
 
 # To try the HashiCorp Vault KV v2 backend against the compose
 # `vault` profile (dev mode only), replace the vault block above with:
@@ -33,5 +30,5 @@ rotation:
 #   keyProvider: passphrase
 #   hashicorp:
 #     addr: http://vault:8200
-#     token: dev-only-token
 #     mount: secret
+# and set OSMCP_VAULT_TOKEN=dev-only-token in .env (tokens are environment-only).
