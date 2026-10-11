@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../schema/manifest.schema.json
+# Source: https://developers.intercom.com/docs/guides/mcp (official, hosted by Intercom). Streamable HTTP, US region
+#   https://mcp.intercom.com/mcp (EU workspaces use https://mcp.eu.intercom.com/mcp; AU is unsupported).
+# Auth: OAuth with dynamic client registration; redirect URIs on localhost / 127.0.0.1 are allowed, any other redirect
+#   must be allowlisted by Intercom Support (relevant for a hosted gateway). An Intercom API token as a Bearer header is
+#   the alternative. Scopes: read users/companies, read conversations, write conversations (add_internal_note only),
+#   read/write articles.
+id: intercom
+name: Intercom
+category: [communication, crm]
+tags: [official, remote]
+description: >
+  Search and read Intercom conversations, contacts and companies, manage Help Center articles, and
+  add internal notes to conversations.
+homepage: https://developers.intercom.com/docs/guides/mcp
+transport:
+  type: streamable-http
+  url: https://mcp.intercom.com/mcp
+auth:
+  type: oauth2
+  scopes: []
+routing:
+  examples:
+    - "find open intercom conversations from this customer"
+    - "look up a contact in intercom by email"
+    - "add an internal note to the support conversation"
+    - "search our help center articles"
+  tools:
+    search_conversations: ["show snoozed conversations assigned to the billing team"]
+    get_contact: ["pull up everything intercom knows about this user"]
+    add_internal_note: ["leave a private note for my teammates on this chat"]
+    create_article: ["write a new help center article draft"]
+health:
+  check: initialize

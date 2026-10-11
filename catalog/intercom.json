@@ -1,0 +1,307 @@
+{
+  "server": "intercom",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "search",
+      "description": "Universal query-DSL search for conversations and contacts. The query must include object_type:conversations or object_type:contacts; supports field filters, q: free text, limit: and starting_after: cursor.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Query string in the Intercom search DSL."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "fetch",
+      "description": "Returns full details for specific resources by their type-prefixed IDs (conversation_, contact_, company_) from search results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Type-prefixed resource ID."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_conversations",
+      "description": "Searches conversations by IDs and filters such as state, source author, assignee and time-to-reply statistics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Conversation IDs."
+          },
+          "state": {
+            "type": "string",
+            "description": "Conversation state.",
+            "enum": [
+              "open",
+              "closed",
+              "snoozed"
+            ]
+          },
+          "source_author_email": {
+            "type": "string",
+            "description": "Author email."
+          },
+          "team_assignee_id": {
+            "type": "string",
+            "description": "Assigned team ID."
+          },
+          "admin_assignee_id": {
+            "type": "number",
+            "description": "Assigned admin ID."
+          },
+          "starting_after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_conversation",
+      "description": "Returns one conversation with all parts and metadata.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_contacts",
+      "description": "Searches contacts by IDs, name, email, phone, custom attributes or email domain.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "starting_after": {
+            "type": "string",
+            "description": "Pagination cursor."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_contact",
+      "description": "Returns full contact details, including custom attributes, location and activity timestamps.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_companies",
+      "description": "Lists companies with optional filters by name, company_id, tag or segment, with page-based pagination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Exact company name."
+          },
+          "company_id": {
+            "type": "string",
+            "description": "External company ID."
+          },
+          "tag_id": {
+            "type": "string",
+            "description": "Tag ID."
+          },
+          "segment_id": {
+            "type": "string",
+            "description": "Segment ID."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Default 15, max 60."
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page, default 1."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_company",
+      "description": "Returns full company details, including custom attributes, segments and tags.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_articles",
+      "description": "Lists all Help Center articles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Page, default 1."
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "1-150, default 25."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_articles",
+      "description": "Searches Help Center articles by phrase, state and help center.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "phrase": {
+            "type": "string",
+            "description": "Search title and body."
+          },
+          "state": {
+            "type": "string",
+            "description": "Article state.",
+            "enum": [
+              "published",
+              "draft"
+            ]
+          },
+          "help_center_id": {
+            "type": "integer",
+            "description": "Help center ID."
+          },
+          "highlight": {
+            "type": "boolean",
+            "description": "Highlight matches."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_article",
+      "description": "Returns full article details, including HTML body, metadata and parent collection.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_article",
+      "description": "Creates a Help Center article.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title."
+          },
+          "author_id": {
+            "type": "integer",
+            "description": "Author admin ID."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "body": {
+            "type": "string",
+            "description": "HTML body."
+          },
+          "state": {
+            "type": "string",
+            "description": "Defaults to draft.",
+            "enum": [
+              "published",
+              "draft"
+            ]
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent collection or section ID."
+          },
+          "parent_type": {
+            "type": "string",
+            "description": "Required if parent_id is set.",
+            "enum": [
+              "collection",
+              "section"
+            ]
+          }
+        },
+        "required": [
+          "title",
+          "author_id"
+        ]
+      }
+    },
+    {
+      "name": "update_article",
+      "description": "Updates an existing Help Center article; at least one field is required.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Article ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title."
+          },
+          "author_id": {
+            "type": "integer",
+            "description": "Author admin ID."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description."
+          },
+          "body": {
+            "type": "string",
+            "description": "HTML body."
+          },
+          "state": {
+            "type": "string",
+            "description": "Article state.",
+            "enum": [
+              "published",
+              "draft"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_internal_note",
+      "description": "Adds a note visible only to teammates on a conversation. Cannot send customer-facing replies or change the assignee.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "description": "Conversation ID, prefixed ID or Inbox URL (not tickets)."
+          },
+          "body": {
+            "type": "string",
+            "description": "HTML or plain text note."
+          }
+        },
+        "required": [
+          "conversation_id",
+          "body"
+        ]
+      }
+    }
+  ]
+}

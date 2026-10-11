@@ -1,0 +1,77 @@
+{
+  "server": "stripe",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "stripe_api_search",
+      "description": "Search for Stripe API methods by keyword.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stripe_api_details",
+      "description": "Get detailed parameter information for a specific Stripe API method.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stripe_api_read",
+      "description": "Read data with any Stripe API GET method (customers, charges, invoices, subscriptions, payment intents, balance and more).",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stripe_api_write",
+      "description": "Write data with any Stripe API POST, PATCH, PUT or DELETE method, such as creating customers, invoices, refunds, products and prices. Some actions need human confirmation.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_stripe_account_info",
+      "description": "Retrieve the Stripe account.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stripe_analytics",
+      "description": "Preview: query metrics, analyse subscriptions and billing and run financial reports; with Sigma, build SQL queries from natural language.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_balance_summary",
+      "description": "Displays an interactive balance summary across the Stripe balance and Treasury accounts.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_stripe_documentation",
+      "description": "Search the Stripe documentation for the given question and language.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "stripe_implementation_planner",
+      "description": "Guides the user through Stripe products to accept payments, sell products online, set up billing or build any Stripe integration.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "send_stripe_feedback",
+      "description": "Share feedback about Stripe's products.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}

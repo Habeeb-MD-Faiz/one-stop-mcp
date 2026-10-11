@@ -1,0 +1,63 @@
+{
+  "server": "lemlist",
+  "source": "docs",
+  "fetchedAt": "2026-10-10T00:00:00Z",
+  "tools": [
+    {
+      "name": "get_campaigns",
+      "description": "Lists existing lemlist campaigns, e.g. to audit what is already running.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_campaign_stats",
+      "description": "Returns performance metrics for a lemlist campaign.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "lemleads_search",
+      "description": "Searches the lemlist B2B lead database by role, industry, company size and location to find prospects matching an ideal customer profile.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "findEmail",
+      "description": "Finds a lead's email address. Consumes credits.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "verifyEmail",
+      "description": "Verifies an email address before it is used in a campaign. Consumes credits.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "linkedinEnrichment",
+      "description": "Enriches a lead using LinkedIn data. Consumes credits.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "findPhone",
+      "description": "Finds a lead's phone number. Consumes credits.",
+      "inputSchema": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "call_api",
+      "description": "Generic fallback that calls any lemlist API endpoint outside the advertised tool set.",
+      "inputSchema": {
+        "type": "object"
+      }
+    }
+  ]
+}
