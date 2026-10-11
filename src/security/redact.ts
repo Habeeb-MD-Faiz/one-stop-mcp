@@ -41,7 +41,7 @@ const SHAPES: Array<[RegExp, string]> = [
   [/\b[rs]k_(?:live|test)_[A-Za-z0-9]{16,}/g, MASK], // Stripe
   [/\bsk-[A-Za-z0-9_-]{20,}/g, MASK], // OpenAI / Anthropic style
   [/(\/\/)[^\s/:@]+:[^\s/@]+@/g, `$1${MASK}@`], // credentials in a URL
-  [/\b((?:api[_-]?key|x-api-key|access[_-]?token|refresh[_-]?token|id[_-]?token|client[_-]?secret|secret|password|passwd|token|authorization)["']?\s*[:=]\s*["']?)(?!\[REDACTED\])[^\s"'&,;}]{4,}/gi, `$1${MASK}`],
+  [/\b((?:api[_-]?key|x-api-key|access[_-]?token|refresh[_-]?token|id[_-]?token|client[_-]?secret|secret|password|passwd|token|authorization)["']?\s*[:=]\s*["']?)(?!\[REDACTED\]|(?:Bearer|Basic)\s)[^\s"'&,;}]{4,}/gi, `$1${MASK}`],
 ];
 
 /** Remove bearer tokens and common key shapes from free text. */
