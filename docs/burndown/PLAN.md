@@ -79,7 +79,7 @@ A lane that needs a contract change stops and reports it instead of editing.
 | L7 server | merged | |
 | L8 community | merged | |
 | S2 integrate | done | typecheck clean, all tests green, 51 manifests valid |
-| S3 end-to-end | running | stdio e2e green (test/e2e.test.ts); routing quality work + held-out set in progress |
+| S3 end-to-end | running | stdio e2e + OAuth-through-HTTP e2e green; held-out set merged; mention vote in. NEXT: merge OneStop-MCP-utter-1..4 (validate, then rerun both benches with and without --dense), record numbers |
 | S4 hardening | pending | |
 | S5 handoff | pending | |
 
@@ -106,3 +106,11 @@ A lane that needs a contract change stops and reports it instead of editing.
 - L8: README must link the new docs.
 - L4: `knowledge-base` added to CATEGORIES. Probe spawns stdio commands from PRs — fine under `pull_request` (no secrets, read-only token), review in S4.
 - L3: Registry deps add `secrets: SecretStore` (list() only, for `connected`). Swap L3's local `toRoutable` for L1's `src/routing/index.ts` and local `redact`/`redactText` for L2's `src/security/redact.ts`. No `unindexed` in DiscoveryResult. Vault value shapes: api_key `{key}`, oauth2 token response + `expires_at`, client `{client_id, client_secret?}` (L2 rotation adapters must match).
+
+## Resume notes (written 10:45, 2026-10-11, at a usage-limit cutoff)
+
+1. U1–U4 utterance lanes were running in `.wt/utter-1..4` (branches `OneStop-MCP-utter-1..4`). Merge whatever was pushed, run `npm run validate`, then the benches: `npm run bench -- --catalog-dir catalog --servers servers --queries bench/heldout` and `--queries bench/seed`. Dense needs the MSVC runtime on PATH on this Windows box (see L1's notes).
+2. Revoke a single bearer token: `UserStore.revokeToken` exists. Add admin route `DELETE users/:id/token/:tokenId` (src/server/admin.ts), CLI `user revoke <id> <tokenId>` (COMMANDS, USAGE, adminRequest, and the local path), and a test row in test/cli.test.ts.
+3. Add a CI floor: `bench --min-top3 <x>` that exits 1 below the floor, wired in ci.yml for `bench/` (currently 82.4%).
+4. README.md (orchestrator): current features, links to docs/, the bench numbers.
+5. S4: security review pass (ponytail-review/audit), CI green on GitHub. S5: brain log summary, project file, arch page.
