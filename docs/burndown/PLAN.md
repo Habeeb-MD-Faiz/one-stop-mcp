@@ -41,13 +41,13 @@ The orchestrator merges lane branches into `OneStop-MCP` at gates.
 
 | Lane | Model | Owns (writes only here) |
 |---|---|---|
-| L1 routing | opus | `src/routing/**`, `bench/**` except `bench/seed/**`, `scripts/routing-bench.ts`, `test/router*.test.ts`, `test/routing*.test.ts`, `test/compress*.test.ts` |
-| L2 security | opus | `src/security/**`, `test/security*.test.ts` |
-| L3 downstream+auth | opus | `src/downstream/**`, `src/auth/**`, `test/downstream*.test.ts`, `test/oauth*.test.ts`, `test/fixtures/**` |
+| L1 routing | merged | bge-small default; seed-catalog bench far below target — see S3 |
+| L2 security | merged | single-use TOTP + admin session added at S2 (D36) |
+| L3 downstream+auth | merged | local helper copies removed (D37) |
 | L4 catalog-core | sonnet | `src/catalog/**`, `src/manifest.ts`, `schema/**`, `scripts/validate-manifests.ts`, `scripts/probe-manifests.ts`, `test/catalog*.test.ts`, `test/manifest*.test.ts` |
-| L5 seed A | sonnet | `servers/<its ids>.yaml`, `catalog/<its ids>.json`, `bench/seed/<its ids>.jsonl` |
-| L6 seed B | sonnet | same, for its ids |
-| L7 server | opus | `src/server/**`, `src/tenancy/**`, `src/cli.ts`, `src/config.ts`, `src/index.ts`, `scripts/token-budget.ts`, `test/server*.test.ts`, `test/gateway*.test.ts`, `test/cli*.test.ts`, `test/config*.test.ts`, `test/tenancy*.test.ts` |
+| L5 seed A | merged | 26 servers |
+| L6 seed B | merged | 24 servers |
+| L7 server | merged | |
 | L8 community | sonnet | `.github/**`, `docs/**` except `docs/PDR.*` and `docs/burndown/**`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`, `Dockerfile`, `.dockerignore`, `docker-compose.yml` |
 | orchestrator | — | everything else: `package.json`, lockfile, `tsconfig*.json`, `src/contracts.ts`, `src/types.ts`, `README.md`, `docs/burndown/**`, `catalog/echo.json`, merges, brain |
 
@@ -70,16 +70,16 @@ A lane that needs a contract change stops and reports it instead of editing.
 | Item | State | Note |
 |---|---|---|
 | S0 skeleton | done | 7606c9d, a9de974 |
-| L1 routing | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L2 security | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L3 downstream+auth | done 9aaa4c3 — merge with L2+L7 (old Registry API callers break until then) | |
+| L1 routing | merged | bge-small default; seed-catalog bench far below target — see S3 |
+| L2 security | merged | single-use TOTP + admin session added at S2 (D36) |
+| L3 downstream+auth | merged | local helper copies removed (D37) |
 | L4 catalog-core | merged cc1b17d | |
-| L5 seed A | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L6 seed B | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
-| L7 server | running — launched 22:50, cut off by the usage limit ~23:10, resumed 03:47 | |
+| L5 seed A | merged | 26 servers |
+| L6 seed B | merged | 24 servers |
+| L7 server | merged | |
 | L8 community | merged | |
-| S2 integrate | pending | |
-| S3 end-to-end | pending | |
+| S2 integrate | done | typecheck clean, all tests green, 51 manifests valid |
+| S3 end-to-end | running | stdio e2e green (test/e2e.test.ts); routing quality work + held-out set in progress |
 | S4 hardening | pending | |
 | S5 handoff | pending | |
 
