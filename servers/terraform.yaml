@@ -27,10 +27,14 @@ routing:
     - "what is the latest version of the aws provider"
     - "show the documentation for a terraform resource"
   tools:
-    search_providers: ["find provider documentation for google_compute_instance"]
-    get_provider_details: ["read the docs for this terraform resource"]
-    search_modules: ["search the registry for a vpc module"]
-    get_latest_provider_version: ["newest release of the azurerm provider"]
-    search_policies: ["find sentinel policies about tagging"]
+    search_providers: ["find provider documentation for google_compute_instance", "find docs for the aws_s3_bucket resource", "which provider manages Cloudflare DNS records"]
+    get_provider_details: ["read the docs for this terraform resource", "show the arguments and attributes of the google_compute_instance resource", "read the guide page for this provider data source"]
+    search_modules: ["search the registry for a vpc module", "is there a registry module for an EKS cluster", "find popular modules for VPC networking"]
+    get_latest_provider_version: ["newest release of the azurerm provider", "what version of the random provider should I pin", "latest release of hashicorp/aws"]
+    search_policies: ["find sentinel policies about tagging", "look for Sentinel policies that enforce resource tags", "find a registry policy restricting instance types"]
+    get_provider_capabilities: ["which resources and data sources does the kubernetes provider offer", "does this provider have a function for parsing CIDRs"]
+    get_module_details: ["show the inputs and outputs of the vpc module", "how do I use this registry module, give me an example"]
+    get_latest_module_version: ["what's the newest version of terraform-aws-modules/vpc", "which module version should I pin in my source block"]
+    get_policy_details: ["show what this Sentinel policy checks", "read the policy content and its README from the registry"]
 health:
   check: initialize

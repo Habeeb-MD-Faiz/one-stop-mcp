@@ -27,10 +27,14 @@ routing:
     - "why is this postgres query slow"
     - "check the health of my postgres database"
   tools:
-    execute_sql: ["select the ten newest rows from the orders table"]
-    get_object_details: ["show the columns and indexes of the users table"]
-    explain_query: ["explain the execution plan of this query"]
-    get_top_queries: ["which queries take the most total time"]
-    analyze_db_health: ["run health checks on the database"]
+    execute_sql: ["select the ten newest rows from the orders table", "count the signups per day for the last month", "run this SELECT with a join on customers and invoices"]
+    get_object_details: ["show the columns and indexes of the users table", "describe the orders table with its foreign keys", "what constraints and column types does this table have"]
+    explain_query: ["explain the execution plan of this query", "show the query plan with EXPLAIN ANALYZE", "would an index on email make this query faster"]
+    get_top_queries: ["which queries take the most total time", "find the slowest statements from pg_stat_statements", "show the queries with the highest mean execution time"]
+    analyze_db_health: ["run health checks on the database", "is my buffer cache hit rate okay", "check for bloat, invalid indexes and vacuum problems"]
+    list_schemas: ["which schemas are in this database", "list every schema including pg_catalog and public"]
+    list_objects: ["what tables and views are in the public schema", "list the sequences or extensions installed in this schema"]
+    analyze_workload_indexes: ["recommend indexes for my whole workload", "what indexes would speed up my heaviest queries"]
+    analyze_query_indexes: ["suggest indexes for these three specific queries", "tune the indexes for this list of SQL statements"]
 health:
   check: initialize
