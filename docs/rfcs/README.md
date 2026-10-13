@@ -7,6 +7,7 @@ Design changes to One-Stop MCP go through a short, public, written process, so t
 | RFC | Title | Status |
 |---|---|---|
 | [0001](0001-v1-open-questions.md) | Answers to the v1 open questions (Q1-Q9) | Accepted provisionally, open for comment |
+| [0002](0002-agent-audit-trail.md) | Agent audit trail (sessions and approvals in the ledger) | Draft |
 
 ## When you need an RFC
 
